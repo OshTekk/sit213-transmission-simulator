@@ -5,6 +5,7 @@
 - [ ] SourceFixe : Amandine
 - [ ] TransmetteurParfait : Antonin
 - [ ] DestinationFinale : Aymeric
+- [ ] Simulateur
 ### Commandes à implémenter
 - [ ] -mess
 - [ ] -s
