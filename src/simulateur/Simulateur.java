@@ -1,7 +1,12 @@
 package simulateur;
 import destinations.Destination;
+import destinations.DestinationFinale;
 import sources.Source;
+import sources.SourceAleatoire;
 import transmetteurs.Transmetteur;
+import transmetteurs.TransmetteurParfait;
+import visualisations.SondeLogique;
+import information.Information;
 
 
 /** La classe Simulateur permet de construire et simuler une chaîne de
@@ -57,8 +62,29 @@ public class Simulateur {
     	// analyser et récupérer les arguments   	
     	analyseArguments(args);
       
-      	// TODO : Partie à compléter
-      		
+        // Instanciation de la source (aléatoire par défaut, fixe quand la classe sera fusionnée)
+        if (messageAleatoire) {
+            source = new SourceAleatoire(nbBitsMess, seed);
+        } else {
+            // En attente de la fusion de la branche SourceFixe (Amandine)
+            throw new ArgumentsException("L'option de message fixe attend la fusion de SourceFixe.");
+        }
+
+        // Instanciation du transmetteur logique parfait et de la destination finale
+        transmetteurLogique = new TransmetteurParfait<Boolean>();
+        destination = new DestinationFinale();
+
+        // Connexion des composants entre eux
+        source.connecter(transmetteurLogique);
+        transmetteurLogique.connecter(destination);
+
+        // Ajout des sondes logiques si l'affichage est demandé (-s)
+        if (affichage) {
+            SondeLogique sondeSource = new SondeLogique("Sonde source", 100);
+            SondeLogique sondeTransmetteur = new SondeLogique("Sonde transmetteur", 100);
+            source.connecter(sondeSource);
+            transmetteurLogique.connecter(sondeTransmetteur);
+        }
     }
    
    
@@ -135,9 +161,7 @@ public class Simulateur {
      *
      */ 
     public void execute() throws Exception {      
-         
-    	// TODO : typiquement source.emettre(); 
-      	     	      
+    	source.emettre(); 
     }
    
    	   	
@@ -147,11 +171,26 @@ public class Simulateur {
      *
      * @return  La valeur du Taux dErreur Binaire.
      */   	   
-    public float  calculTauxErreurBinaire() {
+    public float calculTauxErreurBinaire() {
+        Information<Boolean> infoEmise = source.getInformationEmise();
+        Information<Boolean> infoRecue = destination.getInformationRecue();
 
-    	// TODO : A compléter
+        if (infoEmise == null || infoRecue == null || infoEmise.nbElements() == 0) {
+            return 0.0f;
+        }
 
-    	return  0.0f;
+        int nbErreurs = 0;
+        int tailleMin = Math.min(infoEmise.nbElements(), infoRecue.nbElements());
+
+        for (int i = 0; i < tailleMin; i++) {
+            if (!infoEmise.iemeElement(i).equals(infoRecue.iemeElement(i))) {
+                nbErreurs++;
+            }
+        }
+
+        nbErreurs += Math.abs(infoEmise.nbElements() - infoRecue.nbElements());
+
+        return (float) nbErreurs / infoEmise.nbElements();
     }
    
    
