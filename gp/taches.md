@@ -1,10 +1,10 @@
 # Tâches
 ## TP1
 ### Classes à créer
-- [X] SourceAleatoire : Nathan
+- [x] SourceAleatoire : Nathan
 - [ ] SourceFixe : Amandine
 - [ ] TransmetteurParfait : Antonin
-- [ ] DestinationFinale : Aymeric
+- [x] DestinationFinale : Aymeric
 - [ ] Simulateur
 
 Exemple de javadoc pour chaque classe : 
