@@ -3,9 +3,9 @@
 ### Classes à créer
 - [x] SourceAleatoire : Nathan
 - [x] SourceFixe : Amandine
-- [ ] TransmetteurParfait : Antonin
+- [X] TransmetteurParfait : Antonin
 - [x] DestinationFinale : Aymeric
-- [ ] Simulateur
+- [X] Simulateur
 
 Exemple de javadoc pour chaque classe : 
 ```java
