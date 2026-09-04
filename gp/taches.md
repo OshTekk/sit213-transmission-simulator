@@ -2,7 +2,7 @@
 ## TP1
 ### Classes à créer
 - [x] SourceAleatoire : Nathan
-- [ ] SourceFixe : Amandine
+- [x] SourceFixe : Amandine
 - [ ] TransmetteurParfait : Antonin
 - [x] DestinationFinale : Aymeric
 - [ ] Simulateur
