@@ -1,0 +1,26 @@
+#!/bin/sh
+if [ -d "src" ]; then
+    ROOT_DIR="."
+elif [ -d "../src" ]; then
+    ROOT_DIR=".."
+    cd "$ROOT_DIR" || exit 1
+fi
+
+SIM="./script/simulateur"
+if [ ! -f "$SIM" ]; then
+    SIM="./simulateur"
+fi
+
+echo "=== Test 1: simulation par defaut ==="
+sh "$SIM"
+
+echo "=== Test 2: message impose ==="
+sh "$SIM" -mess 1010101
+
+echo "=== Test 3: longueur du message ==="
+sh "$SIM" -mess 50
+
+echo "=== Test 4: semence fixee ==="
+sh "$SIM" -seed 42
+
+echo "=== Fin des tests ==="

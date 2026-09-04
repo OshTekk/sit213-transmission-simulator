@@ -1,0 +1,10 @@
+#!/bin/sh
+if [ -d "src" ]; then
+    ROOT_DIR="."
+elif [ -d "../src" ]; then
+    ROOT_DIR=".."
+    cd "$ROOT_DIR" || exit 1
+fi
+
+mkdir -p bin
+javac -d bin $(find src -name "*.java")

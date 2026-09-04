@@ -1,0 +1,28 @@
+#!/bin/sh
+ARCHIVE_NAME="${1:-Pons-Weymeels.SIT213.Etape1}"
+
+if [ -d "src" ]; then
+    ROOT_DIR="."
+elif [ -d "../src" ]; then
+    ROOT_DIR=".."
+    cd "$ROOT_DIR" || exit 1
+fi
+
+if [ -f "script/cleanAll" ]; then
+    sh script/cleanAll
+else
+    sh cleanAll
+fi
+
+cp script/compile compile
+cp script/genDoc genDoc
+cp script/cleanAll cleanAll
+cp script/simulateur simulateur
+cp script/runTests runTests
+[ -f script/readme ] && cp script/readme readme
+
+COPYFILE_DISABLE=1 tar --exclude='.DS_Store' --exclude='genDeliverable' --exclude='*.tar.gz' --exclude='.git*' --exclude='.idea*' --exclude='_xxx*' -czf "${ARCHIVE_NAME}.tar.gz" src bin docs compile genDoc cleanAll simulateur runTests readme
+
+rm -f compile genDoc cleanAll simulateur runTests
+
+echo "Livrable genere : ${ARCHIVE_NAME}.tar.gz"
