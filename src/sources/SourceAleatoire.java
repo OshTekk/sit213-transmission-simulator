@@ -5,6 +5,8 @@ import java.util.Random;
 
 /**
  * Composant Source qui génère aléatoirement une suite de bits (Boolean).
+ * @author Nathan Weymeels
+ * @version 1.0
  */
 public class SourceAleatoire extends Source<Boolean> {
 
