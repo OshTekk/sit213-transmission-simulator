@@ -3,6 +3,7 @@ import destinations.Destination;
 import destinations.DestinationFinale;
 import sources.Source;
 import sources.SourceAleatoire;
+import sources.SourceFixe;
 import transmetteurs.Transmetteur;
 import transmetteurs.TransmetteurParfait;
 import visualisations.SondeLogique;
@@ -66,8 +67,7 @@ public class Simulateur {
         if (messageAleatoire) {
             source = new SourceAleatoire(nbBitsMess, seed);
         } else {
-            // En attente de la fusion de la branche SourceFixe (Amandine)
-            throw new ArgumentsException("L'option de message fixe attend la fusion de SourceFixe.");
+            source = new SourceFixe(chaine);
         }
 
         // Instanciation du transmetteur logique parfait et de la destination finale
