@@ -67,7 +67,7 @@ public class Simulateur {
         if (messageAleatoire) {
             source = new SourceAleatoire(nbBitsMess, seed);
         } else {
-            source = new SourceFixe(chaine);
+            source = new SourceFixe(messageString);
         }
 
         // Instanciation du transmetteur logique parfait et de la destination finale
