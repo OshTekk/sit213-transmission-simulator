@@ -1,9 +1,12 @@
 #!/bin/sh
-if [ -d "src" ]; then
-    ROOT_DIR="."
-elif [ -d "../src" ]; then
-    ROOT_DIR=".."
-    cd "$ROOT_DIR" || exit 1
+BASEDIR=$(realpath "$(dirname $0)")
+cd "$BASEDIR"/.. || exit 1
+
+if [ ! -d "bin" ]; then
+    echo "Le dossier bin n’existe pas. Executez le script compile avant."
+elif [ -z "$(ls -A 'bin')" ]; then
+    echo "Le dossier bin est vide. Executez le script compile avant."
+    exit 1
 fi
 
 java -cp bin simulateur.Simulateur "$@"

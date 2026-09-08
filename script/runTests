@@ -1,15 +1,7 @@
 #!/bin/sh
-if [ -d "src" ]; then
-    ROOT_DIR="."
-elif [ -d "../src" ]; then
-    ROOT_DIR=".."
-    cd "$ROOT_DIR" || exit 1
-fi
+BASEDIR=$(realpath "$(dirname $0)")
 
-SIM="./script/simulateur"
-if [ ! -f "$SIM" ]; then
-    SIM="./simulateur"
-fi
+SIM="./simulateur"
 
 echo "=== Test 1: simulation par defaut ==="
 sh "$SIM"
