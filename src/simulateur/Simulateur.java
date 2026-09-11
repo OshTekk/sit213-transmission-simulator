@@ -133,7 +133,7 @@ public class Simulateur {
      * @throws ArgumentsException si un des arguments est incorrect.
      *
      */   
-    private  void analyseArguments(String[] args)  throws  ArgumentsException {
+    private void analyseArguments(String[] args)  throws  ArgumentsException {
 
     	for (int i=0;i<args.length;i++){ // traiter les arguments 1 par 1
 
