@@ -1,8 +1,13 @@
 #!/bin/sh
 ARCHIVE_NAME="${1:-Pons-Weymeels-Touchais-Schaeffer.SIT213.Etape1}"
 
-BASEDIR=$(realpath "$(dirname $0)")
-cd "$BASEDIR"/.. || exit 1
+if [ -d "src" ]; then
+    ROOT_DIR="."
+elif [ -d "$(dirname "$0")/src" ]; then
+    cd "$(dirname "$0")" || exit 1
+elif [ -d "$(dirname "$0")/../src" ]; then
+    cd "$(dirname "$0")/.." || exit 1
+fi
 
 if [ -f "script/cleanAll" ]; then
     sh script/cleanAll

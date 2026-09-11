@@ -1,6 +1,12 @@
 #!/bin/sh
-BASEDIR=$(realpath "$(dirname $0)")
-cd "$BASEDIR"/.. || exit 1
+if [ -d "src" ]; then
+    ROOT_DIR="."
+elif [ -d "$(dirname "$0")/src" ]; then
+    cd "$(dirname "$0")" || exit 1
+elif [ -d "$(dirname "$0")/../src" ]; then
+    cd "$(dirname "$0")/.." || exit 1
+fi
 
+sleep 1
 mkdir -p bin
 javac -d bin $(find src -name "*.java")
