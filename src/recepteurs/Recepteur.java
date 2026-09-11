@@ -1,76 +1,69 @@
 package recepteurs;
 
+import codesbinaires.CodeBinaire;
+import destinations.DestinationInterface;
 import information.Information;
-import simulateur.Simulateur;
+import information.InformationNonConformeException;
+import transmetteurs.Transmetteur;
 
 /**
- * Récepteur permettant de reconstruire une suite de bits
- * à partir d'échantillons booléens.
+ * Composant récepteur qui convertit une information analogique
+ * (échantillons Float) en une information logique (bits Boolean)
+ * selon un code en ligne.
  *
- * Le nombre d'échantillons par bit est fourni par le Simulateur.
+ * @author Amandine TOUCHAIS
+ * @version 1.0
  */
-public class Recepteur {
+public class Recepteur extends Transmetteur<Float, Boolean> {
 
-    /** Simulateur contenant les paramètres de la simulation. */
-    private final Simulateur simulateur;
-
-    /** Information binaire reconstruite. */
-    private Information<Boolean> informationRecue;
-
-    /** Nombre d'échantillons reçus pour le bit en cours. */
-    private int compteurEchantillons;
-
-    /** Nombre d'échantillons valant true pour le bit en cours. */
-    private int nombreTrue;
+    /** Le code binaire utilisé pour le décodage. */
+    private CodeBinaire codeBinaire;
 
     /**
-     * Constructeur.
+     * Construit un récepteur avec un code binaire spécifique.
      *
-     * @param simulateur simulateur contenant les paramètres
+     * @param codeBinaire le code utilisé pour le décodage
      */
-    public Recepteur(Simulateur simulateur) {
-        this.simulateur = simulateur;
-        this.informationRecue = new Information<Boolean>();
-        this.compteurEchantillons = 0;
-        this.nombreTrue = 0;
+    public Recepteur(CodeBinaire codeBinaire) {
+        super();
+        this.codeBinaire = codeBinaire;
     }
 
-    /**
-     * Reçoit un échantillon booléen.
-     *
-     * @param echantillon échantillon reçu
-     */
-    public void recevoir(Boolean echantillon) {
+    @Override
+    public void recevoir(Information<Float> information)
+            throws InformationNonConformeException {
 
-        compteurEchantillons++;
-
-        if (echantillon) {
-            nombreTrue++;
+        if (information == null) {
+            throw new InformationNonConformeException("L'information reçue ne peut pas être nulle.");
         }
 
-        // On récupère la valeur définie dans le Simulateur
-        int nbEchParBit =
-                simulateur.getnbEchParBit();
+        // On mémorise l'information reçue
+        this.informationRecue = information;
 
-        // Un bit complet a été reçu
-        if (compteurEchantillons == nbEchParBit) {
+        // Décodage des échantillons en bits
+        this.informationEmise = this.codeBinaire.decoder(this.informationRecue);
 
-            boolean bitReconstruit = nombreTrue > nbEchParBit / 2;
+        // Émission vers le composant suivant
+        this.emettre();
+    }
 
-            informationRecue.add(bitReconstruit);
+    @Override
+    public void emettre()
+            throws InformationNonConformeException {
 
-            // Réinitialisation pour le bit suivant
-            compteurEchantillons = 0;
-            nombreTrue = 0;
+        for (DestinationInterface<Boolean> destination
+                : this.destinationsConnectees) {
+
+            destination.recevoir(this.informationEmise);
         }
     }
 
     /**
-     * Retourne l'information binaire reconstruite.
+     * Retourne le code binaire utilisé par le récepteur.
      *
-     * @return information reçue
+     * @return le code binaire
      */
-    public Information<Boolean> getInformationRecue() {
-        return informationRecue;
+    public CodeBinaire getCodeBinaire() {
+        return codeBinaire;
     }
 }
