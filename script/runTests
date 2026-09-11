@@ -1,7 +1,19 @@
 #!/bin/sh
-BASEDIR=$(realpath "$(dirname $0)")
+if [ -d "src" ]; then
+    ROOT_DIR="."
+elif [ -d "$(dirname "$0")/src" ]; then
+    cd "$(dirname "$0")" || exit 1
+elif [ -d "$(dirname "$0")/../src" ]; then
+    cd "$(dirname "$0")/.." || exit 1
+fi
 
-SIM="./simulateur"
+if [ -f "./simulateur" ]; then
+    SIM="./simulateur"
+elif [ -f "./script/simulateur" ]; then
+    SIM="./script/simulateur"
+else
+    SIM="simulateur"
+fi
 
 echo "=== Test 1: simulation par defaut ==="
 sh "$SIM"
