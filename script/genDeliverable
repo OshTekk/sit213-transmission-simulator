@@ -15,10 +15,10 @@ cp script/genDoc genDoc
 cp script/cleanAll cleanAll
 cp script/simulateur simulateur
 cp script/runTests runTests
-[ -f script/readme ] && cp script/readme readme
+cp README.md readme
 
-COPYFILE_DISABLE=1 tar --exclude='.DS_Store' --exclude='genDeliverable' --exclude='*.tar.gz' --exclude='.git*' --exclude='.idea*' --exclude='_xxx*' -czf "${ARCHIVE_NAME}.tar.gz" src bin docs script README.md
+COPYFILE_DISABLE=1 tar --exclude='.DS_Store' --exclude='genDeliverable' --exclude='*.tar.gz' --exclude='.git*' --exclude='.idea*' --exclude='_xxx*' -czf "${ARCHIVE_NAME}.tar.gz" src bin docs compile genDoc cleanAll simulateur runTests readme
 
-rm -f compile genDoc cleanAll simulateur runTests
+rm -f compile genDoc cleanAll simulateur runTests readme
 
 echo "Livrable genere : ${ARCHIVE_NAME}.tar.gz"
