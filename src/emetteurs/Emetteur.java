@@ -36,7 +36,7 @@ public class Emetteur extends Transmetteur<Boolean, Float> {
         this.informationRecue = information;
 
         // Codage de l'information binaire en échantillons analogiques
-        this.informationEmise = this.codeBinaire.coder(this.informationRecue);
+        this.informationEmise = this.codeBinaire.encoder(this.informationRecue);
 
         // Émission vers les composants suivants
         this.emettre();
