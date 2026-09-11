@@ -18,14 +18,15 @@ public class SondeAnalogique extends Sonde <Float> {
     }
    	 
     public void recevoir (Information <Float> information) { 
-	informationRecue = information;
-	int nbElements = information.nbElements();
-	float [] table = new float[nbElements];
-	int i = 0;
-	for (float f : information) {
-            table[i] = f;
-            i++;
-	}
-	new VueCourbe (table, nom); 
+		informationRecue = information;
+		int nbElements = information.nbElements();
+		float [] table = new float[nbElements];
+
+		int i = 0;
+		for (float f : information) {
+				table[i] = f;
+				i++;
+		}
+		new VueCourbe (table, nom);
     }
 }
