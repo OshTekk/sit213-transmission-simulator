@@ -7,5 +7,5 @@ elif [ -d "$(dirname "$0")/../src" ]; then
     cd "$(dirname "$0")/.." || exit 1
 fi
 
-rm -rf bin/* docs/* *.tar.gz
+rm -rf bin/* docs/* *.tar.gz _xxxTimeStamp000xxx*
 mkdir -p bin docs
