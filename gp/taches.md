@@ -22,3 +22,16 @@ Exemple de javadoc pour chaque classe :
 - [x] -mess
 - [x] -s
 - [x] -seed
+## TP2
+### Packages à créer
+- [x] codebinaires
+- [x] recepteurs
+- [x] sondes
+### Classes à créer
+- [ ] Sonde analogique (fenetre graphique) : Aymeric
+- [ ] Recepteur : Amandine
+- [ ] Emetteur : Nathan
+- [ ] CodeBinaire : Antonin
+  - [ ] NRZ
+  - [ ] RZ
+  - [ ] NRZT
