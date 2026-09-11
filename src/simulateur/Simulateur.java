@@ -36,6 +36,21 @@ public class Simulateur {
     
     /** la chaîne de caractères correspondant à m dans l'argument -mess m */
     private String messageString = "100";
+
+    /** indique si le Simulateur utilise une transmission analogique (par défaut false = logique) */
+    private boolean transmissionAnalogique = false;
+
+    /** la forme d'onde utilisée pour la transmission analogique ("RZ", "NRZ", "NRZT") */
+    private String formeOnde = "RZ";
+
+    /** le nombre d'échantillons par bit pour la transmission analogique */
+    private int nbEch = 30;
+
+    /** l'amplitude minimale du signal analogique */
+    private float amplMin = 0.0f;
+
+    /** l'amplitude maximale du signal analogique */
+    private float amplMax = 1.0f;
    
    	
     /** le  composant Source de la chaine de transmission */
@@ -70,20 +85,28 @@ public class Simulateur {
             source = new SourceFixe(messageString);
         }
 
-        // Instanciation du transmetteur logique parfait et de la destination finale
-        transmetteurLogique = new TransmetteurParfait<Boolean>();
         destination = new DestinationFinale();
 
-        // Connexion des composants entre eux
-        source.connecter(transmetteurLogique);
-        transmetteurLogique.connecter(destination);
+        if (!transmissionAnalogique) {
+            // Chaîne de transmission logique (Étape 1)
+            transmetteurLogique = new TransmetteurParfait<Boolean>();
 
-        // Ajout des sondes logiques si l'affichage est demandé (-s)
-        if (affichage) {
-            SondeLogique sondeSource = new SondeLogique("Sonde source", 100);
-            SondeLogique sondeTransmetteur = new SondeLogique("Sonde transmetteur", 100);
-            source.connecter(sondeSource);
-            transmetteurLogique.connecter(sondeTransmetteur);
+            source.connecter(transmetteurLogique);
+            transmetteurLogique.connecter(destination);
+
+            // Ajout des sondes logiques si l'affichage est demandé (-s)
+            if (affichage) {
+                SondeLogique sondeSource = new SondeLogique("Sonde source", 100);
+                SondeLogique sondeTransmetteur = new SondeLogique("Sonde transmetteur", 100);
+                source.connecter(sondeSource);
+                transmetteurLogique.connecter(sondeTransmetteur);
+            }
+        } else {
+            // Chaîne de transmission analogique (Étape 2)
+            transmetteurLogique = new TransmetteurParfait<Boolean>();
+
+            source.connecter(transmetteurLogique);
+            transmetteurLogique.connecter(destination);
         }
     }
    
@@ -102,6 +125,9 @@ public class Simulateur {
      * <dt> -mess m  </dt><dd> m (int) constitué de 1 à 6 digits, le nombre de bits du message "aléatoire" à transmettre</dd> 
      * <dt> -s </dt><dd> pour demander l'utilisation des sondes d'affichage</dd>
      * <dt> -seed v </dt><dd> v (int) d'initialisation pour les générateurs aléatoires</dd> 
+     * <dt> -form f </dt><dd> f (String) forme d'onde ("RZ", "NRZ", "NRZT") pour transmission analogique</dd>
+     * <dt> -nbEch ne </dt><dd> ne (int) nombre d'échantillons par bit</dd>
+     * <dt> -ampl min max </dt><dd> min max (float) amplitudes min et max</dd>
      * </dl>
      *
      * @throws ArgumentsException si un des arguments est incorrect.
@@ -145,10 +171,82 @@ public class Simulateur {
     				throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
     		}
     		
+    		else if (args[i].matches("-form")) {
+    			transmissionAnalogique = true;
+    			i++;
+    			if (i >= args.length) {
+    				throw new ArgumentsException("Valeur du parametre -form manquante");
+    			}
+    			formeOnde = args[i].toUpperCase();
+    			if (!formeOnde.matches("NRZ|NRZT|RZ")) {
+    				throw new ArgumentsException("Valeur du parametre -form invalide : " + args[i]);
+    			}
+    		}
+
+    		else if (args[i].matches("-nbEch")) {
+    			transmissionAnalogique = true;
+    			i++;
+    			if (i >= args.length) {
+    				throw new ArgumentsException("Valeur du parametre -nbEch manquante");
+    			}
+    			try {
+    				nbEch = Integer.valueOf(args[i]);
+    				if (nbEch <= 0) {
+    					throw new ArgumentsException("Valeur du parametre -nbEch invalide : " + args[i]);
+    				}
+    			} catch (Exception e) {
+    				throw new ArgumentsException("Valeur du parametre -nbEch invalide : " + args[i]);
+    			}
+    		}
+
+    		else if (args[i].matches("-ampl")) {
+    			transmissionAnalogique = true;
+    			i++;
+    			if (i >= args.length) {
+    				throw new ArgumentsException("Valeurs du parametre -ampl manquantes");
+    			}
+    			try {
+    				amplMin = Float.parseFloat(args[i]);
+    			} catch (Exception e) {
+    				throw new ArgumentsException("Valeur min du parametre -ampl invalide : " + args[i]);
+    			}
+    			i++;
+    			if (i >= args.length) {
+    				throw new ArgumentsException("Valeur max du parametre -ampl manquante");
+    			}
+    			try {
+    				amplMax = Float.parseFloat(args[i]);
+    			} catch (Exception e) {
+    				throw new ArgumentsException("Valeur max du parametre -ampl invalide : " + args[i]);
+    			}
+    		}
+
     		//TODO : ajouter ci-après le traitement des nouvelles options
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
     	}
+
+        // Verification de la coherence des contraintes d'amplitude pour la transmission analogique
+        if (transmissionAnalogique) {
+            if (amplMin >= amplMax) {
+                throw new ArgumentsException("Valeurs du parametre -ampl invalides : min doit etre strictement inferieur a max (" + amplMin + " >= " + amplMax + ")");
+            }
+            if (formeOnde.equals("RZ")) {
+                if (amplMin != 0.0f) {
+                    throw new ArgumentsException("Contrainte RZ invalide : amplMin doit etre egal a 0.0 (" + amplMin + ")");
+                }
+                if (amplMax < 0.0f) {
+                    throw new ArgumentsException("Contrainte RZ invalide : amplMax doit etre positif (" + amplMax + ")");
+                }
+            } else { // NRZ et NRZT
+                if (amplMin > 0.0f) {
+                    throw new ArgumentsException("Contrainte " + formeOnde + " invalide : amplMin doit etre negatif ou nul (" + amplMin + ")");
+                }
+                if (amplMax < 0.0f) {
+                    throw new ArgumentsException("Contrainte " + formeOnde + " invalide : amplMax doit etre positif ou nul (" + amplMax + ")");
+                }
+            }
+        }
       
     }
      
