@@ -3,9 +3,9 @@
 ### Classes à créer
 - [x] SourceAleatoire : Nathan
 - [x] SourceFixe : Amandine
-- [X] TransmetteurParfait : Antonin
+- [x] TransmetteurParfait : Antonin
 - [x] DestinationFinale : Aymeric
-- [X] Simulateur
+- [x] Simulateur
 
 Exemple de javadoc pour chaque classe : 
 ```java
@@ -19,6 +19,6 @@ Exemple de javadoc pour chaque classe :
  */
 ```
 ### Commandes à implémenter
-- [ ] -mess
-- [ ] -s
-- [ ] -seed
+- [x] -mess
+- [x] -s
+- [x] -seed
