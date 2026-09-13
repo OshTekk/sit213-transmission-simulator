@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 public class CodeRZ extends CodeBinaire {
     public CodeRZ(int nbEchantillonParSymbole, float amplitudeMin, float amplitudeMax) {
+        super(nbEchantillonParSymbole, amplitudeMin, amplitudeMax);
 
         if (amplitudeMax < 0)
             throw new AmplitudeInvalideException("Erreur, l'amplitude maximale doit être supérieure à 0.");
@@ -18,8 +19,6 @@ public class CodeRZ extends CodeBinaire {
 
         if (nbEchantillonParSymbole % 3 != 0)
             throw new NbEchantillonInvalideException("Erreur, le nombre d'échantillon par bit doit être un multiple de 3 en CodeRZ.");
-
-        super(nbEchantillonParSymbole, amplitudeMin, amplitudeMax);
     }
 
     public Information<Float> encoder(Information<Boolean> information) {

@@ -4,10 +4,9 @@ import information.Information;
 
 public class CodeNRZT extends CodeBinaire {
     public CodeNRZT(int nbEchParBit, float amplitudeMin, float amplitudeMax) {
+        super(nbEchParBit, amplitudeMin, amplitudeMax);
         if (amplitudeMin >= amplitudeMax)
             throw new AmplitudeInvalideException("Erreur, l'amplitude minimale doit être inférieure à l'amplitude maximale.");
-
-        super(nbEchParBit, amplitudeMin, amplitudeMax);
     }
 
     public Information<Float> encoder(Information<Boolean> information) {
