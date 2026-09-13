@@ -1,6 +1,8 @@
 package simulateur;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -66,6 +68,23 @@ class SimulateurMainTest {
         Resultat resultat = lancer("-s");
         assertEquals(System.getProperty("os.name").startsWith("Windows") ? -2 : 254, resultat.code());
         assertTrue(resultat.sortie().contains("HeadlessException"), resultat.sortie());
+        assertFalse(resultat.sortie().contains("TEB :"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"RZ", "NRZ"})
+    void mainAvecFormeAnalogiqueAfficheTEBZero(String forme) throws Exception {
+        Resultat resultat = lancer("-form", forme, "-mess", "1010101");
+        assertEquals(0, resultat.code());
+        assertTrue(resultat.sortie().contains("-form  " + forme), resultat.sortie());
+        assertTrue(resultat.sortie().contains("TEB : 0.0"), resultat.sortie());
+    }
+
+    @Test
+    void mainErreurFormeInconnueTermineAvecCodeMoinsUn() throws Exception {
+        Resultat resultat = lancer("-form", "INCONNU");
+        assertEquals(System.getProperty("os.name").startsWith("Windows") ? -1 : 255, resultat.code());
+        assertTrue(resultat.sortie().contains("ArgumentsException"), resultat.sortie());
         assertFalse(resultat.sortie().contains("TEB :"));
     }
 }
