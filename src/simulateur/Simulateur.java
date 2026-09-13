@@ -7,7 +7,14 @@ import sources.SourceFixe;
 import transmetteurs.Transmetteur;
 import transmetteurs.TransmetteurParfait;
 import visualisations.SondeLogique;
+import visualisations.SondeAnalogique;
 import information.Information;
+import codesbinaires.CodeBinaire;
+import codesbinaires.CodeNRZ;
+import codesbinaires.CodeNRZT;
+import codesbinaires.CodeRZ;
+import emetteurs.Emetteur;
+import recepteurs.Recepteur;
 
 
 /** La classe Simulateur permet de construire et simuler une chaîne de
@@ -103,10 +110,46 @@ public class Simulateur {
             }
         } else {
             // Chaîne de transmission analogique (Étape 2)
-            transmetteurLogique = new TransmetteurParfait<Boolean>();
+            CodeBinaire codeBinaire;
+            try {
+                switch (formeOnde) {
+                    case "NRZ":
+                        codeBinaire = new CodeNRZ(nbEch, amplMin, amplMax);
+                        break;
+                    case "NRZT":
+                        codeBinaire = new CodeNRZT(nbEch, amplMin, amplMax);
+                        break;
+                    case "RZ":
+                    default:
+                        codeBinaire = new CodeRZ(nbEch, amplMin, amplMax);
+                        break;
+                }
+            } catch (Exception e) {
+                throw new ArgumentsException(e.getMessage());
+            }
 
-            source.connecter(transmetteurLogique);
-            transmetteurLogique.connecter(destination);
+            Emetteur emetteur = new Emetteur(codeBinaire);
+            Transmetteur<Float, Float> transmetteurAnalogique = new TransmetteurParfait<Float>();
+            Recepteur recepteur = new Recepteur(codeBinaire);
+
+            // Connexion de la chaîne analogique
+            source.connecter(emetteur);
+            emetteur.connecter(transmetteurAnalogique);
+            transmetteurAnalogique.connecter(recepteur);
+            recepteur.connecter(destination);
+
+            // Ajout des sondes analogiques et logiques si l'affichage est demandé (-s)
+            if (affichage) {
+                SondeLogique sondeSource = new SondeLogique("Sonde source", 100);
+                SondeAnalogique sondeEmetteur = new SondeAnalogique("Sonde émetteur");
+                SondeAnalogique sondeTransmetteur = new SondeAnalogique("Sonde canal");
+                SondeLogique sondeRecepteur = new SondeLogique("Sonde récepteur", 100);
+
+                source.connecter(sondeSource);
+                emetteur.connecter(sondeEmetteur);
+                transmetteurAnalogique.connecter(sondeTransmetteur);
+                recepteur.connecter(sondeRecepteur);
+            }
         }
     }
    
@@ -177,7 +220,7 @@ public class Simulateur {
     			if (i >= args.length) {
     				throw new ArgumentsException("Valeur du parametre -form manquante");
     			}
-    			formeOnde = args[i].toUpperCase();
+    			formeOnde = args[i];
     			if (!formeOnde.matches("NRZ|NRZT|RZ")) {
     				throw new ArgumentsException("Valeur du parametre -form invalide : " + args[i]);
     			}
