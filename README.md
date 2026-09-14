@@ -1,15 +1,15 @@
 # SIT213 – Simulation d'un système de transmission
 
-**Auteurs :** Antonin Pons, Nathan Weymeels, Amandine Touchais, Aymeric Schaeffer  
+**Noms :** Antonin Pons, Nathan Weymeels, Amandine Touchais, Aymeric Schaeffer  
 **Formation :** FIP 2A – IMT Atlantique (2026-2027)
 
 ---
 
 ## Description
 Projet de simulation d'une chaîne de transmission numérique (UV SIT210 / Module SIT213).  
-À l'**Étape 1**, la chaîne simule une transmission logique élémentaire non bruitée :
+À l'étape 1, la chaîne simule une transmission logique élémentaire non bruitée :
 $$\text{Source} \longrightarrow \text{Transmetteur Parfait} \longrightarrow \text{Destination Finale}$$
-Le canal étant parfait, le Taux d'Erreur Binaire (TEB) attendu est de **0.0**.
+Le canal étant parfait, le Taux d'Erreur Binaire (TEB) attendu est de 0.0.
 
 ---
 
