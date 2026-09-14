@@ -7,6 +7,11 @@ import sources.Source;
 import sources.SourceFixe;
 import sources.SourceAleatoire;
 import transmetteurs.Transmetteur;
+import transmetteurs.TransmetteurParfait;
+import emetteurs.Emetteur;
+import recepteurs.Recepteur;
+import visualisations.SondeLogique;
+import visualisations.SondeAnalogique;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -207,5 +212,124 @@ class SimulateurTest {
         Simulateur simulateur = preparerCalcul("0", "0");
         source(simulateur).getInformationEmise().setIemeElement(0, null);
         assertThrows(NullPointerException.class, simulateur::calculTauxErreurBinaire);
+    }
+
+    // -------------------------------------------------------------
+    // Tests Étape 2 (Nathan) : Arguments et chaîne analogique
+    // -------------------------------------------------------------
+
+    @ParameterizedTest
+    @ValueSource(strings = {"RZ", "NRZ", "NRZT"})
+    void argumentFormeValideActiveTransmissionAnalogique(String forme) throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-form", forme});
+        assertTrue((boolean) lireChamp(simulateur, Simulateur.class, "transmissionAnalogique"));
+        assertEquals(forme, lireChamp(simulateur, Simulateur.class, "formeOnde"));
+    }
+
+    @Test
+    void argumentsNbEchEtAmplitudesValidesSontPrisEnCompte() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-form", "NRZ", "-nbEch", "60", "-ampl", "-2.5", "3.5"});
+        assertEquals(60, (int) lireChamp(simulateur, Simulateur.class, "nbEch"));
+        assertEquals(-2.5f, (float) lireChamp(simulateur, Simulateur.class, "amplMin"));
+        assertEquals(3.5f, (float) lireChamp(simulateur, Simulateur.class, "amplMax"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"TOTO", "nrz", "rz", "123", ""})
+    void argumentFormeInvalideEstRejete(String forme) {
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-form", forme}));
+    }
+
+    @Test
+    void argumentFormeOrphelineEstRejetee() {
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-form"}));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "-5", "abc", "1.5"})
+    void argumentNbEchInvalideEstRejete(String ech) {
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-form", "NRZ", "-nbEch", ech}));
+    }
+
+    @Test
+    void argumentNbEchOrphelinEstRejete() {
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-form", "NRZ", "-nbEch"}));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"1.0,1.0", "2.0,1.0", "a,b", "1.0,b"})
+    void argumentAmplIncoherentEstRejete(String min, String max) {
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-form", "NRZ", "-ampl", min, max}));
+    }
+
+    @Test
+    void argumentAmplOrphelinEstRejete() {
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-form", "NRZ", "-ampl", "1.0"}));
+    }
+
+    @Test
+    void contraintesRzAvecAmplMinNonNulleRejetee() {
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-form", "RZ", "-ampl", "-1.0", "1.0"}));
+    }
+
+    @Test
+    void contraintesRzAvecNbEchNonMultipleDeTroisRejetee() {
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-form", "RZ", "-nbEch", "31"}));
+    }
+
+    @Test
+    void chaineAnalogiqueConnecteEmetteurTransmetteurRecepteur() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-form", "NRZ", "-mess", "101"});
+        List<?> sortiesSource = (List<?>) lireChamp(source(simulateur), Source.class, "destinationsConnectees");
+        assertEquals(1, sortiesSource.size());
+        assertInstanceOf(Emetteur.class, sortiesSource.get(0));
+
+        Emetteur emetteur = (Emetteur) sortiesSource.get(0);
+        List<?> sortiesEmetteur = (List<?>) lireChamp(emetteur, Transmetteur.class, "destinationsConnectees");
+        assertEquals(1, sortiesEmetteur.size());
+        assertInstanceOf(TransmetteurParfait.class, sortiesEmetteur.get(0));
+
+        Transmetteur<?, ?> canal = (Transmetteur<?, ?>) sortiesEmetteur.get(0);
+        List<?> sortiesCanal = (List<?>) lireChamp(canal, Transmetteur.class, "destinationsConnectees");
+        assertEquals(1, sortiesCanal.size());
+        assertInstanceOf(Recepteur.class, sortiesCanal.get(0));
+
+        Recepteur recepteur = (Recepteur) sortiesCanal.get(0);
+        List<?> sortiesRecepteur = (List<?>) lireChamp(recepteur, Transmetteur.class, "destinationsConnectees");
+        assertEquals(1, sortiesRecepteur.size());
+        assertInstanceOf(DestinationFinale.class, sortiesRecepteur.get(0));
+    }
+
+    @Test
+    void constructeurAnalogiqueAvecSondesConnecteQuatreSondes() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-s", "-form", "NRZ", "-mess", "101"});
+        List<?> sortiesSource = (List<?>) lireChamp(source(simulateur), Source.class, "destinationsConnectees");
+        Emetteur emetteur = (Emetteur) sortiesSource.get(0);
+        List<?> sortiesEmetteur = (List<?>) lireChamp(emetteur, Transmetteur.class, "destinationsConnectees");
+        Transmetteur<?, ?> canal = (Transmetteur<?, ?>) sortiesEmetteur.get(0);
+        List<?> sortiesCanal = (List<?>) lireChamp(canal, Transmetteur.class, "destinationsConnectees");
+        Recepteur recepteur = (Recepteur) sortiesCanal.get(0);
+        List<?> sortiesRecepteur = (List<?>) lireChamp(recepteur, Transmetteur.class, "destinationsConnectees");
+
+        assertEquals(2, sortiesSource.size());
+        assertInstanceOf(SondeLogique.class, sortiesSource.get(1));
+
+        assertEquals(2, sortiesEmetteur.size());
+        assertInstanceOf(SondeAnalogique.class, sortiesEmetteur.get(1));
+
+        assertEquals(2, sortiesCanal.size());
+        assertInstanceOf(SondeAnalogique.class, sortiesCanal.get(1));
+
+        assertEquals(2, sortiesRecepteur.size());
+        assertInstanceOf(SondeLogique.class, sortiesRecepteur.get(1));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"NRZ", "RZ"})
+    void executeTransmissionAnalogiqueTransmetSansErreur(String forme) throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-form", forme, "-mess", "1010101"});
+        simulateur.execute();
+        assertEquals(0.0f, simulateur.calculTauxErreurBinaire());
+        assertEquals(destination(simulateur).getInformationRecue(), source(simulateur).getInformationEmise());
     }
 }
