@@ -140,11 +140,18 @@ public class Simulateur {
     private CodeBinaire getCodeBinaire() throws ArgumentsException {
         CodeBinaire codeBinaire;
         try {
-            codeBinaire = switch (formeOnde) {
-                case "NRZ" -> new CodeNRZ(nbEch, amplMin, amplMax);
-                case "NRZT" -> new CodeNRZT(nbEch, amplMin, amplMax);
-                default -> new CodeRZ(nbEch, amplMin, amplMax);
-            };
+            switch (formeOnde) {
+                case "NRZ":
+                    codeBinaire = new CodeNRZ(nbEch, amplMin, amplMax);
+                    break;
+                case "NRZT":
+                    codeBinaire = new CodeNRZT(nbEch, amplMin, amplMax);
+                    break;
+                case "RZ":
+                default:
+                    codeBinaire = new CodeRZ(nbEch, amplMin, amplMax);
+                    break;
+            }
         } catch (Exception e) {
             throw new ArgumentsException(e.getMessage());
         }
