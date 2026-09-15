@@ -5,9 +5,22 @@ import information.InformationNonConformeException;
 
 import java.util.Iterator;
 
+/**
+ * CodeRZ
+ * Permet d'encoder ou de décoder un signal selon le format RZ.
+ */
 public class CodeRZ extends CodeBinaire {
-    public CodeRZ(int nbEchantillonParSymbole, float amplitudeMin, float amplitudeMax) {
-        super(nbEchantillonParSymbole, amplitudeMin, amplitudeMax);
+    /**
+     * Constructeur de la classe CodeRZ
+     * @param nbEchParBit
+     *      Nombre d'échantillon par bit
+     * @param amplitudeMin
+     *      Amplitude minimale du signal NRZ
+     * @param amplitudeMax
+     *      Amplitude maximale du signal NRZ
+     */
+    public CodeRZ(int nbEchParBit, float amplitudeMin, float amplitudeMax) {
+        super(nbEchParBit, amplitudeMin, amplitudeMax);
 
         if (amplitudeMax <= 0)
             throw new AmplitudeInvalideException("Erreur, l'amplitude maximale doit être supérieure à 0.");
@@ -15,10 +28,16 @@ public class CodeRZ extends CodeBinaire {
         if (amplitudeMin != 0)
             throw new AmplitudeInvalideException("Erreur, l'amplitude minimale doit être nulle.");
 
-        if (nbEchantillonParSymbole <= 0 || nbEchantillonParSymbole % 3 != 0)
+        if (nbEchParBit <= 0 || nbEchParBit % 3 != 0)
             throw new NbEchantillonInvalideException("Erreur, le nombre d'échantillon par bit doit être un multiple de 3 strictement positif en CodeRZ.");
     }
 
+    /**
+     * Encoder une suite binaire suivant le format RZ
+     * @param information Les bits à émettre.
+     * @return
+     *      Signal RZ échantilloné
+     */
     public Information<Float> encoder(Information<Boolean> information) {
         Information<Float> infoEncodee = new Information<>();
         int tiersNbEchParBit = nbEchParBit / 3;
@@ -31,6 +50,12 @@ public class CodeRZ extends CodeBinaire {
         return infoEncodee;
     }
 
+    /**
+     * Decoder une suite d'échantillons suivant le format RZ
+     * @param information Signal RZ échantilloné
+     * @return
+     *      Suite de bits
+     */
     public Information<Boolean> decoder(Information<Float> information) throws InformationNonConformeException {
         if (information.nbElements() % nbEchParBit != 0)
             throw new InformationNonConformeException();

@@ -5,7 +5,20 @@ import information.InformationNonConformeException;
 
 import java.util.Iterator;
 
+/**
+ * CodeNRZT
+ * Permet d'encoder ou de décoder un signal selon le format NRZT.
+ */
 public class CodeNRZT extends CodeBinaire {
+    /**
+     * Constructeur de la classe CodeNRZT
+     * @param nbEchParBit
+     *      Nombre d'échantillon par bit
+     * @param amplitudeMin
+     *      Amplitude minimale du signal NRZ
+     * @param amplitudeMax
+     *      Amplitude maximale du signal NRZ
+     */
     public CodeNRZT(int nbEchParBit, float amplitudeMin, float amplitudeMax) {
         super(nbEchParBit, amplitudeMin, amplitudeMax);
 
@@ -23,6 +36,12 @@ public class CodeNRZT extends CodeBinaire {
 
     }
 
+    /**
+     * Encoder une suite binaire suivant le format NRZT
+     * @param information Les bits à émettre.
+     * @return
+     *      Signal NRZT échantilloné
+     */
     public Information<Float> encoder(Information<Boolean> information) {
         Information<Float> infoEncodee = new Information<>();
         int tiersNbEchParBit = nbEchParBit / 3;
@@ -53,6 +72,12 @@ public class CodeNRZT extends CodeBinaire {
         return infoEncodee;
     }
 
+    /**
+     * Decoder une suite d'échantillons suivant le format NRZT
+     * @param information Signal NRZT échantilloné
+     * @return
+     *      Suite de bits
+     */
     public Information<Boolean> decoder(Information<Float> information) throws InformationNonConformeException {
         if (information.nbElements() % nbEchParBit != 0)
             throw new InformationNonConformeException();
