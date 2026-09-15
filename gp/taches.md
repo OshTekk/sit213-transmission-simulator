@@ -30,8 +30,8 @@ Exemple de javadoc pour chaque classe :
 ### Classes à créer
 - [x] Sonde analogique (fenetre graphique) : Aymeric
   - [ ] À tester
-- [ ] Recepteur : Amandine
-- [ ] Emetteur : Nathan
+- [x] Recepteur : Amandine
+- [x] Emetteur : Nathan
 - [ ] CodeBinaire : Antonin
   - [ ] NRZ
   - [ ] RZ
