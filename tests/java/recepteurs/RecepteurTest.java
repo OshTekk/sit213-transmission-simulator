@@ -6,10 +6,14 @@ import destinations.Destination;
 import information.Information;
 import information.InformationNonConformeException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class RecepteurTest {
+
+    private CodeBinaire code;
+    private Recepteur recepteur;
 
     private static class DestinationBoolean extends Destination<Boolean> {
         @Override
@@ -19,11 +23,14 @@ class RecepteurTest {
         }
     }
 
+    @BeforeEach
+    void initialiser() {
+        code = new CodeNRZ(30, 0.0f, 1.0f);
+        recepteur = new Recepteur(code);
+    }
+
     @Test
     void constructeurInitialiseLesInformationsANullEtConserveLeCodeBinaire() {
-        CodeBinaire code = new CodeNRZ(30, 0.0f, 1.0f);
-        Recepteur recepteur = new Recepteur(code);
-
         assertSame(code, recepteur.getCodeBinaire());
         assertNull(recepteur.getInformationRecue());
         assertNull(recepteur.getInformationEmise());
@@ -31,8 +38,6 @@ class RecepteurTest {
 
     @Test
     void recevoirTransmetAuxDestinationsConnectees() throws Exception {
-        CodeBinaire code = new CodeNRZ(30, 0.0f, 1.0f);
-        Recepteur recepteur = new Recepteur(code);
         DestinationBoolean destination = new DestinationBoolean();
         recepteur.connecter(destination);
 
@@ -51,8 +56,6 @@ class RecepteurTest {
 
     @Test
     void recevoirInformationVideProduitEmissionVide() throws Exception {
-        CodeBinaire code = new CodeNRZ(30, 0.0f, 1.0f);
-        Recepteur recepteur = new Recepteur(code);
         DestinationBoolean destination = new DestinationBoolean();
         recepteur.connecter(destination);
 
@@ -65,27 +68,16 @@ class RecepteurTest {
 
     @Test
     void recevoirNullRejetteAvecExceptionSansEcraserPrecedent() throws Exception {
-
-        CodeBinaire code = new CodeNRZ(30, 0.0f, 1.0f);
-        Recepteur recepteur = new Recepteur(code);
-
         Information<Boolean> bits = new Information<>(new Boolean[]{true});
-
         Information<Float> signal = code.encoder(bits);
-
         recepteur.recevoir(signal);
-
         assertThrows(InformationNonConformeException.class, () -> recepteur.recevoir(null));
-
         assertEquals(signal, recepteur.getInformationRecue());
         assertEquals(bits, recepteur.getInformationEmise());
     }
 
     @Test
     void emettreAToutesLesDestinationsEtDeconnecter() throws Exception {
-        CodeBinaire code = new CodeNRZ(30, 0.0f, 1.0f);
-        Recepteur recepteur = new Recepteur(code);
-
         DestinationBoolean d1 = new DestinationBoolean();
         DestinationBoolean d2 = new DestinationBoolean();
 
@@ -109,18 +101,12 @@ class RecepteurTest {
 
     @Test
     void emettreAvantReceptionSansDestinationNeFaitRien() throws Exception {
-
-        CodeBinaire code = new CodeNRZ(30, 0.0f, 1.0f);
-        Recepteur recepteur = new Recepteur(code);
         recepteur.emettre();
         assertNull(recepteur.getInformationEmise());
     }
 
     @Test
     void exceptionDestinationInterromptLEmission() throws Exception {
-        CodeBinaire code = new CodeNRZ(30, 0.0f, 1.0f);
-        Recepteur recepteur = new Recepteur(code);
-
         recepteur.connecter(new Destination<Boolean>() {
             @Override
             public void recevoir(Information<Boolean> information)

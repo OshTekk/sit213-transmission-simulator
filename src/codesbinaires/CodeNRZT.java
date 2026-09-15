@@ -1,12 +1,26 @@
 package codesbinaires;
 
 import information.Information;
+import information.InformationNonConformeException;
+
+import java.util.Iterator;
 
 public class CodeNRZT extends CodeBinaire {
     public CodeNRZT(int nbEchParBit, float amplitudeMin, float amplitudeMax) {
         super(nbEchParBit, amplitudeMin, amplitudeMax);
+
+        if (nbEchParBit <= 0 || nbEchParBit % 3 != 0)
+            throw new NbEchantillonInvalideException("Erreur, le nombre d'échantillon par bit doit être un multiple de 3 positif.");
+
+        if (amplitudeMax < 0)
+            throw new AmplitudeInvalideException("Erreur, l'amplitude maximale doit être positive.");
+
+        if (amplitudeMin > 0)
+            throw new AmplitudeInvalideException("Erreur, l'amplitude minimale doit être négative.");
+
         if (amplitudeMin >= amplitudeMax)
             throw new AmplitudeInvalideException("Erreur, l'amplitude minimale doit être inférieure à l'amplitude maximale.");
+
     }
 
     public Information<Float> encoder(Information<Boolean> information) {
@@ -39,8 +53,30 @@ public class CodeNRZT extends CodeBinaire {
         return infoEncodee;
     }
 
-    public Information<Boolean> decoder(Information<Float> information) {
+    public Information<Boolean> decoder(Information<Float> information) throws InformationNonConformeException {
+        if (information.nbElements() % nbEchParBit != 0)
+            throw new InformationNonConformeException();
+
         Information<Boolean> infoDecodee = new Information<>();
+        int tiersNbEchParBit = nbEchParBit / 3;
+        float amplitudeMoyenne = (amplitudeMax + amplitudeMin) / 2.0f;
+        float amplitudeRelevee;
+        Iterator<Float> it = information.iterator();
+        while (it.hasNext()) {
+            for (int i = 0; i < tiersNbEchParBit; i++) {
+                it.next();
+            }
+            amplitudeRelevee = 0.0f;
+            for (int i = 0; i < tiersNbEchParBit; i++) {
+                amplitudeRelevee += it.next();
+            }
+            amplitudeRelevee = amplitudeRelevee / 3;
+            infoDecodee.add(amplitudeRelevee > amplitudeMoyenne);
+            for (int i = 0; i < tiersNbEchParBit; i++) {
+                it.next();
+            }
+        }
+
         return infoDecodee;
     }
 
@@ -49,17 +85,5 @@ public class CodeNRZT extends CodeBinaire {
         for (int i = 0; i < nbEchantillons; i++) {
             information.add(depart + i * pente);
         }
-    }
-
-    public static void main(String[] args) {
-        CodeNRZT c = new CodeNRZT(12, -5, 5);
-        Information<Boolean> info = new Information<>();
-        info.add(true);
-        info.add(false);
-        info.add(true);
-        info.add(true);
-        info.add(false);
-        Information<Float> output = c.encoder(info);
-        System.out.println("end");
     }
 }

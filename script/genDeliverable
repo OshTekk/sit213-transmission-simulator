@@ -1,5 +1,5 @@
 #!/bin/sh
-ARCHIVE_NAME="${1:-Pons-Weymeels-Touchais-Schaeffer.SIT213.Etape1}"
+ARCHIVE_NAME="${1:-Pons-Weymeels-Touchais-Schaeffer.SIT213.Etape2}"
 
 if [ -d "src" ]; then
     ROOT_DIR="."
@@ -22,7 +22,7 @@ cp script/simulateur simulateur
 cp script/runTests runTests
 cp README.md readme
 
-COPYFILE_DISABLE=1 tar --exclude='.DS_Store' --exclude='genDeliverable' --exclude='*.tar.gz' --exclude='.git*' --exclude='.idea*' --exclude='_xxx*' -czf "${ARCHIVE_NAME}.tar.gz" src bin docs compile genDoc cleanAll simulateur runTests readme
+COPYFILE_DISABLE=1 tar --exclude='.DS_Store' --exclude='genDeliverable' --exclude='*.tar.gz' --exclude='.git*' --exclude='.idea*' --exclude='_xxx*' -czf "${ARCHIVE_NAME}.tar.gz" src bin docs tests compile genDoc cleanAll simulateur runTests readme
 
 rm -f compile genDoc cleanAll simulateur runTests readme
 

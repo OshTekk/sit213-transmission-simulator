@@ -1,6 +1,7 @@
 package codesbinaires;
 
 import information.Information;
+import information.InformationNonConformeException;
 
 /**
  *
@@ -21,5 +22,5 @@ public interface CodeBinaireInterface {
      * @param information Le signal reçu échantillonné.
      * @return Les bits décodés.
      */
-    Information<Boolean> decoder(Information<Float> information);
+    Information<Boolean> decoder(Information<Float> information) throws InformationNonConformeException;
 }

@@ -1,6 +1,7 @@
 package codesbinaires;
 
 import information.Information;
+import information.InformationNonConformeException;
 
 public abstract class CodeBinaire implements CodeBinaireInterface {
     protected float amplitudeMin;
@@ -15,7 +16,7 @@ public abstract class CodeBinaire implements CodeBinaireInterface {
 
     public abstract Information<Float> encoder(Information<Boolean> information);
 
-    public abstract Information<Boolean> decoder(Information<Float> information);
+    public abstract Information<Boolean> decoder(Information<Float> information) throws InformationNonConformeException;
 
     protected void ajouterEchantillons(Information<Float> info, float amplitude, int nbEchantillons) {
         for (int i = 0; i < nbEchantillons; i++) {
