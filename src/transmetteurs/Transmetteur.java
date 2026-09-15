@@ -14,7 +14,7 @@ import java.util.*;
  * l'interface SourceInterface
  * @author prou
  */
-public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, SourceInterface <E> {
+public abstract class Transmetteur <R,E> implements  DestinationInterface <R>, SourceInterface <E> {
    
     /** 
      * la liste des composants destination connectés en sortie du transmetteur 
@@ -81,11 +81,11 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * @param information  l'information  reçue
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
-    public  abstract void recevoir(Information <R> information) throws InformationNonConformeException;
+    public abstract void recevoir(Information <R> information) throws InformationNonConformeException;
    
     /**
      * émet l'information construite par le transmetteur
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
-    public  abstract void emettre() throws InformationNonConformeException;   
+    public abstract void emettre() throws InformationNonConformeException;
 }
