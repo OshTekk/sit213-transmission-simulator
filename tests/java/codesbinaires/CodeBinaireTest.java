@@ -2,7 +2,6 @@ package codesbinaires;
 
 import information.Information;
 import information.InformationNonConformeException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,9 +13,6 @@ abstract class CodeBinaireTest {
     protected float ampliMax, ampliMin;
     protected static final Boolean[] boolTestChain = {true, false, true, true, true, false, false, false, true, false};
     protected static final Float[] invalidSignalChain = {0.0f, 1.5f, 3.0f, 1.5f, 0.0f};
-
-    @BeforeEach
-    abstract void setUp();
 
     @DisplayName("Test d'invariance (boolean -> encoder -> float -> decoder -> boolean)")
     @Test
@@ -31,9 +27,7 @@ abstract class CodeBinaireTest {
     @Test
     void testSignalInvalide() {
         Information<Float> signal = new Information<>(invalidSignalChain);
-        assertThrows(InformationNonConformeException.class, () -> {
-            codeur.decoder(signal);
-        });
+        assertThrows(InformationNonConformeException.class, () -> codeur.decoder(signal));
     }
 
     @DisplayName("Test lors du codage/décodage d'Information vide")
