@@ -17,7 +17,6 @@ public class SourceFixe extends Source<Boolean> {
      */
     public SourceFixe(String chaine) {
         super();
-
         Information<Boolean> information = new Information<Boolean>();
 
         for (int i = 0; i < chaine.length(); i++) {
@@ -27,7 +26,6 @@ public class SourceFixe extends Source<Boolean> {
                 information.add(true);
             }
         }
-
         this.informationGeneree = information;
     }
 }

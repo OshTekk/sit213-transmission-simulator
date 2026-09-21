@@ -28,6 +28,12 @@ public class Emetteur extends Transmetteur<Boolean, Float> {
         this.codeBinaire = codeBinaire;
     }
 
+    /**
+     * Reçoit une information binaire, l'encode puis l'émet.
+     *
+     * @param information information binaire à encoder
+     * @throws InformationNonConformeException si l'information est nulle ou invalide
+     */
     @Override
     public void recevoir(Information<Boolean> information) throws InformationNonConformeException {
         if (information == null) {
@@ -42,6 +48,11 @@ public class Emetteur extends Transmetteur<Boolean, Float> {
         this.emettre();
     }
 
+    /**
+     * Émet le signal encodé vers toutes les destinations connectées.
+     *
+     * @throws InformationNonConformeException si une destination refuse l'information
+     */
     @Override
     public void emettre() throws InformationNonConformeException {
         for (DestinationInterface<Float> destination : this.destinationsConnectees) {
@@ -49,6 +60,11 @@ public class Emetteur extends Transmetteur<Boolean, Float> {
         }
     }
 
+    /**
+     * Retourne le code binaire utilisé par l'émetteur.
+     *
+     * @return code binaire utilisé
+     */
     public CodeBinaire getCodeBinaire() {
         return codeBinaire;
     }

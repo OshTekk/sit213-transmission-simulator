@@ -15,6 +15,15 @@ else
     SIM="simulateur"
 fi
 
+echo "=== Tests JUnit ==="
+if [ -d "tests" ]; then
+    set -eu
+    # Générer aussi la couverture lorsque des tests révèlent une anomalie.
+    mvn -f tests/pom.xml clean test "$@" || statut=$?
+    mvn -f tests/pom.xml jacoco:report "$@" || exit $?
+fi
+  echo "Déploiement : tests non lancés"
+
 echo "=== Test 1: simulation par defaut ==="
 sh "$SIM"
 

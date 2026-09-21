@@ -22,10 +22,11 @@ public  class Information <T>  implements Iterable <T> {
      * @param content le tableau d'éléments pour initialiser l'information construite
      */
     public Information(T [] content) {
-	this.content = new LinkedList <T> (); 
-	for (int i = 0; i < content.length; i++) {
+        this.content = new LinkedList <T> ();
+
+        for (int i = 0; i < content.length; i++) {
             this.content.addLast(content[i]);
-	}
+        }
     }
    
     /**
@@ -71,16 +72,16 @@ public  class Information <T>  implements Iterable <T> {
      */	 
     @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
-	if (!(o instanceof Information))
-            return false;
-	Information <T> information =  (Information <T>) o;
-	if (this.nbElements() != information.nbElements())
-            return false;
-	for (int i = 0; i < this.nbElements(); i++) {
-            if (!this.iemeElement(i).equals(information.iemeElement(i)))
-		return false;
-	}
-	return true;
+        if (!(o instanceof Information)) return false;
+        Information <T> information =  (Information <T>) o;
+
+        if (this.nbElements() != information.nbElements()) return false;
+
+        for (int i = 0; i < this.nbElements(); i++) {
+            if (!this.iemeElement(i).equals(information.iemeElement(i))) return false;
+        }
+
+        return true;
     }
    
     /**
@@ -88,11 +89,11 @@ public  class Information <T>  implements Iterable <T> {
      * @return representation de l'information sous forme de String
      */
     public String toString() {
-	String s = "";
-	for (int i = 0; i < this.nbElements(); i++) {
+        String s = "";
+        for (int i = 0; i < this.nbElements(); i++) {
             s += " " + this.iemeElement(i);
-	}
-	return s;
+        }
+        return s;
     }
    
     /**

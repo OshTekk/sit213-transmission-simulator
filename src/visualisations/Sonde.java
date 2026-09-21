@@ -7,7 +7,7 @@ import destinations.Destination;
  * Classe Abstraite d'un composant destination réalisant un affichage
  * @author prou
  */
-public  abstract class Sonde <T> extends Destination <T> {
+public abstract class Sonde<T> extends Destination<T> {
    
     /**
      * nom de la fenêtre d'affichage
@@ -27,5 +27,5 @@ public  abstract class Sonde <T> extends Destination <T> {
      * qui nous est connectée
      * @param information  l'information  à recevoir
      */   
-    public abstract void recevoir(Information <T> information);     
+    public abstract void recevoir(Information<T> information);
 }

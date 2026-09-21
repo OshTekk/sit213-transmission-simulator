@@ -8,6 +8,8 @@ import information.InformationNonConformeException;
 
 /**
  * Transmetteur introduisant un bruit gaussien à l'émission
+ *
+ * @author Antonin Pons
  */
 public class TransmetteurBruite extends Transmetteur<Float, Float> {
     private final float puissanceBruit;
@@ -29,8 +31,7 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
     /**
      * Reçoit une information en entrée et la retransmet en sortie en introduisant un bruit gaussien
      * @param information  l'information reçue
-     * @throws InformationNonConformeException
-     *      L'information reçue n'est pas conforme
+     * @throws InformationNonConformeException si l'information reçue n'est pas conforme
      */
     @Override
     public void recevoir(Information<Float> information) throws InformationNonConformeException {
@@ -45,7 +46,7 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
 
     /**
      * Emet l'information émise vers toutes les destinations connectées
-     * @throws InformationNonConformeException
+     * @throws InformationNonConformeException si une destination refuse l'information
      */
     @Override
     public void emettre() throws InformationNonConformeException {
@@ -54,6 +55,9 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         }
     }
 
+    /**
+     * Ajoute un échantillon de bruit gaussien à chaque échantillon reçu.
+     */
     private void ajoutBruitGaussien() {
         int nbElem = this.informationRecue.nbElements();
         for (int i = 0; i < nbElem; i++) {
@@ -62,6 +66,11 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         }
     }
 
+    /**
+     * Génère un échantillon de bruit gaussien centré.
+     *
+     * @return échantillon de bruit dont la puissance correspond à la configuration
+     */
     private float genereEchantillonBruit() {
         float a1 = this.random.nextFloat();
         float a2 = this.random.nextFloat();

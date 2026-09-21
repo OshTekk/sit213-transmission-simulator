@@ -53,21 +53,33 @@ public class SourceAleatoire extends Source<Boolean> {
      */
     private void generer() {
         Random rand;
+
         if (seed == null) {
             rand = new Random();
         } else {
             rand = new Random(seed);
         }
+
         informationGeneree = new Information<Boolean>();
         for (int i = 0; i < nbBits; i++) {
             informationGeneree.add(rand.nextBoolean());
         }
     }
 
+    /**
+     * Retourne le nombre de bits générés.
+     *
+     * @return nombre de bits générés
+     */
     public int getNbBits() {
         return nbBits;
     }
 
+    /**
+     * Retourne la semence du générateur aléatoire.
+     *
+     * @return semence utilisée, ou {@code null} si aucune semence n'est imposée
+     */
     public Integer getSeed() {
         return seed;
     }

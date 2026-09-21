@@ -29,6 +29,12 @@ public class Recepteur extends Transmetteur<Float, Boolean> {
         this.codeBinaire = codeBinaire;
     }
 
+    /**
+     * Reçoit un signal échantillonné, le décode puis émet les bits obtenus.
+     *
+     * @param information signal échantillonné à décoder
+     * @throws InformationNonConformeException si l'information est nulle ou invalide
+     */
     @Override
     public void recevoir(Information<Float> information)
             throws InformationNonConformeException {
@@ -47,6 +53,11 @@ public class Recepteur extends Transmetteur<Float, Boolean> {
         this.emettre();
     }
 
+    /**
+     * Émet l'information binaire vers toutes les destinations connectées.
+     *
+     * @throws InformationNonConformeException si une destination refuse l'information
+     */
     @Override
     public void emettre()
             throws InformationNonConformeException {

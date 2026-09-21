@@ -61,18 +61,18 @@ public class Simulateur {
    
    	
     /** le  composant Source de la chaine de transmission */
-    private Source <Boolean>  source = null;
+    private Source <Boolean> source = null;
     
     /** le  composant Transmetteur parfait logique de la chaine de transmission */
-    private Transmetteur <Boolean, Boolean>  transmetteurLogique = null;
+    private Transmetteur <Boolean, Boolean> transmetteurLogique = null;
     
     /** le  composant Destination de la chaine de transmission */
-    private Destination <Boolean>  destination = null;
+    private Destination <Boolean> destination = null;
    	
    
     /** Le constructeur de Simulateur construit une chaîne de
-     * transmission composée d'une Source <Boolean>, d'une Destination
-     * <Boolean> et de Transmetteur(s) [voir la méthode
+     * transmission composée d'une {@code Source<Boolean>}, d'une {@code Destination<Boolean>}
+     * et de Transmetteur(s) [voir la méthode
      * analyseArguments]...  <br> Les différents composants de la
      * chaîne de transmission (Source, Transmetteur(s), Destination,
      * Sonde(s) de visualisation) sont créés et connectés.
@@ -81,7 +81,7 @@ public class Simulateur {
      * @throws ArgumentsException si un des arguments est incorrect
      *
      */   
-    public  Simulateur(String [] args) throws ArgumentsException {
+    public Simulateur(String [] args) throws ArgumentsException {
     	// analyser et récupérer les arguments   	
     	analyseArguments(args);
       
@@ -137,6 +137,12 @@ public class Simulateur {
         }
     }
 
+    /**
+     * Construit le code en ligne sélectionné dans les arguments du simulateur.
+     *
+     * @return code binaire configuré
+     * @throws ArgumentsException si les paramètres du code sont invalides
+     */
     private CodeBinaire getCodeBinaire() throws ArgumentsException {
         CodeBinaire codeBinaire;
         try {
@@ -180,7 +186,7 @@ public class Simulateur {
      * @throws ArgumentsException si un des arguments est incorrect.
      *
      */   
-    private void analyseArguments(String[] args)  throws  ArgumentsException {
+    private void analyseArguments(String[] args) throws ArgumentsException {
 
     	for (int i=0;i<args.length;i++){ // traiter les arguments 1 par 1
 
@@ -373,4 +379,3 @@ public class Simulateur {
     	}              	
     }
 }
-

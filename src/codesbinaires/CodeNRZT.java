@@ -8,6 +8,8 @@ import java.util.Iterator;
 /**
  * CodeNRZT
  * Permet d'encoder ou de décoder un signal selon le format NRZT.
+ *
+ * @author Antonin Pons
  */
 public class CodeNRZT extends CodeBinaire {
     /**
@@ -105,6 +107,14 @@ public class CodeNRZT extends CodeBinaire {
         return infoDecodee;
     }
 
+    /**
+     * Ajoute une transition linéaire entre deux amplitudes.
+     *
+     * @param information information à compléter
+     * @param nbEchantillons nombre d'échantillons de la transition
+     * @param depart amplitude de départ
+     * @param fin amplitude d'arrivée
+     */
     private void ajouterPente(Information<Float> information, int nbEchantillons, float depart, float fin) {
         float pente = (fin-depart)/nbEchantillons;
         for (int i = 0; i < nbEchantillons; i++) {

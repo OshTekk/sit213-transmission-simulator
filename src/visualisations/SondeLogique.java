@@ -7,7 +7,7 @@ import information.Information;
  * booléens
  * @author prou
  */
-public class SondeLogique extends Sonde <Boolean> {
+public class SondeLogique extends Sonde<Boolean> {
    
     /** le nombre de pixels en largeur pour un élément d'information
      * Boolean à afficher dans la fenêtre */
@@ -23,15 +23,20 @@ public class SondeLogique extends Sonde <Boolean> {
         this.nbPixels = nbPixels;
     }
     
-    public void recevoir (Information <Boolean> information) { 
+    /**
+     * Reçoit une information logique et l'affiche sous forme de courbe.
+     *
+     * @param information information logique à afficher
+     */
+    public void recevoir(Information <Boolean> information) {
         informationRecue = information;
         int nbElements = information.nbElements();
         boolean [] table = new boolean[nbElements];
 
         int i = 0;
         for (boolean b : information) {
-                table[i] = b;
-                i++;
+            table[i] = b;
+            i++;
         }
         new VueCourbe (table,  nbPixels, nom);
     }

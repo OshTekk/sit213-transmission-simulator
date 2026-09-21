@@ -7,7 +7,7 @@ import information.Information;
  * d'éléments de type T
  * @author prou
  */
-public class SondeTextuelle <T> extends Sonde <T> {
+public class SondeTextuelle<T> extends Sonde<T> {
    
     /**
      * pour construire une sonde textuelle
@@ -17,8 +17,13 @@ public class SondeTextuelle <T> extends Sonde <T> {
 	super(nom);
     }
    
-    public void recevoir (Information <T> information) { 		 		 	
-	informationRecue = information;
-	System.out.println(nom + " : " + information);
+    /**
+     * Reçoit une information et l'affiche dans la sortie textuelle.
+     *
+     * @param information information à afficher
+     */
+    public void recevoir (Information<T> information) {
+        informationRecue = information;
+        System.out.println(nom + " : " + information);
     }
 }

@@ -5,6 +5,8 @@ import information.InformationNonConformeException;
 
 /**
  * Interface permettant d'encoder une suite binaire ou de décoder un signal en RZ, NRZ ou NRZT
+ *
+ * @author Antonin Pons
  */
 public interface CodeBinaireInterface {
 
@@ -21,6 +23,7 @@ public interface CodeBinaireInterface {
      *
      * @param information Le signal reçu échantillonné.
      * @return Les bits décodés.
+     * @throws InformationNonConformeException si le signal ne respecte pas le format attendu
      */
     Information<Boolean> decoder(Information<Float> information) throws InformationNonConformeException;
 }

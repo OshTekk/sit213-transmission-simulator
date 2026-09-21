@@ -7,7 +7,7 @@ import information.Information;
  * réels (float)
  * @author prou
  */
-public class SondeAnalogique extends Sonde <Float> {
+public class SondeAnalogique extends Sonde<Float> {
    
     /**
      * pour construire une sonde analogique
@@ -17,15 +17,20 @@ public class SondeAnalogique extends Sonde <Float> {
 	super(nom);
     }
    	 
-    public void recevoir (Information <Float> information) { 
+    /**
+     * Reçoit une information analogique et l'affiche sous forme de courbe.
+     *
+     * @param information information analogique à afficher
+     */
+    public void recevoir(Information<Float> information) {
 		informationRecue = information;
 		int nbElements = information.nbElements();
 		float [] table = new float[nbElements];
 
 		int i = 0;
 		for (float f : information) {
-				table[i] = f;
-				i++;
+			table[i] = f;
+			i++;
 		}
 		new VueCourbe (table, nom);
     }

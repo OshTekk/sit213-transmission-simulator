@@ -14,31 +14,31 @@ import java.util.*;
  * l'interface SourceInterface
  * @author prou
  */
-public abstract class Transmetteur <R,E> implements  DestinationInterface <R>, SourceInterface <E> {
+public abstract class Transmetteur<R,E> implements DestinationInterface<R>, SourceInterface<E> {
    
     /** 
      * la liste des composants destination connectés en sortie du transmetteur 
      */
-    protected LinkedList <DestinationInterface <E>> destinationsConnectees;
+    protected LinkedList<DestinationInterface<E>> destinationsConnectees;
    
     /** 
      * l'information reçue en entrée du transmetteur 
      */
-    protected Information <R>  informationRecue;
+    protected Information<R> informationRecue;
 		
     /** 
      * l'information émise en sortie du transmetteur
      */		
-    protected Information <E>  informationEmise;
+    protected Information<E> informationEmise;
    
     /** 
      * un constructeur factorisant les initialisations communes aux
      * réalisations de la classe abstraite Transmetteur
      */
     public Transmetteur() {
-    destinationsConnectees = new LinkedList <DestinationInterface <E>> ();
-	informationRecue = null;
-	informationEmise = null;
+        destinationsConnectees = new LinkedList<DestinationInterface<E>> ();
+        informationRecue = null;
+        informationEmise = null;
     }
    	
     /**
@@ -46,7 +46,7 @@ public abstract class Transmetteur <R,E> implements  DestinationInterface <R>, S
      * transmetteur
      * @return une information   
      */
-    public Information <R>  getInformationRecue() {
+    public Information<R> getInformationRecue() {
 	return this.informationRecue;
     }
 
@@ -55,7 +55,7 @@ public abstract class Transmetteur <R,E> implements  DestinationInterface <R>, S
      * transmetteur
      * @return une information   
      */
-    public Information <E>  getInformationEmise() {
+    public Information<E> getInformationEmise() {
 	return this.informationEmise;
     }
 
@@ -63,7 +63,7 @@ public abstract class Transmetteur <R,E> implements  DestinationInterface <R>, S
      * connecte une destination à la sortie du transmetteur
      * @param destination  la destination à connecter
      */
-    public void connecter (DestinationInterface <E> destination) {
+    public void connecter(DestinationInterface<E> destination) {
 	destinationsConnectees.add(destination); 
     }
 
@@ -71,7 +71,7 @@ public abstract class Transmetteur <R,E> implements  DestinationInterface <R>, S
      * déconnecte une destination de la la sortie du transmetteur
      * @param destination  la destination à déconnecter
      */
-    public void deconnecter (DestinationInterface <E> destination) {
+    public void deconnecter(DestinationInterface<E> destination) {
 	destinationsConnectees.remove(destination); 
     }
    	    
@@ -81,7 +81,7 @@ public abstract class Transmetteur <R,E> implements  DestinationInterface <R>, S
      * @param information  l'information  reçue
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
-    public abstract void recevoir(Information <R> information) throws InformationNonConformeException;
+    public abstract void recevoir(Information<R> information) throws InformationNonConformeException;
    
     /**
      * émet l'information construite par le transmetteur
