@@ -5,6 +5,7 @@ import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
 import transmetteurs.Transmetteur;
+import transmetteurs.TransmetteurBruite;
 import transmetteurs.TransmetteurParfait;
 import visualisations.SondeLogique;
 import visualisations.SondeAnalogique;
@@ -109,11 +110,11 @@ public class Simulateur {
                 transmetteurLogique.connecter(sondeTransmetteur);
             }
         } else {
-            // Chaîne de transmission analogique (Étape 2)
+            // Chaîne de transmission analogique bruitée (Étape 3)
             CodeBinaire codeBinaire = getCodeBinaire();
 
             Emetteur emetteur = new Emetteur(codeBinaire);
-            Transmetteur<Float, Float> transmetteurAnalogique = new TransmetteurParfait<Float>();
+            Transmetteur<Float, Float> transmetteurAnalogique = new TransmetteurBruite(0.5f);
             Recepteur recepteur = new Recepteur(codeBinaire);
 
             // Connexion de la chaîne analogique
