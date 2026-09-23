@@ -72,14 +72,15 @@ public class CodeRZ extends CodeBinaire {
             for (int i = 0; i < tiersNbEchParBit; i++) {
                 it.next();
             }
-            float amplitudeMilieu = 0;
+            float amplitudeMoy = 0;
             for (int i = 0; i < tiersNbEchParBit; i++) {
-                amplitudeMilieu = it.next();
+                amplitudeMoy = it.next();
             }
+            amplitudeMoy /= tiersNbEchParBit;
             for (int i = 0; i < tiersNbEchParBit; i++) {
                 it.next();
             }
-            infoDecodee.add(amplitudeMilieu == amplitudeMax);
+            infoDecodee.add(amplitudeMoy == amplitudeMax);
         }
         return infoDecodee;
     }

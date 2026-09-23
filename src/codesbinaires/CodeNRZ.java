@@ -64,11 +64,12 @@ public class CodeNRZ extends CodeBinaire {
         Information<Boolean> infoDecodee = new Information<>();
         Iterator<Float> it = information.iterator();
         while (it.hasNext()) {
-            float amplitude = 0;
+            float amplitudeMoy = 0;
             for (int i = 0; i < nbEchParBit; i++) {
-                amplitude = it.next();
+                amplitudeMoy += it.next();
             }
-            infoDecodee.add(amplitude == amplitudeMax);
+            amplitudeMoy /= nbEchParBit;
+            infoDecodee.add(amplitudeMoy == amplitudeMax);
         }
         return infoDecodee;
     }
