@@ -287,7 +287,7 @@ class SimulateurTest {
         Emetteur emetteur = (Emetteur) sortiesSource.get(0);
         List<?> sortiesEmetteur = (List<?>) lireChamp(emetteur, Transmetteur.class, "destinationsConnectees");
         assertEquals(1, sortiesEmetteur.size());
-        assertInstanceOf(TransmetteurParfait.class, sortiesEmetteur.get(0));
+        assertInstanceOf(Transmetteur.class, sortiesEmetteur.get(0));
 
         Transmetteur<?, ?> canal = (Transmetteur<?, ?>) sortiesEmetteur.get(0);
         List<?> sortiesCanal = (List<?>) lireChamp(canal, Transmetteur.class, "destinationsConnectees");

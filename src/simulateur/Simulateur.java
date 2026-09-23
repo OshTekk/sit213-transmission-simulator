@@ -201,7 +201,10 @@ public class Simulateur {
     		
     		else if (args[i].matches("-seed")) {
     			aleatoireAvecGerme = true;
-    			i++; 
+    			i++;
+                // vérifier si une valeur est associée
+                if (i >= args.length) throw new ArgumentsException("Valeur de la graine -seed manquante");
+
     			// traiter la valeur associee
     			try { 
     				seed = Integer.valueOf(args[i]);
@@ -212,10 +215,16 @@ public class Simulateur {
     		}
 
     		else if (args[i].matches("-mess")){
-    			i++; 
+    			i++;
+                // vérifier si une valeur est associée
+                if (i >= args.length) throw new ArgumentsException("Valeur du parametre -mess manquante");
+
     			// traiter la valeur associee
     			messageString = args[i];
-    			if (args[i].matches("[0,1]{7,}")) { // au moins 7 digits
+    			if (args[i].contains(",")) {
+                    throw new ArgumentsException ("Valeur du parametre -mess invalide : " + nbBitsMess);
+                }
+                else if (args[i].matches("[0,1]{7,}")) { // au moins 7 digits
     				messageAleatoire = false;
     				nbBitsMess = args[i].length();
     			} 
@@ -225,8 +234,7 @@ public class Simulateur {
     				if (nbBitsMess < 1) 
     					throw new ArgumentsException ("Valeur du parametre -mess invalide : " + nbBitsMess);
     			}
-    			else 
-    				throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
+    			else throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
     		}
     		
     		else if (args[i].matches("-form")) {
