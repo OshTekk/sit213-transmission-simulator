@@ -86,7 +86,7 @@ public class CodeNRZT extends CodeBinaire {
 
         Information<Boolean> infoDecodee = new Information<>();
         int tiersNbEchParBit = nbEchParBit / 3;
-        float amplitudeMoyenne = (amplitudeMax + amplitudeMin) / 2.0f;
+        float amplitudeMilieu = (amplitudeMax + amplitudeMin) / 2.0f;
         float amplitudeMoy;
         Iterator<Float> it = information.iterator();
         while (it.hasNext()) {
@@ -98,7 +98,7 @@ public class CodeNRZT extends CodeBinaire {
                 amplitudeMoy += it.next();
             }
             amplitudeMoy /= tiersNbEchParBit;
-            infoDecodee.add(amplitudeMoy > amplitudeMoyenne);
+            infoDecodee.add(amplitudeMoy > amplitudeMilieu);
             for (int i = 0; i < tiersNbEchParBit; i++) {
                 it.next();
             }

@@ -67,6 +67,7 @@ public class CodeRZ extends CodeBinaire {
 
         Information<Boolean> infoDecodee = new Information<>();
         int tiersNbEchParBit = nbEchParBit / 3;
+        float amplitudeMilieu = (amplitudeMax + amplitudeMin) / 2;
         Iterator<Float> it = information.iterator();
         while (it.hasNext()) {
             for (int i = 0; i < tiersNbEchParBit; i++) {
@@ -80,7 +81,7 @@ public class CodeRZ extends CodeBinaire {
             for (int i = 0; i < tiersNbEchParBit; i++) {
                 it.next();
             }
-            infoDecodee.add(amplitudeMoy == amplitudeMax);
+            infoDecodee.add(amplitudeMoy > amplitudeMilieu);
         }
         return infoDecodee;
     }

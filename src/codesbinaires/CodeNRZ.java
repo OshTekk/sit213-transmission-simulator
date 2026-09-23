@@ -61,6 +61,7 @@ public class CodeNRZ extends CodeBinaire {
         if (information.nbElements() % nbEchParBit != 0)
             throw new InformationNonConformeException();
 
+        float amplitudeMilieu = (amplitudeMax + amplitudeMin) / 2;
         Information<Boolean> infoDecodee = new Information<>();
         Iterator<Float> it = information.iterator();
         while (it.hasNext()) {
@@ -69,7 +70,7 @@ public class CodeNRZ extends CodeBinaire {
                 amplitudeMoy += it.next();
             }
             amplitudeMoy /= nbEchParBit;
-            infoDecodee.add(amplitudeMoy == amplitudeMax);
+            infoDecodee.add(amplitudeMoy > amplitudeMilieu);
         }
         return infoDecodee;
     }
