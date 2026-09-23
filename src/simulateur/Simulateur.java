@@ -60,8 +60,11 @@ public class Simulateur {
     /** l'amplitude maximale du signal analogique */
     private float amplMax = 1.0f;
 
+    /** indique si le canal analogique doit être bruité */
+    private boolean bruitActif = false;
+
     /** puissance du bruit blanc */
-    private float pBruit = 0.5f;
+    private float pBruit = 0.0f;
    
    	
     /** le  composant Source de la chaine de transmission */
@@ -117,7 +120,16 @@ public class Simulateur {
             CodeBinaire codeBinaire = getCodeBinaire();
 
             Emetteur emetteur = new Emetteur(codeBinaire);
-            Transmetteur<Float, Float> transmetteurAnalogique = new TransmetteurBruite(pBruit);
+            Transmetteur<Float, Float> transmetteurAnalogique;
+            if (bruitActif) {
+                if (aleatoireAvecGerme) {
+                    transmetteurAnalogique = new TransmetteurBruite(pBruit, seed);
+                } else {
+                    transmetteurAnalogique = new TransmetteurBruite(pBruit);
+                }
+            } else {
+                transmetteurAnalogique = new TransmetteurParfait<Float>();
+            }
             Recepteur recepteur = new Recepteur(codeBinaire);
 
             // Connexion de la chaîne analogique
@@ -289,11 +301,19 @@ public class Simulateur {
 
             else if (args[i].matches("-pBruit")) {
                 transmissionAnalogique = true;
+                bruitActif = true;
                 i++;
                 if (i >= args.length) {
                     throw new ArgumentsException("Valeur du parametre -pBruit manquante");
                 }
-                pBruit = Float.parseFloat(args[i]);
+                try {
+                    pBruit = Float.parseFloat(args[i]);
+                    if (pBruit < 0) {
+                        throw new ArgumentsException("Valeur du parametre -pBruit invalide : " + args[i]);
+                    }
+                } catch (Exception e) {
+                    throw new ArgumentsException("Valeur du parametre -pBruit invalide : " + args[i]);
+                }
             }
 
     		//TODO : ajouter ci-après le traitement des nouvelles options

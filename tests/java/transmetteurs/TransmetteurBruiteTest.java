@@ -87,6 +87,18 @@ class TransmetteurBruiteTest {
                 () -> transmetteur.recevoir(new Information<>(new Float[]{1.0f})));
     }
 
+    @Test
+    void deuxTransmetteursAvecMemeGraineGenerentLeMemeBruit() throws Exception {
+        TransmetteurBruite transmetteur1 = new TransmetteurBruite(0.5f, 42);
+        TransmetteurBruite transmetteur2 = new TransmetteurBruite(0.5f, 42);
+        Information<Float> signal = new Information<>(new Float[]{0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
+
+        transmetteur1.recevoir(signal);
+        transmetteur2.recevoir(signal);
+
+        assertEquals(transmetteur1.getInformationEmise(), transmetteur2.getInformationEmise());
+    }
+
     /** Destination de test qui mémorise la dernière information reçue. */
     private static class DestinationMemoire extends Destination<Float> {
         @Override

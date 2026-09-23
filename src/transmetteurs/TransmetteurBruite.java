@@ -16,16 +16,31 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
     private final Random random;
 
     /**
-     * Constructeur du Transmetteur bruité
+     * Constructeur du Transmetteur bruité sans graine
      * @param puissanceBruit
      *      Puissance du bruit à introduire
      */
     public TransmetteurBruite(float puissanceBruit) {
+        this(puissanceBruit, null);
+    }
+
+    /**
+     * Constructeur du Transmetteur bruité avec graine
+     * @param puissanceBruit
+     *      Puissance du bruit à introduire
+     * @param seed
+     *      Graine du générateur aléatoire
+     */
+    public TransmetteurBruite(float puissanceBruit, Integer seed) {
         super();
 
         this.puissanceBruit = puissanceBruit;
         this.informationEmise = new Information<>();
-        this.random = new Random();
+        if (seed != null) {
+            this.random = new Random(seed);
+        } else {
+            this.random = new Random();
+        }
     }
 
     /**
