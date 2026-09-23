@@ -59,6 +59,9 @@ public class Simulateur {
 
     /** l'amplitude maximale du signal analogique */
     private float amplMax = 1.0f;
+
+    /** puissance du bruit blanc */
+    private float pBruit = 0.5f;
    
    	
     /** le  composant Source de la chaine de transmission */
@@ -114,7 +117,7 @@ public class Simulateur {
             CodeBinaire codeBinaire = getCodeBinaire();
 
             Emetteur emetteur = new Emetteur(codeBinaire);
-            Transmetteur<Float, Float> transmetteurAnalogique = new TransmetteurBruite(0.5f);
+            Transmetteur<Float, Float> transmetteurAnalogique = new TransmetteurBruite(pBruit);
             Recepteur recepteur = new Recepteur(codeBinaire);
 
             // Connexion de la chaîne analogique
@@ -182,6 +185,7 @@ public class Simulateur {
      * <dt> -form f </dt><dd> f (String) forme d'onde ("RZ", "NRZ", "NRZT") pour transmission analogique</dd>
      * <dt> -nbEch ne </dt><dd> ne (int) nombre d'échantillons par bit</dd>
      * <dt> -ampl min max </dt><dd> min max (float) amplitudes min et max</dd>
+     * <dt> -pBruit pb </dt><dd> pb (float) puissance du bruit</dd>
      * </dl>
      *
      * @throws ArgumentsException si un des arguments est incorrect.
@@ -274,6 +278,15 @@ public class Simulateur {
     				throw new ArgumentsException("Valeur max du parametre -ampl invalide : " + args[i]);
     			}
     		}
+
+            else if (args[i].matches("-pBruit")) {
+                transmissionAnalogique = true;
+                i++;
+                if (i >= args.length) {
+                    throw new ArgumentsException("Valeur du parametre -pBruit manquante");
+                }
+                pBruit = Float.parseFloat(args[i]);
+            }
 
     		//TODO : ajouter ci-après le traitement des nouvelles options
 
