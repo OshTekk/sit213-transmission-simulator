@@ -12,8 +12,8 @@ import information.InformationNonConformeException;
 public class TransmetteurBruite extends Transmetteur<Float, Float> {
     private Float puissanceBruit;
     private final Random random;
-    private float snrpb;
-    private int nbEchParBit;
+    private final Float snrpb;
+    private final Integer nbEchParBit;
 
     /**
      * Constructeur du transmetteur bruité utilisant le SNR par bit
@@ -26,9 +26,9 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
      */
     public TransmetteurBruite(float snrpb, int nbEchParBit, Integer semence) {
         super();
-        this.puissanceBruit = null;
         this.snrpb = snrpb;
         this.nbEchParBit = nbEchParBit;
+        this.puissanceBruit = null;
         this.informationEmise = new Information<>();
         this.random = (semence != null) ? new Random(semence) : new Random();
     }
@@ -41,14 +41,15 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
     /**
      * Constructeur du Transmetteur bruité
      * @param puissanceBruit
-     *      Rapport signal sur bruit par bit
+     *      Puissance du bruit généré
      * @param semence
      *      Semence utilisée pour générer les échantillons du bruit
      *
      */
     public TransmetteurBruite(float puissanceBruit, Integer semence) {
         super();
-
+        this.snrpb = null;
+        this.nbEchParBit = null;
         this.puissanceBruit = puissanceBruit;
         this.informationEmise = new Information<>();
         this.random = (semence != null) ? new Random(semence) : new Random();
@@ -102,13 +103,11 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
     }
 
     private void calculPuissanceBruit() {
-        if (this.puissanceBruit != null) {
-            return;
+        if (this.snrpb != null && this.nbEchParBit != null) {
+            float snrLin = (float) Math.pow(10.0f, snrpb / 10.0f);
+            float pSignal = this.calculPuissanceSignal();
+            this.puissanceBruit = (pSignal * (float) nbEchParBit) / (2.0f * snrLin);
         }
-        float snrLin = (float) Math.pow(10.0f, snrpb / 10.0f);
-        float pSignal = this.calculPuissanceSignal();
-        this.puissanceBruit = (pSignal * (float) nbEchParBit) / (2.0f * snrLin);
-
     }
 
     private float calculPuissanceSignal() {
