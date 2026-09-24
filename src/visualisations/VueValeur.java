@@ -5,7 +5,6 @@ import javax.swing.*;
  * Fenêtre affichant une valeur unique.
  * Le code d'origine a été fourni par B. Prou et mis à jour par E. Cousin en 2021.
  *
- * @author Antonin Pons
  */
 public class VueValeur extends Vue {
 

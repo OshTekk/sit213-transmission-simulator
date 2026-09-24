@@ -64,6 +64,7 @@ public class CodeNRZ extends CodeBinaire {
         float amplitudeMilieu = (amplitudeMax + amplitudeMin) / 2;
         Information<Boolean> infoDecodee = new Information<>();
         Iterator<Float> it = information.iterator();
+
         while (it.hasNext()) {
             float amplitudeMoy = 0;
             for (int i = 0; i < nbEchParBit; i++) {

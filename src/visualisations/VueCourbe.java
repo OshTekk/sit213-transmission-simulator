@@ -6,7 +6,6 @@ import java.awt.geom.*;
  * Fenêtre affichant une information logique ou analogique sous forme de courbe.
  * Le code d'origine a été fourni par B. Prou et mis à jour par E. Cousin en 2021.
  *
- * @author Antonin Pons
  */
 public class VueCourbe extends Vue {
     

@@ -68,13 +68,13 @@ public class Simulateur {
    
    	
     /** le  composant Source de la chaine de transmission */
-    private Source <Boolean> source = null;
+    private Source<Boolean> source = null;
     
     /** le  composant Transmetteur parfait logique de la chaine de transmission */
-    private Transmetteur <Boolean, Boolean> transmetteurLogique = null;
+    private Transmetteur<Boolean, Boolean> transmetteurLogique = null;
     
     /** le  composant Destination de la chaine de transmission */
-    private Destination <Boolean> destination = null;
+    private Destination<Boolean> destination = null;
    	
    
     /** Le constructeur de Simulateur construit une chaîne de
@@ -99,11 +99,12 @@ public class Simulateur {
             source = new SourceFixe(messageString);
         }
 
+        // Instanciation de la destination
         destination = new DestinationFinale();
 
         if (!transmissionAnalogique) {
             // Chaîne de transmission logique (Étape 1)
-            transmetteurLogique = new TransmetteurParfait<Boolean>();
+            transmetteurLogique = new TransmetteurParfait<>();
 
             source.connecter(transmetteurLogique);
             transmetteurLogique.connecter(destination);
@@ -121,7 +122,9 @@ public class Simulateur {
 
             Emetteur emetteur = new Emetteur(codeBinaire);
             Transmetteur<Float, Float> transmetteurAnalogique;
+            
             if (snrpbActif) {
+                //TODO: Simplifiable au niveau de la seed : les objets doivent-ils gérer l'absence de seed en interne
                 if (aleatoireAvecGerme) {
                     transmetteurAnalogique = new TransmetteurBruite(snrpb, nbEch, seed);
                 } else {
@@ -130,6 +133,7 @@ public class Simulateur {
             } else {
                 transmetteurAnalogique = new TransmetteurParfait<>();
             }
+            
             Recepteur recepteur = new Recepteur(codeBinaire);
 
             // Connexion de la chaîne analogique

@@ -7,7 +7,6 @@ import javax.swing.*;
  * Fenêtre de base commune aux vues du simulateur.
  * Le code d'origine a été fourni par B. Prou et mis à jour par E. Cousin en 2021.
  *
- * @author Antonin Pons
  */
 public class Vue extends JFrame {
     private static LinkedList<Vue> lesVues=new LinkedList<Vue>();
