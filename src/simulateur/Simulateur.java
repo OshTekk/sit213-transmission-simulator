@@ -194,7 +194,7 @@ public class Simulateur {
      * <dt> -mess m  </dt><dd> m (int) constitué de 1 à 6 digits, le nombre de bits du message "aléatoire" à transmettre</dd> 
      * <dt> -s </dt><dd> pour demander l'utilisation des sondes d'affichage</dd>
      * <dt> -seed v </dt><dd> v (int) d'initialisation pour les générateurs aléatoires</dd> 
-     * <dt> -form f </dt><dd> f (String) forme d'onde ("RZ", "NRZ", "NRZT") pour transmission analogique</dd>
+     * <dt> -codeur f </dt><dd> f (String) forme d'onde ("RZ", "NRZ", "NRZT") pour transmission analogique</dd>
      * <dt> -nbEch ne </dt><dd> ne (int) nombre d'échantillons par bit</dd>
      * <dt> -ampl min max </dt><dd> min max (float) amplitudes min et max</dd>
      * <dt> -snrpb snr </dt><dd> snr (float) Rapport signal sur bruit par bit</dd>
@@ -249,7 +249,7 @@ public class Simulateur {
     			else throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
     		}
     		
-    		else if (args[i].matches("-form")) {
+    		else if (args[i].matches("-codeur")) {
     			transmissionAnalogique = true;
     			i++;
     			if (i >= args.length) {
