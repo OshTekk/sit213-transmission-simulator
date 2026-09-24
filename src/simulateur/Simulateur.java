@@ -61,10 +61,10 @@ public class Simulateur {
     private float amplMax = 1.0f;
 
     /** indique si le canal analogique doit être bruité */
-    private boolean bruitActif = false;
+    private boolean snrpbActif = false;
 
-    /** puissance du bruit blanc */
-    private float pBruit = 0.0f;
+    /** rapport signal sur bruit par bit */
+    private float snrpb = 0.0f;
    
    	
     /** le  composant Source de la chaine de transmission */
@@ -121,14 +121,14 @@ public class Simulateur {
 
             Emetteur emetteur = new Emetteur(codeBinaire);
             Transmetteur<Float, Float> transmetteurAnalogique;
-            if (bruitActif) {
+            if (snrpbActif) {
                 if (aleatoireAvecGerme) {
-                    transmetteurAnalogique = new TransmetteurBruite(pBruit, seed);
+                    transmetteurAnalogique = new TransmetteurBruite(snrpb, nbEch, seed);
                 } else {
-                    transmetteurAnalogique = new TransmetteurBruite(pBruit);
+                    transmetteurAnalogique = new TransmetteurBruite(snrpb, nbEch);
                 }
             } else {
-                transmetteurAnalogique = new TransmetteurParfait<Float>();
+                transmetteurAnalogique = new TransmetteurParfait<>();
             }
             Recepteur recepteur = new Recepteur(codeBinaire);
 
@@ -197,7 +197,7 @@ public class Simulateur {
      * <dt> -form f </dt><dd> f (String) forme d'onde ("RZ", "NRZ", "NRZT") pour transmission analogique</dd>
      * <dt> -nbEch ne </dt><dd> ne (int) nombre d'échantillons par bit</dd>
      * <dt> -ampl min max </dt><dd> min max (float) amplitudes min et max</dd>
-     * <dt> -pBruit pb </dt><dd> pb (float) puissance du bruit</dd>
+     * <dt> -snrpb snr </dt><dd> snr (float) Rapport signal sur bruit par bit</dd>
      * </dl>
      *
      * @throws ArgumentsException si un des arguments est incorrect.
@@ -299,20 +299,17 @@ public class Simulateur {
     			}
     		}
 
-            else if (args[i].matches("-pBruit")) {
+            else if (args[i].matches("-snrpb")) {
                 transmissionAnalogique = true;
-                bruitActif = true;
+                snrpbActif = true;
                 i++;
                 if (i >= args.length) {
-                    throw new ArgumentsException("Valeur du parametre -pBruit manquante");
+                    throw new ArgumentsException("Valeur du parametre -snrpb manquante");
                 }
                 try {
-                    pBruit = Float.parseFloat(args[i]);
-                    if (pBruit < 0) {
-                        throw new ArgumentsException("Valeur du parametre -pBruit invalide : " + args[i]);
-                    }
+                    snrpb = Float.parseFloat(args[i]);
                 } catch (Exception e) {
-                    throw new ArgumentsException("Valeur du parametre -pBruit invalide : " + args[i]);
+                    throw new ArgumentsException("Valeur du parametre -snrpb invalide : " + args[i]);
                 }
             }
 
