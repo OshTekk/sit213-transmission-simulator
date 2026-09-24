@@ -41,7 +41,7 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
     /**
      * Constructeur du Transmetteur bruité
      * @param puissanceBruit
-     *      Rapport signal sur bruit par bit
+     *      Puissance du bruit
      * @param semence
      *      Semence utilisée pour générer les échantillons du bruit
      *
@@ -50,6 +50,7 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         super();
 
         this.puissanceBruit = puissanceBruit;
+        this.nbEchParBit = 0;
         this.informationEmise = new Information<>();
         this.random = (semence != null) ? new Random(semence) : new Random();
     }
@@ -102,12 +103,11 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
     }
 
     private void calculPuissanceBruit() {
-        if (this.puissanceBruit != null) {
-            return;
+        if (this.nbEchParBit > 0) {
+            float snrLin = (float) Math.pow(10.0f, snrpb / 10.0f);
+            float pSignal = this.calculPuissanceSignal();
+            this.puissanceBruit = (pSignal * (float) nbEchParBit) / (2.0f * snrLin);
         }
-        float snrLin = (float) Math.pow(10.0f, snrpb / 10.0f);
-        float pSignal = this.calculPuissanceSignal();
-        this.puissanceBruit = (pSignal * (float) nbEchParBit) / (2.0f * snrLin);
 
     }
 
