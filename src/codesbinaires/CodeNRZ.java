@@ -15,7 +15,7 @@ public class CodeNRZ extends CodeBinaire {
     /**
      * Constructeur de la classe CodeNRZ
      * @param nbEchParBit
-     *      Nombre d'échantillon par bit
+     *      Nombre d'échantillons par bit
      * @param amplitudeMin
      *      Amplitude minimale du signal NRZ
      * @param amplitudeMax

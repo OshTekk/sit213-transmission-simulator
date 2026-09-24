@@ -15,7 +15,7 @@ public class CodeRZ extends CodeBinaire {
     /**
      * Constructeur de la classe CodeRZ
      * @param nbEchParBit
-     *      Nombre d'échantillon par bit
+     *      Nombre d'échantillons par bit
      * @param amplitudeMin
      *      Amplitude minimale du signal NRZ
      * @param amplitudeMax
@@ -62,7 +62,7 @@ public class CodeRZ extends CodeBinaire {
      */
     public Information<Boolean> decoder(Information<Float> information) throws InformationNonConformeException {
         if (information.nbElements() % nbEchParBit != 0)
-            // Le nombre d'échantillon par bits
+            // Le nombre d'échantillons par bits
             throw new InformationNonConformeException();
 
         Information<Boolean> infoDecodee = new Information<>();
