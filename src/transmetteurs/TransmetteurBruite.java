@@ -8,45 +8,61 @@ import information.InformationNonConformeException;
 
 /**
  * Transmetteur introduisant un bruit gaussien à l'émission
- *
- * @author Antonin Pons
  */
 public class TransmetteurBruite extends Transmetteur<Float, Float> {
-    private final float puissanceBruit;
+    private Float puissanceBruit;
     private final Random random;
+    private float snrpb;
+    private int nbEchParBit;
 
     /**
-     * Constructeur du Transmetteur bruité sans graine
-     * @param puissanceBruit
-     *      Puissance du bruit à introduire
+     * Constructeur du transmetteur bruité utilisant le SNR par bit
+     * @param snrpb
+     *      Rapport signal sur bruit par bit
+     * @param nbEchParBit
+     *      Nombre d'échantillon par bit
+     * @param semence
+     *      Semence utilisée pour générer les échantillons du bruit
      */
+    public TransmetteurBruite(float snrpb, int nbEchParBit, Integer semence) {
+        super();
+        this.puissanceBruit = null;
+        this.snrpb = snrpb;
+        this.nbEchParBit = nbEchParBit;
+        this.informationEmise = new Information<>();
+        this.random = (semence != null) ? new Random(semence) : new Random();
+    }
+
+    public TransmetteurBruite(float snrpb, int nbEchParBit) {
+        this(snrpb, nbEchParBit, null);
+    }
+
+
+    /**
+     * Constructeur du Transmetteur bruité
+     * @param puissanceBruit
+     *      Rapport signal sur bruit par bit
+     * @param semence
+     *      Semence utilisée pour générer les échantillons du bruit
+     *
+     */
+    public TransmetteurBruite(float puissanceBruit, Integer semence) {
+        super();
+
+        this.puissanceBruit = puissanceBruit;
+        this.informationEmise = new Information<>();
+        this.random = (semence != null) ? new Random(semence) : new Random();
+    }
+
     public TransmetteurBruite(float puissanceBruit) {
         this(puissanceBruit, null);
     }
 
     /**
-     * Constructeur du Transmetteur bruité avec graine
-     * @param puissanceBruit
-     *      Puissance du bruit à introduire
-     * @param seed
-     *      Graine du générateur aléatoire
-     */
-    public TransmetteurBruite(float puissanceBruit, Integer seed) {
-        super();
-
-        this.puissanceBruit = puissanceBruit;
-        this.informationEmise = new Information<>();
-        if (seed != null) {
-            this.random = new Random(seed);
-        } else {
-            this.random = new Random();
-        }
-    }
-
-    /**
      * Reçoit une information en entrée et la retransmet en sortie en introduisant un bruit gaussien
      * @param information  l'information reçue
-     * @throws InformationNonConformeException si l'information reçue n'est pas conforme
+     * @throws InformationNonConformeException
+     *      L'information reçue n'est pas conforme
      */
     @Override
     public void recevoir(Information<Float> information) throws InformationNonConformeException {
@@ -55,13 +71,15 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         }
         // réception de l'information reçue
         this.informationRecue = information;
+        this.informationEmise = new Information<>();
+        this.calculPuissanceBruit();
         this.ajoutBruitGaussien();
         this.emettre();
     }
 
     /**
      * Emet l'information émise vers toutes les destinations connectées
-     * @throws InformationNonConformeException si une destination refuse l'information
+     * @throws InformationNonConformeException
      */
     @Override
     public void emettre() throws InformationNonConformeException {
@@ -70,25 +88,38 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         }
     }
 
-    /**
-     * Ajoute un échantillon de bruit gaussien à chaque échantillon reçu.
-     */
     private void ajoutBruitGaussien() {
-        int nbElem = this.informationRecue.nbElements();
-        for (int i = 0; i < nbElem; i++) {
-            float echantillonBruite = this.informationRecue.iemeElement(i)+this.genereEchantillonBruit();
-            this.informationEmise.add(echantillonBruite);
+        for (Float echantillon : this.informationRecue) {
+            float bruit = this.genereEchantillonBruit();
+            this.informationEmise.add(echantillon + bruit);
         }
     }
 
-    /**
-     * Génère un échantillon de bruit gaussien centré.
-     *
-     * @return échantillon de bruit dont la puissance correspond à la configuration
-     */
     private float genereEchantillonBruit() {
         float a1 = this.random.nextFloat();
         float a2 = this.random.nextFloat();
-        return (float) (Math.sqrt(this.puissanceBruit) * Math.sqrt(-2*Math.log(1-a1)) * Math.cos(2 * Math.PI * a2));
+        return (float) (Math.sqrt(this.puissanceBruit) * Math.sqrt(-2 * Math.log(1 - a1)) * Math.cos(2 * Math.PI * a2));
+    }
+
+    private void calculPuissanceBruit() {
+        if (this.puissanceBruit != null) {
+            return;
+        }
+        float snrLin = (float) Math.pow(10.0f, snrpb / 10.0f);
+        float pSignal = this.calculPuissanceSignal();
+        this.puissanceBruit = (pSignal * (float) nbEchParBit) / (2.0f * snrLin);
+
+    }
+
+    private float calculPuissanceSignal() {
+        float sommeQuadratique = 0.0f;
+        float nEchantillons = (float) this.informationRecue.nbElements();
+        if (nEchantillons == 0.0f) {
+            return 0.0f;
+        }
+        for (Float echantillon : this.informationRecue) {
+            sommeQuadratique += echantillon * echantillon;
+        }
+        return sommeQuadratique / nEchantillons;
     }
 }
