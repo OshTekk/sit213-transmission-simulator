@@ -183,6 +183,7 @@ build/
 bin/*
 build
 target
+output
 *.sublime-*
 /scratch
 .gradle
