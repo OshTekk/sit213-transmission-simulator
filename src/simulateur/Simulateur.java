@@ -125,11 +125,7 @@ public class Simulateur {
             
             if (snrpbActif) {
                 //TODO: Simplifiable au niveau de la seed : les objets doivent-ils gérer l'absence de seed en interne
-                if (aleatoireAvecGerme) {
-                    transmetteurAnalogique = new TransmetteurBruite(snrpb, nbEch, seed);
-                } else {
-                    transmetteurAnalogique = new TransmetteurBruite(snrpb, nbEch);
-                }
+                transmetteurAnalogique = new TransmetteurBruite(snrpb, nbEch, seed);
             } else {
                 transmetteurAnalogique = new TransmetteurParfait<>();
             }

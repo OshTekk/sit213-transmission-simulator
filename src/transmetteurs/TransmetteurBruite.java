@@ -35,31 +35,6 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         this.random = (semence != null) ? new Random(semence) : new Random();
     }
 
-    public TransmetteurBruite(float snrpb, int nbEchParBit) {
-        this(snrpb, nbEchParBit, null);
-    }
-
-
-    /**
-     * Constructeur du Transmetteur bruité
-     * @param puissanceBruit
-     *      Puissance du bruit généré
-     * @param semence
-     *      Semence utilisée pour générer les échantillons du bruit
-     *
-     */
-    public TransmetteurBruite(float puissanceBruit, Integer semence) {
-        super();
-        this.snrpb = null;
-        this.nbEchParBit = null;
-        this.puissanceBruit = puissanceBruit;
-        this.informationEmise = new Information<>();
-        this.random = (semence != null) ? new Random(semence) : new Random();
-    }
-
-    public TransmetteurBruite(float puissanceBruit) {
-        this(puissanceBruit, null);
-    }
 
     /**
      * Reçoit une information en entrée et la retransmet en sortie en introduisant un bruit gaussien
