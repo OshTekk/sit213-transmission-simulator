@@ -207,11 +207,11 @@ public class Simulateur {
 
     	for (int i=0;i<args.length;i++){ // traiter les arguments 1 par 1
 
-    		if (args[i].matches("-s")){
+    		if (args[i].equals("-s")){
     			affichage = true;
     		}
     		
-    		else if (args[i].matches("-seed")) {
+    		else if (args[i].equals("-seed")) {
     			aleatoireAvecGerme = true;
     			i++;
                 // vérifier si une valeur est associée
@@ -226,7 +226,7 @@ public class Simulateur {
     			}           		
     		}
 
-    		else if (args[i].matches("-mess")){
+    		else if (args[i].equals("-mess")){
     			i++;
                 // vérifier si une valeur est associée
                 if (i >= args.length) throw new ArgumentsException("Valeur du parametre -mess manquante");
@@ -236,7 +236,7 @@ public class Simulateur {
     			if (args[i].contains(",")) {
                     throw new ArgumentsException ("Valeur du parametre -mess invalide : " + nbBitsMess);
                 }
-                else if (args[i].matches("[0,1]{7,}")) { // au moins 7 digits
+                else if (args[i].matches("[01]{7,}")) { // au moins 7 digits
     				messageAleatoire = false;
     				nbBitsMess = args[i].length();
     			} 
@@ -249,7 +249,7 @@ public class Simulateur {
     			else throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
     		}
     		
-    		else if (args[i].matches("-form")) {
+    		else if (args[i].equals("-form")) {
     			transmissionAnalogique = true;
     			i++;
     			if (i >= args.length) {
@@ -261,7 +261,7 @@ public class Simulateur {
     			}
     		}
 
-    		else if (args[i].matches("-nbEch")) {
+    		else if (args[i].equals("-nbEch")) {
     			transmissionAnalogique = true;
     			i++;
     			if (i >= args.length) {
@@ -277,7 +277,7 @@ public class Simulateur {
     			}
     		}
 
-    		else if (args[i].matches("-ampl")) {
+    		else if (args[i].equals("-ampl")) {
     			transmissionAnalogique = true;
     			i++;
     			if (i >= args.length) {
@@ -299,7 +299,7 @@ public class Simulateur {
     			}
     		}
 
-            else if (args[i].matches("-snrpb")) {
+            else if (args[i].equals("-snrpb")) {
                 transmissionAnalogique = true;
                 snrpbActif = true;
                 i++;

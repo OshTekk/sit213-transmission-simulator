@@ -26,10 +26,10 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
      *      Semence utilisée pour générer les échantillons du bruit
      */
     public TransmetteurBruite(float snrpb, int nbEchParBit, Integer semence) {
+        super();
         if (nbEchParBit <= 0) {
             throw new NbEchantillonInvalideException("Erreur, le nombre d'échantillon par bit doit être strictement positif.");
         }
-        super();
         this.snrpb = snrpb;
         this.nbEchParBit = nbEchParBit;
         this.puissanceBruit = null;

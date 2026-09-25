@@ -21,8 +21,9 @@ if [ -d "tests" ]; then
     # Générer aussi la couverture lorsque des tests révèlent une anomalie.
     mvn -f tests/pom.xml clean test "$@" || statut=$?
     mvn -f tests/pom.xml jacoco:report "$@" || exit $?
+else
+    echo "Déploiement : tests non lancés"
 fi
-  echo "Déploiement : tests non lancés"
 
 echo "=== Test 1: simulation par defaut ==="
 sh "$SIM"
