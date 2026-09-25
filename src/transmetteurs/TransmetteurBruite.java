@@ -2,6 +2,7 @@ package transmetteurs;
 
 import java.util.Random;
 
+import codesbinaires.NbEchantillonInvalideException;
 import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
@@ -27,12 +28,19 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
      *      Semence utilisée pour générer les échantillons du bruit
      */
     public TransmetteurBruite(float snrpb, int nbEchParBit, Integer semence) {
+        if (nbEchParBit <= 0) {
+            throw new NbEchantillonInvalideException("Erreur, le nombre d'échantillon par bit doit être strictement positif.");
+        }
         super();
         this.snrpb = snrpb;
         this.nbEchParBit = nbEchParBit;
         this.puissanceBruit = null;
         this.informationEmise = new Information<>();
         this.random = (semence != null) ? new Random(semence) : new Random();
+    }
+
+    public TransmetteurBruite(float snrpb, int nbEchParBit) {
+        this(snrpb, nbEchParBit, null);
     }
 
 
@@ -98,6 +106,11 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         return (float) (Math.sqrt(this.puissanceBruit) * Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * (double) a2));
     }
 
+    /**
+     * Méthode calculant la puissance du bruit en fonction du SNRPB et de la puissance du signal.
+     * On réalise le calcul suivant :
+     * (Ps * N) / (2 * SNR Linéaire).
+     */
     private void calculPuissanceBruit() {
         if (this.snrpb != null && this.nbEchParBit != null) {
             float snrLin = (float) Math.pow(10.0f, snrpb / 10.0f);
@@ -106,6 +119,12 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         }
     }
 
+    /**
+     * Calcule la puissance du signal reçu en faisant la moyenne des carrés des échantillons.
+     *
+     * @return
+     *      Puissance du signal
+     */
     private float calculPuissanceSignal() {
         float sommeQuadratique = 0.0f;
         float nEchantillons = (float) this.informationRecue.nbElements();

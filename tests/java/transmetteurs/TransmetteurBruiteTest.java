@@ -14,12 +14,13 @@ import java.util.Iterator;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransmetteurBruiteTest {
+    static int NBECHPARBIT_COMMUN = 30;
 
     @ParameterizedTest
     @NullSource
     @ValueSource(ints = {0, 42, -7})
     void constructeurInitialiseLesInformationsAvecOuSansSemence(Integer semence) throws Exception {
-        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, 30, semence);
+        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, semence);
 
         assertNull(transmetteur.getInformationRecue());
         assertNotNull(transmetteur.getInformationEmise());
@@ -36,7 +37,7 @@ class TransmetteurBruiteTest {
 
     @Test
     void recevoirSignalNulEnAmplitudeNeProduitPasDeBruitEtLeTransmet() throws Exception {
-        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, 30, 42);
+        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, 42);
         DestinationMemoire destination = new DestinationMemoire();
         Information<Float> signal = new Information<>(new Float[]{0f, 0f, 0f});
         transmetteur.connecter(destination);
@@ -273,20 +274,9 @@ class TransmetteurBruiteTest {
     }
 
     @Test
-    void nombreDEchantillonsParBitNulSupprimeActuellementLeBruit() throws Exception {
-        TransmetteurBruite transmetteur = assertDoesNotThrow(() -> new TransmetteurBruite(0f, 0, 42));
-        Information<Float> signal = new Information<>(new Float[]{-1f, 1f});
-
-        transmetteur.recevoir(signal);
-
-        assertEquals(signal, transmetteur.getInformationEmise());
-    }
-
-    @ParameterizedTest
-    @CsvSource({"0, -1", "NaN, 2"})
-    void parametresInvalidesProduisentActuellementNaN(float snrDb, int nbEchParBit) throws Exception {
+    void parametresInvalidesProduisentActuellementNaN() throws Exception {
         TransmetteurBruite transmetteur = assertDoesNotThrow(
-                () -> new TransmetteurBruite(snrDb, nbEchParBit, 42));
+                () -> new TransmetteurBruite(Float.NaN, 2, 42));
 
         transmetteur.recevoir(new Information<>(new Float[]{-1f, 1f}));
 
