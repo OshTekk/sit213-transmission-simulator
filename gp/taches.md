@@ -29,13 +29,18 @@ Exemple de javadoc pour chaque classe :
 - [x] ~~sondes~~
 ### Classes à créer
 - [x] Sonde analogique (fenetre graphique) : Aymeric
-  - [ ] À tester
+  - [x] À tester
 - [x] Recepteur : Amandine
 - [x] Emetteur : Nathan
-- [ ] CodeBinaire : Antonin
-  - [ ] NRZ
-  - [ ] RZ
-  - [ ] NRZT
+- [x] CodeBinaire : Antonin
+  - [x] NRZ
+  - [x] RZ
+  - [x] NRZT
 ### Rapports
-- [ ] Rapport de tests : Aymeric
-- [ ] Rapport d'implémentation : Aymeric
+- [x] Rapport de tests : Aymeric
+- [x] Rapport d'implémentation : Aymeric
+## TP3
+On a ajouté la classe transmetteur bruité.
+Les codes bibaires ont été corrigés.
+Le package visualisation est à présent testé.
+## TP4
