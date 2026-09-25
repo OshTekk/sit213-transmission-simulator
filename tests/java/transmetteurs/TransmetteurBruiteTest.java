@@ -202,7 +202,7 @@ class TransmetteurBruiteTest {
     @Test
     void deuxGrainesDifferentesProduisentDesBruitsDifferents() throws Exception {
         TransmetteurBruite premier = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
-        TransmetteurBruite second = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
+        TransmetteurBruite second = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE+1);
         Information<Float> signal = new Information<>(new Float[]{-1f, 1f, -1f, 1f});
 
         premier.recevoir(signal);
