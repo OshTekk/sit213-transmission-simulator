@@ -16,6 +16,8 @@ import codesbinaires.CodeNRZT;
 import codesbinaires.CodeRZ;
 import emetteurs.Emetteur;
 import recepteurs.Recepteur;
+import visualisations.SondeSauvegarder;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -128,21 +130,8 @@ public class Simulateur {
             if (affichage) afficherSondesAnalogiques(emetteur, transmetteurAnalogique, recepteur);
 
             if (sauvegarder) {
-                // On connecte une destination anonyme à la sortie du canal analogique
-                // Cette destination
-                transmetteurAnalogique.connecter(new Destination<>() {
-                    @Override
-                    public void recevoir(Information<Float> information) {
-                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fichierSauvegarde))) {
-                            for (Float val : information) {
-                                writer.write(Float.toString(val));
-                                writer.newLine();
-                            }
-                        } catch (IOException e) {
-                            System.err.println("Erreur lors de la sauvegarde dans " + fichierSauvegarde + " : " + e.getMessage());
-                        }
-                    }
-                });
+                SondeSauvegarder sondeSauv = new SondeSauvegarder("Sonde Sauvegarder", fichierSauvegarde);
+                transmetteurAnalogique.connecter(sondeSauv);
             }
         }
     }
