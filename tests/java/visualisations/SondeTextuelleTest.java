@@ -22,12 +22,14 @@ class SondeTextuelleTest {
         return octets.toString(StandardCharsets.UTF_8);
     }
 
+    /** Vérifie le nom et l'absence d'information reçue à la construction. */
     @Test void constructeurConserveNomEtEtatInitial() {
         SondeTextuelle<Boolean> sonde = new SondeTextuelle<>("Bits");
         assertEquals("Bits", sonde.nom);
         assertNull(sonde.getInformationRecue());
     }
 
+    /** Vérifie l'affichage des valeurs et la mémorisation de la même information. */
     @Test void recevoirAfficheLesValeursEtMemoriseLaMemeInformation() {
         SondeTextuelle<Boolean> sonde = new SondeTextuelle<>("Bits");
         Information<Boolean> info = new Information<>(new Boolean[]{true, false});
@@ -35,6 +37,7 @@ class SondeTextuelleTest {
         assertSame(info, sonde.getInformationRecue());
     }
 
+    /** Vérifie qu'une nouvelle réception remplace l'ancienne, même avec un autre type. */
     @Test void recevoirRemplaceLaDerniereInformationEtAccepteUnAutreType() {
         SondeTextuelle<String> sonde = new SondeTextuelle<>("Texte");
         Information<String> premier = new Information<>(new String[]{"bonjour"});
@@ -45,6 +48,7 @@ class SondeTextuelleTest {
         assertSame(second, sonde.getInformationRecue());
     }
 
+    /** Vérifie qu'une information vide peut être affichée et mémorisée. */
     @Test void recevoirAccepteUneInformationVide() {
         SondeTextuelle<Float> sonde = new SondeTextuelle<>("Vide");
         Information<Float> info = new Information<>();
@@ -52,6 +56,7 @@ class SondeTextuelleTest {
         assertSame(info, sonde.getInformationRecue());
     }
 
+    /** Caractérise l'effacement et l'affichage de null lors d'une réception nulle. */
     @Test void recevoirNullEffaceActuellementLaReceptionEtAfficheNull() {
         SondeTextuelle<Boolean> sonde = new SondeTextuelle<>("Bits");
         sortie(() -> sonde.recevoir(new Information<>(new Boolean[]{true})));
@@ -59,6 +64,7 @@ class SondeTextuelleTest {
         assertNull(sonde.getInformationRecue());
     }
 
+    /** Caractérise l'acceptation actuelle d'un élément nul dans l'information. */
     @Test void recevoirAccepteActuellementUnElementNull() {
         SondeTextuelle<String> sonde = new SondeTextuelle<>(null);
         Information<String> info = new Information<>(new String[]{null});

@@ -10,12 +10,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static visualisations.SupportVisualisations.*;
 
 class SondePuissanceTest {
+    /** Vérifie le nom et l'absence d'information reçue à la construction. */
     @Test void constructeurConserveNomEtEtatInitial() {
         SondePuissance sonde = new SondePuissance("Puissance");
         assertEquals("Puissance", sonde.nom);
         assertNull(sonde.getInformationRecue());
     }
 
+    /** Vérifie l'affichage de la moyenne des carrés et le remplacement de la réception. */
     @Test @Tag("graphique")
     void recevoirAfficheLaMoyenneDesCarresEtRemplaceLaReception() throws Throwable {
         avecInterface(() -> {
@@ -34,6 +36,7 @@ class SondePuissanceTest {
         });
     }
 
+    /** Vérifie que la puissance d'un seul échantillon est son carré. */
     @ParameterizedTest @CsvSource({"-0.5, 0.25", "0.0, 0.0", "2.0, 4.0"}) @Tag("graphique")
     void recevoirUnSeulEchantillonAfficheSonCarre(float valeur, double puissance) throws Throwable {
         avecInterface(() -> {
@@ -42,6 +45,7 @@ class SondePuissanceTest {
         });
     }
 
+    /** Caractérise l'affichage actuel de NaN pour une information vide. */
     @Test @Tag("graphique")
     void recevoirUneInformationVideAfficheActuellementNaN() throws Throwable {
         avecInterface(() -> {
@@ -53,12 +57,14 @@ class SondePuissanceTest {
         });
     }
 
+    /** Caractérise l'exception actuelle provoquée par une réception nulle. */
     @Test void recevoirNullLeveUneNullPointerException() {
         SondePuissance sonde = new SondePuissance("P");
         assertThrows(NullPointerException.class, () -> sonde.recevoir(null));
         assertNull(sonde.getInformationRecue());
     }
 
+    /** Caractérise l'échec sur un élément nul après mémorisation de l'information. */
     @Test void recevoirUnElementNullEchoueApresMemorisation() {
         SondePuissance sonde = new SondePuissance("P");
         Information<Float> info = new Information<>(new Float[]{1f, null});

@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 // Méthodes fournies, conservées dans le périmètre car elles assurent l'émission réelle.
 class SourceTest {
+    /** Vérifie que l'émission renseigne l'information émise même sans destination. */
     @Test void emissionSansDestinationMetAJourInformationEmise() throws Exception {
         SourceFixe source = new SourceFixe("01");
         assertNull(source.getInformationEmise());
@@ -16,6 +17,7 @@ class SourceTest {
         assertEquals(new Information<>(new Boolean[]{false, true}), source.getInformationEmise());
     }
 
+    /** Vérifie la diffusion à plusieurs destinations puis l'effet de la déconnexion. */
     @Test void emissionVersPlusieursDestinationsPuisDeconnexion() throws Exception {
         SourceFixe source = new SourceFixe("01");
         DestinationFinale a = new DestinationFinale();
@@ -33,6 +35,7 @@ class SourceTest {
         assertEquals(source.getInformationEmise(), a.getInformationRecue());
     }
 
+    /** Vérifie qu'un rejet par une destination interrompt l'émission et laisse son état nul. */
     @Test void erreurDestinationInterromptEmissionEtLaisseInformationEmiseNulle() {
         SourceFixe source = new SourceFixe("01");
         source.connecter(new Destination<Boolean>() {
@@ -47,6 +50,7 @@ class SourceTest {
         assertNull(suivante.getInformationRecue());
     }
 
+    /** Caractérise l'exception actuelle quand une destination nulle est connectée. */
     @Test void connecterNullProvoqueUneExceptionLorsDeLEmission() {
         SourceFixe source = new SourceFixe("01");
         source.connecter(null);

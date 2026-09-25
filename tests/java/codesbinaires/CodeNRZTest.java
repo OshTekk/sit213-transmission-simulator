@@ -20,6 +20,7 @@ class CodeNRZTest extends CodeBinaireTest {
         codeur = new CodeNRZ(nbEch, ampliMin, ampliMax);
     }
 
+    /** Vérifie que le constructeur NRZ refuse les amplitudes et les nombres d'échantillons invalides. */
     @DisplayName("Vérification de la levée d'exception en cas d'amplitude invalide")
     @Test
     void testConstructeur() {

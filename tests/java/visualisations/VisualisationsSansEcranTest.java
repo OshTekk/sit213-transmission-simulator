@@ -18,6 +18,7 @@ class VisualisationsSansEcranTest {
         assumeTrue(GraphicsEnvironment.isHeadless(), "Ce test nécessite le mode sans écran");
     }
 
+    /** Vérifie que les constructeurs de vues échouent en environnement sans écran. */
     @Test void constructeursDeVuesEchouentSansEcran() {
         assertThrows(HeadlessException.class, () -> new Vue("Vue"));
         assertThrows(HeadlessException.class, () -> new VueValeur(1, "Valeur"));
@@ -25,6 +26,7 @@ class VisualisationsSansEcranTest {
         assertThrows(HeadlessException.class, () -> new VueCourbe(new boolean[]{true}, 20, "Logique"));
     }
 
+    /** Vérifie que les sondes mémorisent l'information avant l'échec de création de fenêtre. */
     @Test void sondesMemorisentAvantLEchecDeCreationDeFenetre() {
         Information<Float> analogique = new Information<>(new Float[]{-1f, 1f});
         Information<Boolean> logique = new Information<>(new Boolean[]{true, false});

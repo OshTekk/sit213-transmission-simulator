@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class SondeTest {
 
+    /** Vérifie que la sonde conserve le nom fourni. */
     @Test
     void constructeurConserveLeNom() {
         Sonde<Boolean> sonde = new SondeDeTest<>("Sonde entrée");
@@ -16,6 +17,7 @@ class SondeTest {
         assertEquals("Sonde entrée", sonde.nom);
     }
 
+    /** Vérifie qu'une sonde neuve n'a reçu aucune information. */
     @Test
     void constructeurInitialiseInformationRecueANull() {
         Sonde<Boolean> sonde = new SondeDeTest<>("Sonde entrée");
@@ -23,6 +25,7 @@ class SondeTest {
         assertNull(sonde.getInformationRecue());
     }
 
+    /** Caractérise l'acceptation actuelle d'un nom nul. */
     @Test
     void constructeurAccepteActuellementUnNomNull() {
         Sonde<Boolean> sonde = assertDoesNotThrow(() -> new SondeDeTest<Boolean>(null));
@@ -30,6 +33,7 @@ class SondeTest {
         assertNull(sonde.nom);
     }
 
+    /** Vérifie qu'un nom vide est conservé. */
     @Test
     void constructeurAccepteUnNomVide() {
         Sonde<Boolean> sonde = assertDoesNotThrow(() -> new SondeDeTest<Boolean>(""));
@@ -37,6 +41,7 @@ class SondeTest {
         assertEquals("", sonde.nom);
     }
 
+    /** Vérifie que les espaces présents dans le nom sont conservés. */
     @Test
     void constructeurConserveLesEspacesDuNom() {
         Sonde<Boolean> sonde = new SondeDeTest<>("  Sonde entrée  ");

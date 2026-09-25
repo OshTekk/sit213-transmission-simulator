@@ -14,6 +14,7 @@ abstract class CodeBinaireTest {
     protected static final Boolean[] boolTestChain = {true, false, true, true, true, false, false, false, true, false};
     protected static final Float[] invalidSignalChain = {0.0f, 1.5f, 3.0f, 1.5f, 0.0f};
 
+    /** Vérifie qu'un encodage suivi d'un décodage restitue exactement les bits initiaux. */
     @DisplayName("Test d'invariance (boolean -> encoder -> float -> decoder -> boolean)")
     @Test
     void testInvariance() throws InformationNonConformeException {
@@ -23,6 +24,7 @@ abstract class CodeBinaireTest {
         assertEquals(info, infoDecode, "Erreur, l'information doit être identique à l'émission.");
     }
 
+    /** Vérifie qu'un signal analogique invalide est refusé au décodage. */
     @DisplayName("Test décodage signal invalide")
     @Test
     void testSignalInvalide() {
@@ -30,6 +32,7 @@ abstract class CodeBinaireTest {
         assertThrows(InformationNonConformeException.class, () -> codeur.decoder(signal));
     }
 
+    /** Vérifie que coder puis décoder une information vide conserve une taille nulle. */
     @DisplayName("Test lors du codage/décodage d'Information vide")
     @Test
     void testInformationVide() throws InformationNonConformeException {
@@ -40,6 +43,7 @@ abstract class CodeBinaireTest {
         assertEquals(0, infoDecodee.nbElements());
     }
 
+    /** Vérifie qu'un bit donne le nombre prévu d'échantillons puis un seul bit décodé. */
     @DisplayName("Test lors du codage/décodage d'Information contenant 1 bit")
     @Test
     void testInformationUnBit() throws InformationNonConformeException {
@@ -50,6 +54,7 @@ abstract class CodeBinaireTest {
         assertEquals(1, infoDecodee.nbElements());
     }
 
+    /** Vérifie que le nombre d'échantillons est le produit du nombre de bits par les échantillons par bit. */
     @DisplayName("Test du dimensionnement (nbElements == nbBits * nbEchParBit)")
     @Test
     void testNombreEchantillon() {

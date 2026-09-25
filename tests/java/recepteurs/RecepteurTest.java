@@ -29,6 +29,7 @@ class RecepteurTest {
         recepteur = new Recepteur(code);
     }
 
+    /** Vérifie que le récepteur conserve son codeur et démarre sans information reçue ni émise. */
     @Test
     void constructeurInitialiseLesInformationsANullEtConserveLeCodeBinaire() {
         assertSame(code, recepteur.getCodeBinaire());
@@ -36,6 +37,7 @@ class RecepteurTest {
         assertNull(recepteur.getInformationEmise());
     }
 
+    /** Vérifie que le signal reçu est décodé en bits puis transmis à la destination. */
     @Test
     void recevoirTransmetAuxDestinationsConnectees() throws Exception {
         DestinationBoolean destination = new DestinationBoolean();
@@ -54,6 +56,7 @@ class RecepteurTest {
         assertEquals(recepteur.getInformationEmise(), destination.getInformationRecue());
     }
 
+    /** Vérifie qu'une information vide produit et transmet une émission vide. */
     @Test
     void recevoirInformationVideProduitEmissionVide() throws Exception {
         DestinationBoolean destination = new DestinationBoolean();
@@ -66,6 +69,7 @@ class RecepteurTest {
         assertEquals(0, destination.getInformationRecue().nbElements());
     }
 
+    /** Vérifie qu'une réception nulle est rejetée sans écraser le message précédent. */
     @Test
     void recevoirNullRejetteAvecExceptionSansEcraserPrecedent() throws Exception {
         Information<Boolean> bits = new Information<>(new Boolean[]{true});
@@ -76,6 +80,7 @@ class RecepteurTest {
         assertEquals(bits, recepteur.getInformationEmise());
     }
 
+    /** Vérifie l'envoi aux destinations connectées et l'effet d'une déconnexion. */
     @Test
     void emettreAToutesLesDestinationsEtDeconnecter() throws Exception {
         DestinationBoolean d1 = new DestinationBoolean();
@@ -99,12 +104,14 @@ class RecepteurTest {
         assertNotEquals(recepteur.getInformationEmise(), d2.getInformationRecue());
     }
 
+    /** Vérifie qu'émettre avant une réception et sans destination ne modifie pas l'état. */
     @Test
     void emettreAvantReceptionSansDestinationNeFaitRien() throws Exception {
         recepteur.emettre();
         assertNull(recepteur.getInformationEmise());
     }
 
+    /** Vérifie que le rejet d'une destination interrompt l'envoi aux suivantes. */
     @Test
     void exceptionDestinationInterromptLEmission() throws Exception {
         recepteur.connecter(new Destination<Boolean>() {

@@ -41,6 +41,10 @@ Exemple de javadoc pour chaque classe :
 - [x] Rapport d'implémentation : Aymeric
 ## TP3
 On a ajouté la classe transmetteur bruité.
-Les codes bibaires ont été corrigés.
+Les codes binaires ont été corrigés.
 Le package visualisation est à présent testé.
+- [ ] Ajouter un graphe de visualisation de la distribution du bruit : une courbe gaussienne doit s'afficher.
+- [ ] Ajouter un graphe traçant l'évolution du TEB (Eb/N0) en fonction du (SNR par bit) (plusieurs réalisation de la simulation). 
+  - Eb: énergie par bit (Joule: Watt. sec)
+  - N0: densité spectrale du bruit (Watt/Hz)
 ## TP4

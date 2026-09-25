@@ -17,6 +17,12 @@ class TransmetteurBruiteTest {
     static int NBECHPARBIT_COMMUN = 30;
     static int SEMENCE_COMMUNE = 42;
 
+    /**
+     * Vérifie l'état initial du transmetteur et la production de valeurs finies,
+     * qu'une semence soit fournie ou non.
+     *
+     * @param semence semence du générateur, éventuellement absente
+     */
     @ParameterizedTest
     @NullSource
     @ValueSource(ints = {0, 42, -7})
@@ -36,6 +42,7 @@ class TransmetteurBruiteTest {
         }
     }
 
+    /** Vérifie qu'un signal de puissance nulle est transmis sans bruit à la destination. */
     @Test
     void recevoirSignalNulEnAmplitudeNeProduitPasDeBruitEtLeTransmet() throws Exception {
         TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
@@ -52,6 +59,7 @@ class TransmetteurBruiteTest {
         assertEquals(1, destination.receptions);
     }
 
+    /** Vérifie que le bruit modifie l'émission sans altérer l'information reçue. */
     @Test
     void recevoirAjouteDuBruitSansModifierLeSignalInitial() throws Exception {
         TransmetteurBruite transmetteur = new TransmetteurBruite(0f, 2, SEMENCE_COMMUNE);
@@ -70,6 +78,15 @@ class TransmetteurBruiteTest {
         }
     }
 
+    /**
+     * Vérifie statistiquement que le bruit est centré et que sa variance suit
+     * le SNR, le nombre d'échantillons par bit et la puissance du signal.
+     *
+     * @param snrDb rapport signal sur bruit en décibels
+     * @param nbEchParBit nombre d'échantillons par bit
+     * @param amplitude facteur d'amplitude du signal
+     * @param varianceAttendue variance théorique du bruit
+     */
     @ParameterizedTest
     @CsvSource({"0, 2, 1, 5", "10, 2, 1, 0.5", "-10, 2, 1, 50",
             "0, 8, 1, 20", "0, 2, 2, 20"})
@@ -104,6 +121,7 @@ class TransmetteurBruiteTest {
         assertEquals(varianceAttendue, variance, varianceAttendue * 0.05);
     }
 
+    /** Vérifie qu'une réception vide remplace l'émission précédente et est propagée. */
     @Test
     void recevoirUneInformationVideEmetUneInformationVide() throws Exception {
         TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
@@ -122,6 +140,7 @@ class TransmetteurBruiteTest {
         assertEquals(2, destination.receptions);
     }
 
+    /** Vérifie qu'une réception nulle est rejetée sans modifier ni retransmettre l'état précédent. */
     @Test
     void recevoirNullLeveUneExceptionSansEcraserNiRetransmettreLesInformations() throws Exception {
         TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
@@ -139,6 +158,10 @@ class TransmetteurBruiteTest {
         assertEquals(1, destination.receptions);
     }
 
+    /**
+     * Caractérise l'échec actuel sur un élément nul : l'émission est vidée,
+     * mais la destination conserve l'émission précédente.
+     */
     @Test
     void recevoirUnElementNullEchoueActuellementApresRemiseAZeroDeLEmission() throws Exception {
         TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
@@ -157,6 +180,7 @@ class TransmetteurBruiteTest {
         assertEquals(1, destination.receptions);
     }
 
+    /** Vérifie que chaque réception remplace l'émission et recalcule le bruit selon la puissance reçue. */
     @Test
     void chaqueReceptionRecalculeLaPuissanceEtRemplaceLEmission() throws Exception {
         TransmetteurBruite reference = new TransmetteurBruite(0f, 2, SEMENCE_COMMUNE);
@@ -181,6 +205,7 @@ class TransmetteurBruiteTest {
         }
     }
 
+    /** Vérifie qu'une même semence reproduit la suite de bruits sur plusieurs réceptions. */
     @Test
     void deuxTransmetteursAvecMemeGraineGenerentLeMemeBruitSurPlusieursReceptions() throws Exception {
         TransmetteurBruite premier = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
@@ -199,6 +224,7 @@ class TransmetteurBruiteTest {
                 "La séquence aléatoire doit avancer entre deux réceptions");
     }
 
+    /** Vérifie que des semences différentes produisent des émissions différentes. */
     @Test
     void deuxGrainesDifferentesProduisentDesBruitsDifferents() throws Exception {
         TransmetteurBruite premier = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
@@ -211,6 +237,7 @@ class TransmetteurBruiteTest {
         assertNotEquals(premier.getInformationEmise(), second.getInformationEmise());
     }
 
+    /** Vérifie que l'émission est renvoyée aux destinations sans recalculer le bruit. */
     @Test
     void emettreEnvoieLeMemeSignalAuxDestinationsSansRegenererLeBruit() throws Exception {
         TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
@@ -235,6 +262,7 @@ class TransmetteurBruiteTest {
         assertEquals(2, seconde.receptions);
     }
 
+    /** Vérifie qu'une émission avant toute réception transmet une information vide. */
     @Test
     void emettreAvantReceptionTransmetLEmissionVideEtAccepteAucuneDestination() throws Exception {
         TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
@@ -250,6 +278,7 @@ class TransmetteurBruiteTest {
         assertNull(transmetteur.getInformationRecue());
     }
 
+    /** Vérifie qu'un rejet par une destination interrompt la propagation et remonte l'exception. */
     @Test
     void emettrePropageLExceptionEtInterromptLesDestinationsSuivantes() {
         TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
@@ -258,6 +287,7 @@ class TransmetteurBruiteTest {
         InformationNonConformeException rejet = new InformationNonConformeException("rejet du test");
         transmetteur.connecter(avant);
         transmetteur.connecter(new Destination<Float>() {
+            /** Simule une destination qui rejette l'information pour tester l'arrêt de la propagation. */
             @Override
             public void recevoir(Information<Float> information) throws InformationNonConformeException {
                 throw rejet;
@@ -274,6 +304,7 @@ class TransmetteurBruiteTest {
         assertSame(rejet, assertThrows(InformationNonConformeException.class, transmetteur::emettre));
     }
 
+    /** Caractérise le comportement actuel avec un SNR NaN : les échantillons émis sont NaN. */
     @Test
     void parametresInvalidesProduisentActuellementNaN() throws Exception {
         TransmetteurBruite transmetteur = assertDoesNotThrow(
@@ -291,6 +322,11 @@ class TransmetteurBruiteTest {
     private static class DestinationMemoire extends Destination<Float> {
         private int receptions;
 
+        /**
+         * Mémorise la dernière information reçue et incrémente le compteur de réceptions.
+         *
+         * @param information information transmise à cette destination
+         */
         @Override
         public void recevoir(Information<Float> information) {
             this.informationRecue = information;

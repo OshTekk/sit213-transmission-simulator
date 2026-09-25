@@ -8,12 +8,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static visualisations.SupportVisualisations.*;
 
 class SondeAnalogiqueTest {
+    /** Vérifie le nom et l'absence d'information reçue à la construction. */
     @Test void constructeurConserveNomEtEtatInitial() {
         SondeAnalogique sonde = new SondeAnalogique("Signal");
         assertEquals("Signal", sonde.nom);
         assertNull(sonde.getInformationRecue());
     }
 
+    /** Vérifie la conversion des échantillons en courbe et le remplacement de la réception. */
     @Test @Tag("graphique")
     void recevoirConvertitLesEchantillonsEtRemplaceLaReception() throws Throwable {
         avecInterface(() -> {
@@ -32,6 +34,7 @@ class SondeAnalogiqueTest {
         });
     }
 
+    /** Caractérise l'échec actuel du dessin après réception d'un signal vide. */
     @Test @Tag("graphique")
     void recevoirVideCreeUneCourbeDontLeDessinEchoueActuellement() throws Throwable {
         avecInterface(() -> {
@@ -46,12 +49,14 @@ class SondeAnalogiqueTest {
         });
     }
 
+    /** Caractérise l'exception actuelle provoquée par une réception nulle. */
     @Test void recevoirNullLeveUneNullPointerException() {
         SondeAnalogique sonde = new SondeAnalogique("Signal");
         assertThrows(NullPointerException.class, () -> sonde.recevoir(null));
         assertNull(sonde.getInformationRecue());
     }
 
+    /** Caractérise l'échec sur un élément nul après mémorisation de l'information. */
     @Test void recevoirUnElementNullEchoueApresMemorisation() {
         SondeAnalogique sonde = new SondeAnalogique("Signal");
         Information<Float> info = new Information<>(new Float[]{1f, null});

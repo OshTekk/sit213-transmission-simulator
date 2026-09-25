@@ -42,12 +42,14 @@ class SimulateurMainTest {
         }
     }
 
+    /** Vérifie que le programme lancé sans argument termine normalement et affiche un TEB nul. */
     @Test void mainParDefautAfficheTEBZero() throws Exception {
         Resultat resultat = lancer();
         assertEquals(0, resultat.code());
         assertTrue(resultat.sortie().contains("TEB : 0.0"), resultat.sortie());
     }
 
+    /** Vérifie que la commande et son TEB sont affichés après une exécution avec options. */
     @Test void mainAvecArgumentsAfficheLaCommandeEtLeTEB() throws Exception {
         Resultat resultat = lancer("-mess", "1010101", "-seed", "42");
         assertEquals(0, resultat.code());
@@ -56,6 +58,7 @@ class SimulateurMainTest {
         assertTrue(resultat.sortie().contains("TEB : 0.0"), resultat.sortie());
     }
 
+    /** Vérifie le code de sortie et le diagnostic produits pour un argument inconnu. */
     @Test void mainErreurArgumentsTermineAvecCodeMoinsUn() throws Exception {
         Resultat resultat = lancer("-inconnu");
         assertEquals(System.getProperty("os.name").startsWith("Windows") ? -1 : 255, resultat.code());
@@ -63,6 +66,7 @@ class SimulateurMainTest {
         assertFalse(resultat.sortie().contains("TEB :"));
     }
 
+    /** Vérifie le code de sortie et le diagnostic produits lors d'un échec d'exécution. */
     @Test void mainErreurExecutionTermineAvecCodeMoinsDeux() throws Exception {
         // L'affichage est impossible en mode sans écran : couvre le second catch de main.
         Resultat resultat = lancer("-s");
@@ -71,6 +75,7 @@ class SimulateurMainTest {
         assertFalse(resultat.sortie().contains("TEB :"));
     }
 
+    /** Vérifie l'affichage du TEB pour les formes analogiques prises en charge. */
     @ParameterizedTest
     @ValueSource(strings = {"RZ", "NRZ"})
     void mainAvecFormeAnalogiqueAfficheTEBZero(String forme) throws Exception {
@@ -80,6 +85,7 @@ class SimulateurMainTest {
         assertTrue(resultat.sortie().contains("TEB : 0.0"), resultat.sortie());
     }
 
+    /** Vérifie le code de sortie et le diagnostic produits pour une forme inconnue. */
     @Test
     void mainErreurFormeInconnueTermineAvecCodeMoinsUn() throws Exception {
         Resultat resultat = lancer("-form", "INCONNU");

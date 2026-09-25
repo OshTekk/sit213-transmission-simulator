@@ -32,10 +32,7 @@ public class Simulateur {
     
     /** indique si le Simulateur utilise un message généré de manière aléatoire (message imposé sinon) */
     private boolean messageAleatoire = true;
-    
-    /** indique si le Simulateur utilise un germe pour initialiser les générateurs aléatoires */
-    private boolean aleatoireAvecGerme = false;
-    
+
     /** la valeur de la semence utilisée pour les générateurs aléatoires */
     private Integer seed = null; // pas de semence par défaut
     
@@ -65,14 +62,10 @@ public class Simulateur {
 
     /** rapport signal sur bruit par bit */
     private float snrpb = 0.0f;
-   
-   	
+
     /** le  composant Source de la chaine de transmission */
     private Source<Boolean> source = null;
-    
-    /** le  composant Transmetteur parfait logique de la chaine de transmission */
-    private Transmetteur<Boolean, Boolean> transmetteurLogique = null;
-    
+
     /** le  composant Destination de la chaine de transmission */
     private Destination<Boolean> destination = null;
    	
@@ -88,23 +81,21 @@ public class Simulateur {
      * @throws ArgumentsException si un des arguments est incorrect
      *
      */   
-    public Simulateur(String [] args) throws ArgumentsException {
+    public Simulateur(String[] args) throws ArgumentsException {
     	// analyser et récupérer les arguments   	
     	analyseArguments(args);
       
         // Instanciation de la source (aléatoire par défaut, fixe quand la classe sera fusionnée)
-        if (messageAleatoire) {
-            source = new SourceAleatoire(nbBitsMess, seed);
-        } else {
-            source = new SourceFixe(messageString);
-        }
+        source = messageAleatoire
+                ? new SourceAleatoire(nbBitsMess, seed)
+                : new SourceFixe(messageString);
 
         // Instanciation de la destination
         destination = new DestinationFinale();
 
         if (!transmissionAnalogique) {
             // Chaîne de transmission logique (Étape 1)
-            transmetteurLogique = new TransmetteurParfait<>();
+            Transmetteur<Boolean, Boolean> transmetteurLogique = new TransmetteurParfait<>();
 
             source.connecter(transmetteurLogique);
             transmetteurLogique.connecter(destination);
@@ -121,15 +112,9 @@ public class Simulateur {
             CodeBinaire codeBinaire = getCodeBinaire();
 
             Emetteur emetteur = new Emetteur(codeBinaire);
-            Transmetteur<Float, Float> transmetteurAnalogique;
-            
-            if (snrpbActif) {
-                //TODO: Simplifiable au niveau de la seed : les objets doivent-ils gérer l'absence de seed en interne
-                transmetteurAnalogique = new TransmetteurBruite(snrpb, nbEch, seed);
-            } else {
-                transmetteurAnalogique = new TransmetteurParfait<>();
-            }
-            
+            Transmetteur<Float, Float> transmetteurAnalogique = snrpbActif
+                    ? new TransmetteurBruite(snrpb, nbEch, seed)
+                    : new TransmetteurParfait<>();
             Recepteur recepteur = new Recepteur(codeBinaire);
 
             // Connexion de la chaîne analogique
@@ -205,14 +190,11 @@ public class Simulateur {
      */   
     private void analyseArguments(String[] args) throws ArgumentsException {
 
-    	for (int i=0;i<args.length;i++){ // traiter les arguments 1 par 1
+    	for (int i=0; i<args.length; i++) { // traiter les arguments 1 par 1
 
-    		if (args[i].equals("-s")){
-    			affichage = true;
-    		}
-    		
+    		if (args[i].equals("-s")) affichage = true;
+
     		else if (args[i].equals("-seed")) {
-    			aleatoireAvecGerme = true;
     			i++;
                 // vérifier si une valeur est associée
                 if (i >= args.length) throw new ArgumentsException("Valeur de la graine -seed manquante");
@@ -285,7 +267,7 @@ public class Simulateur {
     			}
     			try {
     				amplMin = Float.parseFloat(args[i]);
-    			} catch (Exception e) {
+    			} catch (NumberFormatException e) {
     				throw new ArgumentsException("Valeur min du parametre -ampl invalide : " + args[i]);
     			}
     			i++;
@@ -294,7 +276,7 @@ public class Simulateur {
     			}
     			try {
     				amplMax = Float.parseFloat(args[i]);
-    			} catch (Exception e) {
+    			} catch (NumberFormatException e) {
     				throw new ArgumentsException("Valeur max du parametre -ampl invalide : " + args[i]);
     			}
     		}

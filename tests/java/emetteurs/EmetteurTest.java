@@ -29,6 +29,7 @@ class EmetteurTest {
         emetteur = new Emetteur(code);
     }
 
+    /** Vérifie que l'émetteur conserve son codeur et démarre sans information reçue ni émise. */
     @Test
     void constructeurInitialiseLesInformationsANullEtConserveLeCodeBinaire() {
         assertSame(code, emetteur.getCodeBinaire());
@@ -36,6 +37,7 @@ class EmetteurTest {
         assertNull(emetteur.getInformationEmise());
     }
 
+    /** Vérifie que les bits reçus sont encodés puis transmis à la destination. */
     @Test
     void recevoirTransmetAuxDestinationsConnectees() throws Exception {
         DestinationFloat destination = new DestinationFloat();
@@ -50,6 +52,7 @@ class EmetteurTest {
         assertEquals(emetteur.getInformationEmise(), destination.getInformationRecue());
     }
 
+    /** Vérifie qu'une information vide produit et transmet une émission vide. */
     @Test
     void recevoirInformationVideProduitEmissionVide() throws Exception {
         DestinationFloat destination = new DestinationFloat();
@@ -61,6 +64,7 @@ class EmetteurTest {
         assertEquals(0, destination.getInformationRecue().nbElements());
     }
 
+    /** Vérifie qu'une réception nulle est rejetée sans écraser le message précédent. */
     @Test
     void recevoirNullRejetteAvecExceptionSansEcraserPrecedent() throws Exception {
         Information<Boolean> bits = new Information<>(new Boolean[]{true});
@@ -71,6 +75,7 @@ class EmetteurTest {
         assertNotNull(emetteur.getInformationEmise());
     }
 
+    /** Vérifie l'envoi aux destinations connectées et l'effet d'une déconnexion. */
     @Test
     void emettreAToutesLesDestinationsEtDeconnecter() throws Exception {
         DestinationFloat d1 = new DestinationFloat();
@@ -90,12 +95,14 @@ class EmetteurTest {
         assertNotEquals(emetteur.getInformationEmise(), d2.getInformationRecue());
     }
 
+    /** Vérifie qu'émettre avant une réception et sans destination ne modifie pas l'état. */
     @Test
     void emettreAvantReceptionSansDestinationNeFaitRien() throws Exception {
         emetteur.emettre();
         assertNull(emetteur.getInformationEmise());
     }
 
+    /** Vérifie que le rejet d'une destination interrompt l'envoi aux suivantes. */
     @Test
     void exceptionDestinationInterromptLEmission() {
         emetteur.connecter(new Destination<Float>() {

@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SourceAleatoireTest {
+    /** Vérifie que la source par défaut émet cent bits définis sans semence imposée. */
     @Test void constructeurParDefautGenereCentBits() throws Exception {
         SourceAleatoire source = new SourceAleatoire();
         assertEquals(100, source.getNbBits());
@@ -16,6 +17,7 @@ class SourceAleatoireTest {
         for (Boolean bit : source.getInformationEmise()) assertNotNull(bit);
     }
 
+    /** Vérifie que la taille demandée détermine le nombre de bits émis. */
     @ParameterizedTest @ValueSource(ints = {1, 7, 100, 1000})
     void respecteLaLongueur(int taille) throws Exception {
         SourceAleatoire source = new SourceAleatoire(taille);
@@ -26,6 +28,7 @@ class SourceAleatoireTest {
         for (Boolean bit : source.getInformationEmise()) assertNotNull(bit);
     }
 
+    /** Vérifie qu'une même semence reproduit le même message aléatoire. */
     @ParameterizedTest @ValueSource(ints = {0, 42, -1, Integer.MIN_VALUE, Integer.MAX_VALUE})
     void memeGraineReproduitLeMessage(int graine) throws Exception {
         SourceAleatoire a = new SourceAleatoire(128, graine);
@@ -38,6 +41,7 @@ class SourceAleatoireTest {
         assertEquals(a.getInformationEmise(), b.getInformationEmise());
     }
 
+    /** Vérifie qu'une semence nulle est acceptée et permet l'émission. */
     @Test void graineNulleEstAcceptee() throws Exception {
         SourceAleatoire source = new SourceAleatoire(7, null);
         source.emettre();
@@ -45,6 +49,7 @@ class SourceAleatoireTest {
         assertEquals(7, source.getInformationEmise().nbElements());
     }
 
+    /** Caractérise l'émission vide produite actuellement pour une longueur non positive. */
     @ParameterizedTest @ValueSource(ints = {0, -1, Integer.MIN_VALUE})
     void longueurNonPositiveProduitActuellementUnMessageVide(int taille) throws Exception {
         SourceAleatoire source = new SourceAleatoire(taille, 42);
@@ -53,6 +58,7 @@ class SourceAleatoireTest {
         assertEquals(0, source.getInformationEmise().nbElements());
     }
 
+    /** Vérifie que deux émissions de la même source conservent le message généré. */
     @Test void deuxEmissionsConserventLeMessageGenere() throws Exception {
         SourceAleatoire source = new SourceAleatoire(20, 42);
         source.emettre();

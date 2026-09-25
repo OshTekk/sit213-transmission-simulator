@@ -16,6 +16,7 @@ class CodeRZTest extends CodeBinaireTest {
         codeur = new CodeRZ(nbEch, ampliMin, ampliMax);
     }
 
+    /** Vérifie que le constructeur RZ impose une amplitude minimale nulle et un nombre d'échantillons valide. */
     @DisplayName("Vérification de la levée d'exception en cas de paramètre constructeur invalide")
     @Test
     void testConstructeur() {

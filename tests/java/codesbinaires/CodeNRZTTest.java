@@ -16,6 +16,7 @@ class CodeNRZTTest extends CodeBinaireTest {
         codeur = new CodeNRZT(nbEch, ampliMin, ampliMax);
     }
 
+    /** Vérifie que le codage NRZT refuse un nombre d'échantillons non divisible par trois. */
     @DisplayName("Vérification de la levée d'exception en cas de nbEch invalide")
     @Test
     void testNbEchantillonNonMultiple3() {
@@ -24,6 +25,7 @@ class CodeNRZTTest extends CodeBinaireTest {
         });
     }
 
+    /** Vérifie le rejet des amplitudes incompatibles et des nombres d'échantillons invalides par le constructeur NRZT. */
     @DisplayName("Vérification de la levée d'exception en cas d'amplitude invalide")
     @Test
     void testAmplitudeInvalide() {
