@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TransmetteurBruiteTest {
     static int NBECHPARBIT_COMMUN = 30;
+    static int SEMENCE_COMMUNE = 42;
 
     @ParameterizedTest
     @NullSource
@@ -37,7 +38,7 @@ class TransmetteurBruiteTest {
 
     @Test
     void recevoirSignalNulEnAmplitudeNeProduitPasDeBruitEtLeTransmet() throws Exception {
-        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, 42);
+        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
         DestinationMemoire destination = new DestinationMemoire();
         Information<Float> signal = new Information<>(new Float[]{0f, 0f, 0f});
         transmetteur.connecter(destination);
@@ -53,7 +54,7 @@ class TransmetteurBruiteTest {
 
     @Test
     void recevoirAjouteDuBruitSansModifierLeSignalInitial() throws Exception {
-        TransmetteurBruite transmetteur = new TransmetteurBruite(0f, 2, 42);
+        TransmetteurBruite transmetteur = new TransmetteurBruite(0f, 2, SEMENCE_COMMUNE);
         Information<Float> signal = new Information<>(new Float[]{-1f, 0f, 1f, 2f});
 
         transmetteur.recevoir(signal);
@@ -82,7 +83,7 @@ class TransmetteurBruiteTest {
         for (int i = 0; i < taille; i++) {
             signal.add((i % 2 == 0 ? -1f : 3f) * amplitude);
         }
-        TransmetteurBruite transmetteur = new TransmetteurBruite(snrDb, nbEchParBit, 4242);
+        TransmetteurBruite transmetteur = new TransmetteurBruite(snrDb, nbEchParBit, SEMENCE_COMMUNE);
         transmetteur.recevoir(signal);
 
         assertEquals(taille, transmetteur.getInformationEmise().nbElements());
@@ -105,7 +106,7 @@ class TransmetteurBruiteTest {
 
     @Test
     void recevoirUneInformationVideEmetUneInformationVide() throws Exception {
-        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, 30, 42);
+        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
         DestinationMemoire destination = new DestinationMemoire();
         transmetteur.connecter(destination);
         transmetteur.recevoir(new Information<>(new Float[]{1f, -1f}));
@@ -123,7 +124,7 @@ class TransmetteurBruiteTest {
 
     @Test
     void recevoirNullLeveUneExceptionSansEcraserNiRetransmettreLesInformations() throws Exception {
-        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, 30, 42);
+        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
         DestinationMemoire destination = new DestinationMemoire();
         transmetteur.connecter(destination);
         Information<Float> signal = new Information<>(new Float[]{0.5f});
@@ -140,7 +141,7 @@ class TransmetteurBruiteTest {
 
     @Test
     void recevoirUnElementNullEchoueActuellementApresRemiseAZeroDeLEmission() throws Exception {
-        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, 30, 42);
+        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
         DestinationMemoire destination = new DestinationMemoire();
         transmetteur.connecter(destination);
         transmetteur.recevoir(new Information<>(new Float[]{1f}));
@@ -158,8 +159,8 @@ class TransmetteurBruiteTest {
 
     @Test
     void chaqueReceptionRecalculeLaPuissanceEtRemplaceLEmission() throws Exception {
-        TransmetteurBruite reference = new TransmetteurBruite(0f, 2, 42);
-        TransmetteurBruite amplifie = new TransmetteurBruite(0f, 2, 42);
+        TransmetteurBruite reference = new TransmetteurBruite(0f, 2, SEMENCE_COMMUNE);
+        TransmetteurBruite amplifie = new TransmetteurBruite(0f, 2, SEMENCE_COMMUNE);
         Information<Float> premier = new Information<>(new Float[]{-1f, 3f});
         reference.recevoir(premier);
         amplifie.recevoir(premier);
@@ -182,8 +183,8 @@ class TransmetteurBruiteTest {
 
     @Test
     void deuxTransmetteursAvecMemeGraineGenerentLeMemeBruitSurPlusieursReceptions() throws Exception {
-        TransmetteurBruite premier = new TransmetteurBruite(10f, 30, 42);
-        TransmetteurBruite second = new TransmetteurBruite(10f, 30, 42);
+        TransmetteurBruite premier = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
+        TransmetteurBruite second = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
         Information<Float> signal = new Information<>(new Float[]{-1f, 1f, -1f, 1f});
 
         premier.recevoir(signal);
@@ -200,8 +201,8 @@ class TransmetteurBruiteTest {
 
     @Test
     void deuxGrainesDifferentesProduisentDesBruitsDifferents() throws Exception {
-        TransmetteurBruite premier = new TransmetteurBruite(10f, 30, 42);
-        TransmetteurBruite second = new TransmetteurBruite(10f, 30, 43);
+        TransmetteurBruite premier = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
+        TransmetteurBruite second = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
         Information<Float> signal = new Information<>(new Float[]{-1f, 1f, -1f, 1f});
 
         premier.recevoir(signal);
@@ -212,7 +213,7 @@ class TransmetteurBruiteTest {
 
     @Test
     void emettreEnvoieLeMemeSignalAuxDestinationsSansRegenererLeBruit() throws Exception {
-        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, 30, 42);
+        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
         DestinationMemoire premiere = new DestinationMemoire();
         DestinationMemoire seconde = new DestinationMemoire();
         transmetteur.connecter(premiere);
@@ -236,7 +237,7 @@ class TransmetteurBruiteTest {
 
     @Test
     void emettreAvantReceptionTransmetLEmissionVideEtAccepteAucuneDestination() throws Exception {
-        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, 30, 42);
+        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
         assertDoesNotThrow(transmetteur::emettre);
         DestinationMemoire destination = new DestinationMemoire();
         transmetteur.connecter(destination);
@@ -251,7 +252,7 @@ class TransmetteurBruiteTest {
 
     @Test
     void emettrePropageLExceptionEtInterromptLesDestinationsSuivantes() {
-        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, 30, 42);
+        TransmetteurBruite transmetteur = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, SEMENCE_COMMUNE);
         DestinationMemoire avant = new DestinationMemoire();
         DestinationMemoire apres = new DestinationMemoire();
         InformationNonConformeException rejet = new InformationNonConformeException("rejet du test");
@@ -276,7 +277,7 @@ class TransmetteurBruiteTest {
     @Test
     void parametresInvalidesProduisentActuellementNaN() throws Exception {
         TransmetteurBruite transmetteur = assertDoesNotThrow(
-                () -> new TransmetteurBruite(Float.NaN, 2, 42));
+                () -> new TransmetteurBruite(Float.NaN, 2, SEMENCE_COMMUNE));
 
         transmetteur.recevoir(new Information<>(new Float[]{-1f, 1f}));
 
