@@ -8,6 +8,7 @@ import sources.SourceFixe;
 import sources.SourceAleatoire;
 import transmetteurs.Transmetteur;
 import transmetteurs.TransmetteurParfait;
+import transmetteurs.TransmetteurBruite;
 import emetteurs.Emetteur;
 import recepteurs.Recepteur;
 import visualisations.SondeLogique;
@@ -331,5 +332,38 @@ class SimulateurTest {
         simulateur.execute();
         assertEquals(0.0f, simulateur.calculTauxErreurBinaire());
         assertEquals(destination(simulateur).getInformationRecue(), source(simulateur).getInformationEmise());
+    }
+
+    @Test
+    void snrpbAbsentDoitLeverArgumentsException() {
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-snrpb"}));
+    }
+
+    @Test
+    void snrpbInvalideDoitLeverArgumentsException() {
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-snrpb", "invalide"}));
+    }
+
+    @Test
+    void chaineAnalogiqueAvecSnrpbConnecteTransmetteurBruite() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-form", "NRZ", "-snrpb", "10.0", "-mess", "101"});
+        Emetteur emetteur = (Emetteur) ((List<?>) lireChamp(source(simulateur), Source.class, "destinationsConnectees")).get(0);
+        List<?> sortiesEmetteur = (List<?>) lireChamp(emetteur, Transmetteur.class, "destinationsConnectees");
+        assertEquals(1, sortiesEmetteur.size());
+        assertInstanceOf(TransmetteurBruite.class, sortiesEmetteur.get(0));
+    }
+
+    @Test
+    void executeAvecSnrpbFortDonneTebNul() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-form", "NRZ", "-snrpb", "30.0", "-mess", "1000", "-seed", "42"});
+        simulateur.execute();
+        assertEquals(0.0f, simulateur.calculTauxErreurBinaire());
+    }
+
+    @Test
+    void executeAvecSnrpbTresFaibleDonneTebNonNul() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-form", "NRZ", "-snrpb", "-10.0", "-mess", "1000", "-seed", "42"});
+        simulateur.execute();
+        assertTrue(simulateur.calculTauxErreurBinaire() > 0.1f);
     }
 }

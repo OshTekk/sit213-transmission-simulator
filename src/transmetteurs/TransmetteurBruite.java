@@ -32,7 +32,11 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         this.nbEchParBit = nbEchParBit;
         this.puissanceBruit = null;
         this.informationEmise = new Information<>();
-        this.random = (semence != null) ? new Random(semence) : new Random();
+        if (semence != null) {
+            this.random = new Random(semence);
+        } else {
+            this.random = new Random();
+        }
     }
 
     public TransmetteurBruite(float snrpb, int nbEchParBit) {
@@ -54,7 +58,11 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         this.nbEchParBit = null;
         this.puissanceBruit = puissanceBruit;
         this.informationEmise = new Information<>();
-        this.random = (semence != null) ? new Random(semence) : new Random();
+        if (semence != null) {
+            this.random = new Random(semence);
+        } else {
+            this.random = new Random();
+        }
     }
 
     public TransmetteurBruite(float puissanceBruit) {
@@ -106,9 +114,19 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
      * @return échantillon de bruit dont la puissance correspond à la configuration
      */
     private float genereEchantillonBruit() {
+        if (this.puissanceBruit == null || this.puissanceBruit <= 0.0f) {
+            return 0.0f;
+        }
         float a1 = this.random.nextFloat();
+        while (a1 >= 1.0f) {
+            a1 = this.random.nextFloat();
+        }
         float a2 = this.random.nextFloat();
-        return (float) (Math.sqrt(this.puissanceBruit) * Math.sqrt(-2 * Math.log(1 - a1)) * Math.cos(2 * Math.PI * a2));
+        double u1 = 1.0 - (double) a1;
+        if (u1 <= 0.0) {
+            u1 = 1e-10;
+        }
+        return (float) (Math.sqrt(this.puissanceBruit) * Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * (double) a2));
     }
 
     private void calculPuissanceBruit() {
@@ -129,5 +147,32 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
             sommeQuadratique += echantillon * echantillon;
         }
         return sommeQuadratique / nEchantillons;
+    }
+
+    /**
+     * Retourne la puissance du bruit calculée ou configurée.
+     *
+     * @return puissance du bruit
+     */
+    public Float getPuissanceBruit() {
+        return this.puissanceBruit;
+    }
+
+    /**
+     * Retourne le rapport signal sur bruit par bit configuré.
+     *
+     * @return rapport signal sur bruit par bit (en dB)
+     */
+    public Float getSnrpb() {
+        return this.snrpb;
+    }
+
+    /**
+     * Retourne le nombre d'échantillons par bit configuré.
+     *
+     * @return nombre d'échantillons par bit
+     */
+    public Integer getNbEchParBit() {
+        return this.nbEchParBit;
     }
 }
