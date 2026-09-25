@@ -2,8 +2,6 @@ package codesbinaires;
 
 /**
  * Signale qu'une amplitude fournie à un code binaire est invalide.
- *
- * @author Antonin Pons
  */
 public class AmplitudeInvalideException extends RuntimeException {
     /**

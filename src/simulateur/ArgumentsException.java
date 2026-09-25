@@ -2,8 +2,6 @@ package simulateur;
 
 /**
  * Signale qu'un argument fourni au simulateur est invalide.
- *
- * @author Antonin Pons
  */
 public class ArgumentsException extends Exception {
     

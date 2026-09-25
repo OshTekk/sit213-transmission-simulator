@@ -8,8 +8,6 @@ import java.util.Iterator;
 /**
  * CodeRZ
  * Permet d'encoder ou de décoder un signal selon le format RZ.
- *
- * @author Antonin Pons
  */
 public class CodeRZ extends CodeBinaire {
     /**

@@ -5,8 +5,6 @@ import information.InformationNonConformeException;
 
 /**
  * Interface permettant d'encoder une suite binaire ou de décoder un signal en RZ, NRZ ou NRZT
- *
- * @author Antonin Pons
  */
 public interface CodeBinaireInterface {
 

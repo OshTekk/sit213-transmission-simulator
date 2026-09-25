@@ -2,8 +2,6 @@ package information;
 
 /**
  * Signale qu'une information ne respecte pas le format attendu par un composant.
- *
- * @author Antonin Pons
  */
 public class InformationNonConformeException extends Exception {
    

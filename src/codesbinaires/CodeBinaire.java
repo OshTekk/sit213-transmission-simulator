@@ -5,8 +5,6 @@ import information.InformationNonConformeException;
 
 /**
  * Base commune des codes en ligne binaires.
- *
- * @author Antonin Pons
  */
 public abstract class CodeBinaire implements CodeBinaireInterface {
     protected float amplitudeMin;

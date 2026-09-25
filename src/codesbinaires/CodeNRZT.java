@@ -8,8 +8,6 @@ import java.util.Iterator;
 /**
  * CodeNRZT
  * Permet d'encoder ou de décoder un signal selon le format NRZT.
- *
- * @author Antonin Pons
  */
 public class CodeNRZT extends CodeBinaire {
     /**

@@ -2,8 +2,6 @@ package codesbinaires;
 
 /**
  * Signale qu'un nombre d'échantillons par bit est invalide.
- *
- * @author Antonin Pons
  */
 public class NbEchantillonInvalideException extends RuntimeException {
     /**

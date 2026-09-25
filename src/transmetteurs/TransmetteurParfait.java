@@ -9,7 +9,6 @@ import information.InformationNonConformeException;
  * L'information reçue en entrée est copiée en entrée.
  *
  * @param <T> le type des données transmises
- * @author Antonin Pons
  * @version 1.0
  */
 public class TransmetteurParfait<T> extends Transmetteur<T, T> {

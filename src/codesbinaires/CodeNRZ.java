@@ -8,8 +8,6 @@ import java.util.Iterator;
 /**
  * CodeNRZ
  * Permet d'encoder ou de décoder un signal selon le format NRZ.
- *
- * @author Antonin Pons
  */
 public class CodeNRZ extends CodeBinaire {
     /**

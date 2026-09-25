@@ -9,8 +9,6 @@ import information.InformationNonConformeException;
 
 /**
  * Transmetteur introduisant un bruit gaussien à l'émission
- *
- * @author Antonin Pons
  */
 public class TransmetteurBruite extends Transmetteur<Float, Float> {
     private Float puissanceBruit;
