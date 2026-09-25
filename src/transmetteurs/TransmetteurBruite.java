@@ -32,11 +32,7 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         this.nbEchParBit = nbEchParBit;
         this.puissanceBruit = null;
         this.informationEmise = new Information<>();
-        if (semence != null) {
-            this.random = new Random(semence);
-        } else {
-            this.random = new Random();
-        }
+        this.random = (semence != null) ? new Random(semence) : new Random();
     }
 
     public TransmetteurBruite(float snrpb, int nbEchParBit) {
@@ -58,11 +54,7 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         this.nbEchParBit = null;
         this.puissanceBruit = puissanceBruit;
         this.informationEmise = new Information<>();
-        if (semence != null) {
-            this.random = new Random(semence);
-        } else {
-            this.random = new Random();
-        }
+        this.random = (semence != null) ? new Random(semence) : new Random();
     }
 
     public TransmetteurBruite(float puissanceBruit) {
@@ -117,15 +109,17 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         if (this.puissanceBruit == null || this.puissanceBruit <= 0.0f) {
             return 0.0f;
         }
+        // Tirage de variables uniformes dans [0, 1[
         float a1 = this.random.nextFloat();
-        while (a1 >= 1.0f) {
-            a1 = this.random.nextFloat();
-        }
         float a2 = this.random.nextFloat();
+
+        // Transformation de Box-Muller : u1 dans ]0, 1] avec sécurité contre ln(0)
         double u1 = 1.0 - (double) a1;
         if (u1 <= 0.0) {
             u1 = 1e-10;
         }
+
+        // Échantillon gaussien centré dimensionné par l'écart-type
         return (float) (Math.sqrt(this.puissanceBruit) * Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * (double) a2));
     }
 
