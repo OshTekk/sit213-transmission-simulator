@@ -100,26 +100,19 @@ public class Simulateur {
         // Instanciation de la destination
         destination = new DestinationFinale();
 
-        if (!transmissionAnalogique) {
-            // Chaîne de transmission logique (Étape 1)
+        if (!transmissionAnalogique) { // Chaîne de TRANSMISSION LOGIQUE (Étape 1)
             Transmetteur<Boolean, Boolean> transmetteurLogique = new TransmetteurParfait<>();
 
             source.connecter(transmetteurLogique);
             transmetteurLogique.connecter(destination);
 
             // Ajout des sondes logiques si l'affichage est demandé (-s)
-            if (affichage) {
-                SondeLogique sondeSource = new SondeLogique("Sonde source", 100);
-                SondeLogique sondeTransmetteur = new SondeLogique("Sonde transmetteur", 100);
-                source.connecter(sondeSource);
-                transmetteurLogique.connecter(sondeTransmetteur);
-            }
-        } else {
-            // Chaîne de transmission analogique bruitée (Étape 3)
+            if (affichage) afficherSondesLogiques(transmetteurLogique);
+
+        } else { // Chaîne de TRANSMISSION ANALOGIQUE bruitée (Étape 3)
             CodeBinaire codeBinaire = getCodeBinaire();
 
             Emetteur emetteur = new Emetteur(codeBinaire);
-            
             Transmetteur<Float, Float> transmetteurAnalogique = snrpbActif
                     ? new TransmetteurBruite(snrpb, nbEch, seed)
                     : new TransmetteurParfait<>();
@@ -132,17 +125,8 @@ public class Simulateur {
             recepteur.connecter(destination);
 
             // Ajout des sondes analogiques et logiques si l'affichage est demandé (-s)
-            if (affichage) {
-                SondeLogique sondeSource = new SondeLogique("Sonde source", 100);
-                SondeAnalogique sondeEmetteur = new SondeAnalogique("Sonde émetteur");
-                SondeAnalogique sondeTransmetteur = new SondeAnalogique("Sonde canal");
-                SondeLogique sondeRecepteur = new SondeLogique("Sonde récepteur", 100);
+            if (affichage) afficherSondesAnalogiques(emetteur, transmetteurAnalogique, recepteur);
 
-                source.connecter(sondeSource);
-                emetteur.connecter(sondeEmetteur);
-                transmetteurAnalogique.connecter(sondeTransmetteur);
-                recepteur.connecter(sondeRecepteur);
-            }
             if (sauvegarder) {
                 // On connecte une destination anonyme à la sortie du canal analogique
                 // Cette destination
@@ -160,8 +144,32 @@ public class Simulateur {
                     }
                 });
             }
-
         }
+    }
+
+    /**
+     * Affiche les sondes analogiques
+     */
+    private void afficherSondesAnalogiques(Emetteur emetteur, Transmetteur<Float, Float> transmetteurAnalogique, Recepteur recepteur) {
+        SondeLogique sondeSource = new SondeLogique("Sonde source", 100);
+        SondeAnalogique sondeEmetteur = new SondeAnalogique("Sonde émetteur");
+        SondeAnalogique sondeTransmetteur = new SondeAnalogique("Sonde canal");
+        SondeLogique sondeRecepteur = new SondeLogique("Sonde récepteur", 100);
+
+        source.connecter(sondeSource);
+        emetteur.connecter(sondeEmetteur);
+        transmetteurAnalogique.connecter(sondeTransmetteur);
+        recepteur.connecter(sondeRecepteur);
+    }
+
+    /**
+     * Affiche les sondes logiques
+     */
+    private void afficherSondesLogiques(Transmetteur<Boolean, Boolean> transmetteurLogique) {
+        SondeLogique sondeSource = new SondeLogique("Sonde source", 100);
+        SondeLogique sondeTransmetteur = new SondeLogique("Sonde transmetteur", 100);
+        source.connecter(sondeSource);
+        transmetteurLogique.connecter(sondeTransmetteur);
     }
 
     /**
@@ -400,12 +408,15 @@ public class Simulateur {
         return (float) nbErreurs / infoEmise.nbElements();
     }
    
+   
+   
+   
     /** La fonction main instancie un Simulateur à l'aide des
      *  arguments paramètres et affiche le résultat de l'exécution
      *  d'une transmission.
      *  @param args les différents arguments qui serviront à l'instanciation du Simulateur.
      */
-    public static void main(String [] args) throws IOException {
+    public static void main(String [] args) {
 
     	Simulateur simulateur = null;
 
@@ -429,6 +440,6 @@ public class Simulateur {
     		System.out.println(e);
     		e.printStackTrace();
     		System.exit(-2);
-    	}
+    	}              	
     }
 }
