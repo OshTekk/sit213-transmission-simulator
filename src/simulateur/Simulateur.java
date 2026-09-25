@@ -16,7 +16,9 @@ import codesbinaires.CodeNRZT;
 import codesbinaires.CodeRZ;
 import emetteurs.Emetteur;
 import recepteurs.Recepteur;
-
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /** La classe Simulateur permet de construire et simuler une chaîne de
  * transmission composée d'une Source, d'un nombre variable de
@@ -68,7 +70,12 @@ public class Simulateur {
 
     /** le  composant Destination de la chaine de transmission */
     private Destination<Boolean> destination = null;
-   	
+
+    /** fichier dans lequel le signal de sortie est sauvegardé*/
+    private String fichierSauvegarde = "out.txt";
+
+    /** indique si le signal en sortie du transmetteur analogique doit être enregistré */
+    private boolean sauvegarder = false;
    
     /** Le constructeur de Simulateur construit une chaîne de
      * transmission composée d'une {@code Source<Boolean>}, d'une {@code Destination<Boolean>}
@@ -112,6 +119,7 @@ public class Simulateur {
             CodeBinaire codeBinaire = getCodeBinaire();
 
             Emetteur emetteur = new Emetteur(codeBinaire);
+            
             Transmetteur<Float, Float> transmetteurAnalogique = snrpbActif
                     ? new TransmetteurBruite(snrpb, nbEch, seed)
                     : new TransmetteurParfait<>();
@@ -135,6 +143,24 @@ public class Simulateur {
                 transmetteurAnalogique.connecter(sondeTransmetteur);
                 recepteur.connecter(sondeRecepteur);
             }
+            if (sauvegarder) {
+                // On connecte une destination anonyme à la sortie du canal analogique
+                // Cette destination
+                transmetteurAnalogique.connecter(new Destination<>() {
+                    @Override
+                    public void recevoir(Information<Float> information) {
+                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fichierSauvegarde))) {
+                            for (Float val : information) {
+                                writer.write(Float.toString(val));
+                                writer.newLine();
+                            }
+                        } catch (IOException e) {
+                            System.err.println("Erreur lors de la sauvegarde dans " + fichierSauvegarde + " : " + e.getMessage());
+                        }
+                    }
+                });
+            }
+
         }
     }
 
@@ -295,6 +321,15 @@ public class Simulateur {
                 }
             }
 
+            else if (args[i].equals("-save")) {
+                i++;
+                sauvegarder = true;
+                if (i >= args.length) {
+                    throw new ArgumentsException("Valeur du parametre -save manquante");
+                }
+                fichierSauvegarde = args[i].replace(" ", "_");
+            }
+
     		//TODO : ajouter ci-après le traitement des nouvelles options
 
     		else throw new ArgumentsException("Option invalide :"+ args[i]);
@@ -365,15 +400,12 @@ public class Simulateur {
         return (float) nbErreurs / infoEmise.nbElements();
     }
    
-   
-   
-   
     /** La fonction main instancie un Simulateur à l'aide des
      *  arguments paramètres et affiche le résultat de l'exécution
      *  d'une transmission.
      *  @param args les différents arguments qui serviront à l'instanciation du Simulateur.
      */
-    public static void main(String [] args) { 
+    public static void main(String [] args) throws IOException {
 
     	Simulateur simulateur = null;
 
@@ -397,6 +429,6 @@ public class Simulateur {
     		System.out.println(e);
     		e.printStackTrace();
     		System.exit(-2);
-    	}              	
+    	}
     }
 }
