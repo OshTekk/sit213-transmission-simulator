@@ -189,6 +189,4 @@ target
 README.html
 .exercism
 docs/*
-.idea/
-*.iml
 suivi.md
