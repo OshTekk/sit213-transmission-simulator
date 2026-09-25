@@ -1,3 +1,6 @@
+# Installer les dépendances avec la commandes ci-dessous
+# pip3 install -r requirements.txt
+
 numpy
 matplotlib
 scipy
