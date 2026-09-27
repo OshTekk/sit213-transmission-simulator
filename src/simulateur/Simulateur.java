@@ -10,10 +10,12 @@ import transmetteurs.TransmetteurParfait;
 import visualisations.SondeLogique;
 import visualisations.SondeAnalogique;
 import information.Information;
+import codesbinaires.AmplitudeInvalideException;
 import codesbinaires.CodeBinaire;
 import codesbinaires.CodeNRZ;
 import codesbinaires.CodeNRZT;
 import codesbinaires.CodeRZ;
+import codesbinaires.NbEchantillonInvalideException;
 import emetteurs.Emetteur;
 import recepteurs.Recepteur;
 import visualisations.SondeSauvegarder;
@@ -165,27 +167,19 @@ public class Simulateur {
      * Construit le code en ligne sélectionné dans les arguments du simulateur.
      *
      * @return code binaire configuré
-     * @throws ArgumentsException si les paramètres du code sont invalides
+     * @throws ArgumentsException si la forme d'onde ou les paramètres du code sont invalides
      */
     private CodeBinaire getCodeBinaire() throws ArgumentsException {
-        CodeBinaire codeBinaire;
         try {
-            switch (formeOnde) {
-                case "NRZ":
-                    codeBinaire = new CodeNRZ(nbEch, amplMin, amplMax);
-                    break;
-                case "NRZT":
-                    codeBinaire = new CodeNRZT(nbEch, amplMin, amplMax);
-                    break;
-                case "RZ":
-                default:
-                    codeBinaire = new CodeRZ(nbEch, amplMin, amplMax);
-                    break;
-            }
-        } catch (Exception e) {
+            return switch (formeOnde) {
+                case "NRZ" -> new CodeNRZ(nbEch, amplMin, amplMax);
+                case "NRZT" -> new CodeNRZT(nbEch, amplMin, amplMax);
+                case "RZ" -> new CodeRZ(nbEch, amplMin, amplMax);
+                default -> throw new ArgumentsException("Valeur du parametre -form invalide : " + formeOnde);
+            };
+        } catch (AmplitudeInvalideException | NbEchantillonInvalideException e) {
             throw new ArgumentsException(e.getMessage());
         }
-        return codeBinaire;
     }
 
 
