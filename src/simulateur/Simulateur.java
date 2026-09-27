@@ -109,6 +109,8 @@ public class Simulateur {
             // Ajout des sondes logiques si l'affichage est demandé (-s)
             if (affichage) afficherSondesLogiques(transmetteurLogique);
 
+            if (sauvegarder) throw new ArgumentsException("Impossible de sauvegarder une transmission logique");
+
         } else { // Chaîne de TRANSMISSION ANALOGIQUE bruitée (Étape 3)
             CodeBinaire codeBinaire = getCodeBinaire();
 

@@ -21,7 +21,7 @@ public class SondeSauvegarder extends Sonde<Float> {
         super(nom);
 
         if (fichier != null) {
-            fichier = this.fichier;
+            this.fichier = fichier;
         }
     }
 
