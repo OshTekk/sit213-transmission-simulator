@@ -18,10 +18,6 @@ import emetteurs.Emetteur;
 import recepteurs.Recepteur;
 import visualisations.SondeSauvegarder;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-
 /** La classe Simulateur permet de construire et simuler une chaîne de
  * transmission composée d'une Source, d'un nombre variable de
  * Transmetteur(s) et d'une Destination.
@@ -189,171 +185,178 @@ public class Simulateur {
     }
 
 
-    /** La méthode analyseArguments extrait d'un tableau de chaînes de
-     * caractères les différentes options de la simulation.  <br>Elle met
-     * à jour les attributs correspondants du Simulateur.
+    /**
+     * Lit les options dans leur ordre d'apparition et configure la simulation.
+     * Une option répétée remplace sa valeur précédente.
      *
-     * @param args le tableau des différents arguments.
-     * <br>
-     * <br>Les arguments autorisés sont : 
-     * <br> 
      * <dl>
-     * <dt> -mess m  </dt><dd> m (String) constitué de 7 ou plus digits à 0 | 1, le message à transmettre</dd>
-     * <dt> -mess m  </dt><dd> m (int) constitué de 1 à 6 digits, le nombre de bits du message "aléatoire" à transmettre</dd> 
-     * <dt> -s </dt><dd> pour demander l'utilisation des sondes d'affichage</dd>
-     * <dt> -seed v </dt><dd> v (int) d'initialisation pour les générateurs aléatoires</dd> 
-     * <dt> -form f </dt><dd> f (String) forme d'onde ("RZ", "NRZ", "NRZT") pour transmission analogique</dd>
-     * <dt> -nbEch ne </dt><dd> ne (int) nombre d'échantillons par bit</dd>
-     * <dt> -ampl min max </dt><dd> min max (float) amplitudes min et max</dd>
-     * <dt> -snrpb snr </dt><dd> snr (float) Rapport signal sur bruit par bit</dd>
+     * <dt>-mess m</dt><dd>Message binaire d'au moins 7 bits, ou nombre de bits aléatoires sur 1 à 6 chiffres.</dd>
+     * <dt>-s</dt><dd>Active les sondes d'affichage.</dd>
+     * <dt>-seed v</dt><dd>Fixe la semence des générateurs aléatoires.</dd>
+     * <dt>-form f</dt><dd>Sélectionne RZ, NRZ ou NRZT et active la transmission analogique.</dd>
+     * <dt>-nbEch n</dt><dd>Fixe le nombre d'échantillons par bit.</dd>
+     * <dt>-ampl min max</dt><dd>Fixe les amplitudes minimale et maximale.</dd>
+     * <dt>-snrpb snr</dt><dd>Active le canal bruité avec le rapport signal sur bruit par bit.</dd>
+     * <dt>-save fichier</dt><dd>Demande la sauvegarde du signal analogique.</dd>
      * </dl>
      *
-     * @throws ArgumentsException si un des arguments est incorrect.
-     *
-     */   
+     * @param args options de la ligne de commande
+     * @throws ArgumentsException si une option ou la configuration résultante est invalide
+     */
     private void analyseArguments(String[] args) throws ArgumentsException {
-
-    	for (int i=0; i<args.length; i++) { // traiter les arguments 1 par 1
-
-    		if (args[i].equals("-s")) affichage = true;
-
-    		else if (args[i].equals("-seed")) {
-    			i++;
-                // vérifier si une valeur est associée
-                if (i >= args.length) throw new ArgumentsException("Valeur de la graine -seed manquante");
-
-    			// traiter la valeur associee
-    			try { 
-    				seed = Integer.valueOf(args[i]);
-    			}
-    			catch (Exception e) {
-    				throw new ArgumentsException("Valeur du parametre -seed  invalide :" + args[i]);
-    			}           		
-    		}
-
-    		else if (args[i].equals("-mess")){
-    			i++;
-                // vérifier si une valeur est associée
-                if (i >= args.length) throw new ArgumentsException("Valeur du parametre -mess manquante");
-
-    			// traiter la valeur associee
-    			messageString = args[i];
-    			if (args[i].contains(",")) {
-                    throw new ArgumentsException ("Valeur du parametre -mess invalide : " + nbBitsMess);
+        for (int i = 0; i < args.length; ) {
+            switch (args[i]) {
+                case "-s" -> {
+                    affichage = true;
+                    i++;
                 }
-                else if (args[i].matches("[01]{7,}")) { // au moins 7 digits
-    				messageAleatoire = false;
-    				nbBitsMess = args[i].length();
-    			} 
-    			else if (args[i].matches("[0-9]{1,6}")) { // de 1 à 6 chiffres
-    				messageAleatoire = true;
-    				nbBitsMess = Integer.valueOf(args[i]);
-    				if (nbBitsMess < 1) 
-    					throw new ArgumentsException ("Valeur du parametre -mess invalide : " + nbBitsMess);
-    			}
-    			else throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
-    		}
-    		
-    		else if (args[i].equals("-form")) {
-    			transmissionAnalogique = true;
-    			i++;
-    			if (i >= args.length) {
-    				throw new ArgumentsException("Valeur du parametre -form manquante");
-    			}
-    			formeOnde = args[i];
-    			if (!formeOnde.matches("NRZ|NRZT|RZ")) {
-    				throw new ArgumentsException("Valeur du parametre -form invalide : " + args[i]);
-    			}
-    		}
-
-    		else if (args[i].equals("-nbEch")) {
-    			transmissionAnalogique = true;
-    			i++;
-    			if (i >= args.length) {
-    				throw new ArgumentsException("Valeur du parametre -nbEch manquante");
-    			}
-    			try {
-    				nbEch = Integer.valueOf(args[i]);
-    				if (nbEch <= 0) {
-    					throw new ArgumentsException("Valeur du parametre -nbEch invalide : " + args[i]);
-    				}
-    			} catch (Exception e) {
-    				throw new ArgumentsException("Valeur du parametre -nbEch invalide : " + args[i]);
-    			}
-    		}
-
-    		else if (args[i].equals("-ampl")) {
-    			transmissionAnalogique = true;
-    			i++;
-    			if (i >= args.length) {
-    				throw new ArgumentsException("Valeurs du parametre -ampl manquantes");
-    			}
-    			try {
-    				amplMin = Float.parseFloat(args[i]);
-    			} catch (NumberFormatException e) {
-    				throw new ArgumentsException("Valeur min du parametre -ampl invalide : " + args[i]);
-    			}
-    			i++;
-    			if (i >= args.length) {
-    				throw new ArgumentsException("Valeur max du parametre -ampl manquante");
-    			}
-    			try {
-    				amplMax = Float.parseFloat(args[i]);
-    			} catch (NumberFormatException e) {
-    				throw new ArgumentsException("Valeur max du parametre -ampl invalide : " + args[i]);
-    			}
-    		}
-
-            else if (args[i].equals("-snrpb")) {
-                transmissionAnalogique = true;
-                snrpbActif = true;
-                i++;
-                if (i >= args.length) {
-                    throw new ArgumentsException("Valeur du parametre -snrpb manquante");
+                case "-seed" -> {
+                    seed = lireEntier(lireValeurObligatoire(args, i + 1, "-seed"), "-seed");
+                    i += 2;
                 }
-                try {
-                    snrpb = Float.parseFloat(args[i]);
-                } catch (Exception e) {
-                    throw new ArgumentsException("Valeur du parametre -snrpb invalide : " + args[i]);
+                case "-mess" -> {
+                    analyserMessage(lireValeurObligatoire(args, i + 1, "-mess"));
+                    i += 2;
                 }
-            }
-
-            else if (args[i].equals("-save")) {
-                i++;
-                sauvegarder = true;
-                if (i >= args.length) {
-                    throw new ArgumentsException("Valeur du parametre -save manquante");
+                case "-form" -> {
+                    transmissionAnalogique = true;
+                    formeOnde = lireValeurObligatoire(args, i + 1, "-form");
+                    if (!formeOnde.matches("NRZ|NRZT|RZ")) {
+                        throw new ArgumentsException("Valeur du parametre -form invalide : " + formeOnde);
+                    }
+                    i += 2;
                 }
-                fichierSauvegarde = args[i].replace(" ", "_");
-            }
-
-    		//TODO : ajouter ci-après le traitement des nouvelles options
-
-    		else throw new ArgumentsException("Option invalide :"+ args[i]);
-    	}
-
-        // Verification de la coherence des contraintes d'amplitude pour la transmission analogique
-        if (transmissionAnalogique) {
-            if (amplMin >= amplMax) {
-                throw new ArgumentsException("Valeurs du parametre -ampl invalides : min doit etre strictement inferieur a max (" + amplMin + " >= " + amplMax + ")");
-            }
-            if (formeOnde.equals("RZ")) {
-                if (amplMin != 0.0f) {
-                    throw new ArgumentsException("Contrainte RZ invalide : amplMin doit etre egal a 0.0 (" + amplMin + ")");
+                case "-nbEch" -> {
+                    transmissionAnalogique = true;
+                    String valeur = lireValeurObligatoire(args, i + 1, "-nbEch");
+                    nbEch = lireEntier(valeur, "-nbEch");
+                    if (nbEch <= 0) {
+                        throw new ArgumentsException("Valeur du parametre -nbEch invalide : " + valeur);
+                    }
+                    i += 2;
                 }
-                if (amplMax < 0.0f) {
-                    throw new ArgumentsException("Contrainte RZ invalide : amplMax doit etre positif (" + amplMax + ")");
+                case "-ampl" -> {
+                    transmissionAnalogique = true;
+                    amplMin = lireReel(lireValeurObligatoire(args, i + 1, "-ampl"), "min du parametre -ampl");
+                    amplMax = lireReel(lireValeurObligatoire(args, i + 2, "-ampl"), "max du parametre -ampl");
+                    i += 3;
                 }
-            } else { // NRZ et NRZT
-                if (amplMin > 0.0f) {
-                    throw new ArgumentsException("Contrainte " + formeOnde + " invalide : amplMin doit etre negatif ou nul (" + amplMin + ")");
+                case "-snrpb" -> {
+                    transmissionAnalogique = true;
+                    snrpbActif = true;
+                    snrpb = lireReel(lireValeurObligatoire(args, i + 1, "-snrpb"), "du parametre -snrpb");
+                    i += 2;
                 }
-                if (amplMax < 0.0f) {
-                    throw new ArgumentsException("Contrainte " + formeOnde + " invalide : amplMax doit etre positif ou nul (" + amplMax + ")");
+                case "-save" -> {
+                    sauvegarder = true;
+                    fichierSauvegarde = lireValeurObligatoire(args, i + 1, "-save").replace(" ", "_");
+                    i += 2;
                 }
+                default -> throw new ArgumentsException("Option invalide :" + args[i]);
             }
         }
-      
+        validerConfigurationAnalogique();
+    }
+
+    /**
+     * Renvoie la valeur qui suit une option nécessitant un argument.
+     *
+     * @param args arguments de la ligne de commande
+     * @param position position attendue de la valeur
+     * @param option nom de l'option concernée
+     * @return valeur présente à la position demandée
+     * @throws ArgumentsException si la valeur manque
+     */
+    private static String lireValeurObligatoire(String[] args, int position, String option) throws ArgumentsException {
+        if (position >= args.length) {
+            throw new ArgumentsException("Valeur du parametre " + option + " manquante");
+        }
+        return args[position];
+    }
+
+    /**
+     * Convertit la valeur d'une option en entier.
+     *
+     * @param valeur texte à convertir
+     * @param option nom de l'option concernée
+     * @return entier lu
+     * @throws ArgumentsException si la valeur n'est pas un entier valide
+     */
+    private static int lireEntier(String valeur, String option) throws ArgumentsException {
+        try {
+            return Integer.parseInt(valeur);
+        } catch (NumberFormatException e) {
+            throw new ArgumentsException("Valeur du parametre " + option + " invalide : " + valeur);
+        }
+    }
+
+    /**
+     * Convertit la valeur d'une option en nombre réel.
+     *
+     * @param valeur texte à convertir
+     * @param description rôle de la valeur dans l'option
+     * @return nombre réel lu
+     * @throws ArgumentsException si la valeur n'est pas un nombre réel valide
+     */
+    private static float lireReel(String valeur, String description) throws ArgumentsException {
+        try {
+            return Float.parseFloat(valeur);
+        } catch (NumberFormatException e) {
+            throw new ArgumentsException("Valeur " + description + " invalide : " + valeur);
+        }
+    }
+
+    /**
+     * Interprète l'argument de {@code -mess} comme un message fixe ou une longueur aléatoire.
+     *
+     * @param valeur message binaire d'au moins 7 bits ou longueur sur 1 à 6 chiffres
+     * @throws ArgumentsException si la valeur ne respecte aucun de ces formats
+     */
+    private void analyserMessage(String valeur) throws ArgumentsException {
+        if (valeur.matches("[01]{7,}")) {
+            messageString = valeur;
+            messageAleatoire = false;
+            nbBitsMess = valeur.length();
+        } else if (valeur.matches("[0-9]{1,6}")) {
+            int longueur = Integer.parseInt(valeur);
+            if (longueur < 1) {
+                throw new ArgumentsException("Valeur du parametre -mess invalide : " + valeur);
+            }
+            messageString = valeur;
+            messageAleatoire = true;
+            nbBitsMess = longueur;
+        } else {
+            throw new ArgumentsException("Valeur du parametre -mess invalide : " + valeur);
+        }
+    }
+
+    /**
+     * Vérifie les contraintes d'amplitude de la forme d'onde analogique choisie.
+     *
+     * @throws ArgumentsException si les amplitudes sont incompatibles avec la forme choisie
+     */
+    private void validerConfigurationAnalogique() throws ArgumentsException {
+        if (!transmissionAnalogique) {
+            return;
+        }
+        if (amplMin >= amplMax) {
+            throw new ArgumentsException("Valeurs du parametre -ampl invalides : min doit etre strictement inferieur a max (" + amplMin + " >= " + amplMax + ")");
+        }
+        if (formeOnde.equals("RZ")) {
+            if (amplMin != 0.0f) {
+                throw new ArgumentsException("Contrainte RZ invalide : amplMin doit etre egal a 0.0 (" + amplMin + ")");
+            }
+            if (amplMax < 0.0f) {
+                throw new ArgumentsException("Contrainte RZ invalide : amplMax doit etre positif (" + amplMax + ")");
+            }
+        } else { // NRZ et NRZT
+            if (amplMin > 0.0f) {
+                throw new ArgumentsException("Contrainte " + formeOnde + " invalide : amplMin doit etre negatif ou nul (" + amplMin + ")");
+            }
+            if (amplMax < 0.0f) {
+                throw new ArgumentsException("Contrainte " + formeOnde + " invalide : amplMax doit etre positif ou nul (" + amplMax + ")");
+            }
+        }
     }
      
     
