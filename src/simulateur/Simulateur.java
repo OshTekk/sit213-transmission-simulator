@@ -18,6 +18,8 @@ import emetteurs.Emetteur;
 import recepteurs.Recepteur;
 import visualisations.SondeSauvegarder;
 
+import java.util.Iterator;
+
 /** La classe Simulateur permet de construire et simuler une chaîne de
  * transmission composée d'une Source, d'un nombre variable de
  * Transmetteur(s) et d'une Destination.
@@ -387,10 +389,11 @@ public class Simulateur {
         }
 
         int nbErreurs = 0;
-        int tailleMin = Math.min(infoEmise.nbElements(), infoRecue.nbElements());
+        Iterator<Boolean> bitsEmis = infoEmise.iterator();
+        Iterator<Boolean> bitsRecus = infoRecue.iterator();
 
-        for (int i = 0; i < tailleMin; i++) {
-            if (!infoEmise.iemeElement(i).equals(infoRecue.iemeElement(i))) {
+        while (bitsEmis.hasNext() && bitsRecus.hasNext()) {
+            if (!bitsEmis.next().equals(bitsRecus.next())) {
                 nbErreurs++;
             }
         }
