@@ -48,3 +48,7 @@ Le package visualisation est à présent testé.
   - Eb: énergie par bit (Joule: Watt. sec)
   - N0: densité spectrale du bruit (Watt/Hz)
 ## TP4
+- [ ] Graphiques : Amandine
+- [ ] Tests : Nathan
+- [ ] Argument : Antonin
+- [ ] TransmetteurBruité : Aymeric 
