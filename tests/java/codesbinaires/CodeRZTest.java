@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CodeRZTest extends CodeBinaireTest {
     @BeforeEach
     void setUp() {
-        nbEch = 12;
+        nbEch = 10;
         ampliMin = 0.0f;
         ampliMax = 5.0f;
         codeur = new CodeRZ(nbEch, ampliMin, ampliMax);
@@ -31,9 +31,6 @@ class CodeRZTest extends CodeBinaireTest {
         });
         assertThrows(NbEchantillonInvalideException.class, () -> {
             new CodeRZ(-3, ampliMin, ampliMax);
-        });
-        assertThrows(NbEchantillonInvalideException.class, () -> {
-            new CodeRZ(11, ampliMin, ampliMax);
         });
     }
 

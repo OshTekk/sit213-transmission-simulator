@@ -14,7 +14,7 @@ class CodeNRZTest extends CodeBinaireTest {
 
     @BeforeEach
     void setUp() {
-        nbEch = 12;
+        nbEch = 10;
         ampliMin = -5.0f;
         ampliMax = 5.0f;
         codeur = new CodeNRZ(nbEch, ampliMin, ampliMax);
