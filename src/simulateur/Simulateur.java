@@ -20,7 +20,10 @@ import emetteurs.Emetteur;
 import recepteurs.Recepteur;
 import visualisations.SondeSauvegarder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /** La classe Simulateur permet de construire et simuler une chaîne de
  * transmission composée d'une Source, d'un nombre variable de
@@ -30,7 +33,9 @@ import java.util.Iterator;
  *
  */
 public class Simulateur {
-      	
+    /** couple décalage, amplitude relative */
+    public record Trajet(int decalage, float amplitude) {}
+
     /** indique si le Simulateur utilise des sondes d'affichage */
     private boolean affichage = false;
     
@@ -66,6 +71,9 @@ public class Simulateur {
 
     /** rapport signal sur bruit par bit */
     private float snrpb = 0.0f;
+
+    /** liste des decalages temporels des multi-trajets */
+    private List<Trajet> multiTrajets = new ArrayList<>();
 
     /** le  composant Source de la chaine de transmission */
     private Source<Boolean> source = null;
@@ -249,6 +257,40 @@ public class Simulateur {
                     sauvegarder = true;
                     fichierSauvegarde = lireValeurObligatoire(args, i + 1, "-save").replace(" ", "_");
                     i += 2;
+                }
+                case "-ti" -> {
+                    transmissionAnalogique = true;
+                    multiTrajets.clear();
+                    int j = i + 1;
+                    if (j >= args.length || args[j].startsWith("-")) {
+                        throw new ArgumentsException("Valeur du parametre -ti manquante");
+                    }
+                    while (j < args.length && !args[j].startsWith("-")) {
+                        if (multiTrajets.size() >= 5) {
+                            throw new ArgumentsException("Nombre de trajets indirects superieur a 5 pour le parametre -ti");
+                        }
+                        int dt = lireEntier(args[j], "-ti (retard)");
+                        if (dt <= 0) {
+                            throw new ArgumentsException("Le retard du trajet (-ti) doit etre strictement positif : " + dt);
+                        }
+                        j++;
+                        if (j >= args.length || args[j].startsWith("-")) {
+                            throw new ArgumentsException("Attenuation manquante pour le trajet indirect de retard " + dt);
+                        }
+                        float ar = lireReel(args[j], "du parametre -ti (attenuation)");
+                        if (ar < 0.0f || ar > 1.0f) {
+                            throw new ArgumentsException("L'attenuation du trajet (-ti) doit etre comprise entre 0.0 et 1.0 : " + ar);
+                        }
+                        j++;
+                        multiTrajets.add(new Trajet(dt, ar));
+                    }
+                    while (multiTrajets.size() < 5) {
+                        multiTrajets.add(new Trajet(0, 0.0f));
+                    }
+                    if (multiTrajets.size() > 5) {
+                        throw new ArgumentsException("Erreur, il ne peut y avoir que 5 multitrajets au maximum.");
+                    }
+                    i = j;
                 }
                 default -> throw new ArgumentsException("Option invalide :" + args[i]);
             }
