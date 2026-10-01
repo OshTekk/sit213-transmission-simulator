@@ -93,7 +93,7 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
             for (Trajet trajet : this.multiTrajets) {   // Pour chaque trajet
                 if (trajet.decalage() <= i) {           // on vérifie si le décalage concerne le bit actuel
                     // auquel cas le bit retardé est calculé
-                    multiTrajets += trajet.amplitude() * this.informationRecue.iemeElement(i-trajet.decalage()) ;
+                    multiTrajets += trajet.amplitude() * this.informationRecue.iemeElement(i-trajet.decalage());
                 }
             }
 
