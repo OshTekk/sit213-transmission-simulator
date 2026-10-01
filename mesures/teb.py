@@ -29,9 +29,9 @@ BIN_DIR = os.path.join(PROJECT_ROOT, "bin")
 DATA_FILE = os.path.join(os.path.dirname(__file__), "teb_resultats.json")
 
 # Paramètres de simulation
-NB_BITS = 999_999         # Nombre de bits par simulation (ex: 100 000 pour descendre à 1e-4)
+NB_BITS = 100_000         # Nombre de bits par simulation (ex: 100 000 pour descendre à 1e-4)
 NB_ECH = 30               # Échantillons par bit
-SNR_RANGE = np.arange(5, 15, 0.01)  # Plage de SNR en dB : de -4 à 10 dB par pas de 1 dB
+SNR_RANGE = np.arange(5, 15, 0.25)  # Plage de SNR en dB : de -4 à 10 dB par pas de 1 dB
 
 # Formes d'onde à tester avec leurs arguments
 FORMES = {
