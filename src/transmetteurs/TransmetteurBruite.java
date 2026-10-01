@@ -147,15 +147,15 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
      *      Puissance du signal
      */
     private float calculPuissanceSignal() {
-        float sommeQuadratique = 0.0f;
-        float nEchantillons = (float) this.informationRecue.nbElements();
+        double sommeQuadratique = 0.0;
+        double nEchantillons = (double) this.informationRecue.nbElements();
         if (nEchantillons == 0.0f) {
             return 0.0f;
         }
         for (Float echantillon : this.informationRecue) {
-            sommeQuadratique += echantillon * echantillon;
+            sommeQuadratique += (double) echantillon * (double) echantillon;
         }
-        return sommeQuadratique / nEchantillons;
+        return (float) (sommeQuadratique / nEchantillons);
     }
 
     /**
