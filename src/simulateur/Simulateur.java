@@ -126,7 +126,7 @@ public class Simulateur {
 
             Emetteur emetteur = new Emetteur(codeBinaire);
             Transmetteur<Float, Float> transmetteurAnalogique = snrpbActif
-                    ? new TransmetteurBruite(snrpb, nbEch, seed)
+                    ? new TransmetteurBruite(snrpb, nbEch, multiTrajets, seed)
                     : new TransmetteurParfait<>();
             Recepteur recepteur = new Recepteur(codeBinaire);
 
@@ -261,41 +261,54 @@ public class Simulateur {
                 case "-ti" -> {
                     transmissionAnalogique = true;
                     multiTrajets.clear();
-                    int j = i + 1;
-                    if (j >= args.length || args[j].startsWith("-")) {
-                        throw new ArgumentsException("Valeur du parametre -ti manquante");
-                    }
-                    while (j < args.length && !args[j].startsWith("-")) {
-                        if (multiTrajets.size() >= 5) {
-                            throw new ArgumentsException("Nombre de trajets indirects superieur a 5 pour le parametre -ti");
-                        }
-                        int dt = lireEntier(args[j], "-ti (retard)");
-                        if (dt <= 0) {
-                            throw new ArgumentsException("Le retard du trajet (-ti) doit etre strictement positif : " + dt);
-                        }
-                        j++;
-                        if (j >= args.length || args[j].startsWith("-")) {
-                            throw new ArgumentsException("Attenuation manquante pour le trajet indirect de retard " + dt);
-                        }
-                        float ar = lireReel(args[j], "du parametre -ti (attenuation)");
-                        if (ar < 0.0f || ar > 1.0f) {
-                            throw new ArgumentsException("L'attenuation du trajet (-ti) doit etre comprise entre 0.0 et 1.0 : " + ar);
-                        }
-                        j++;
-                        multiTrajets.add(new Trajet(dt, ar));
-                    }
-                    while (multiTrajets.size() < 5) {
-                        multiTrajets.add(new Trajet(0, 0.0f));
-                    }
-                    if (multiTrajets.size() > 5) {
-                        throw new ArgumentsException("Erreur, il ne peut y avoir que 5 multitrajets au maximum.");
-                    }
-                    i = j;
+                    i = analyserMultiTrajets(args, i);
                 }
                 default -> throw new ArgumentsException("Option invalide :" + args[i]);
             }
         }
         validerConfigurationAnalogique();
+    }
+
+    /**
+     * Analyse les multitrajets à traiter
+     *
+     * @param args arguments de la ligne de commande
+     * @param i position actuelle
+     * @return position de la fin des multitrajets
+     * @throws ArgumentsException si la valeur manque
+     */
+    private int analyserMultiTrajets(String[] args, int i) throws ArgumentsException {
+        ++i;
+
+        if (i >= args.length || args[i].startsWith("-")) {
+            throw new ArgumentsException("Valeur du parametre -ti manquante");
+        }
+
+        while (i < args.length && !args[i].startsWith("-")) {
+            if (multiTrajets.size() >= 5) {
+                throw new ArgumentsException("Nombre de trajets indirects superieur a 5 pour le parametre -ti");
+            }
+            int dt = lireEntier(args[i], "-ti (retard)");
+            if (dt < 0) {
+                throw new ArgumentsException("Le retard du trajet (-ti) doit etre positif : " + dt);
+            }
+            i++;
+            if (i >= args.length || args[i].startsWith("-")) {
+                throw new ArgumentsException("Amplitude manquante pour le trajet indirect de retard " + dt);
+            }
+            float ar = lireReel(args[i], "du parametre -ti (attenuation)");
+            if (ar < 0.0f || ar > 1.0f) {
+                throw new ArgumentsException("L'amplitude du trajet (-ti) doit etre comprise entre 0.0 et 1.0 : " + ar);
+            }
+            i++;
+            multiTrajets.add(new Trajet(dt, ar));
+        }
+
+        if (multiTrajets.size() > 5) {
+            throw new ArgumentsException("Erreur, il ne peut y avoir que 5 multitrajets au maximum.");
+        }
+
+        return i;
     }
 
     /**

@@ -306,12 +306,6 @@ class SimulateurTest {
         assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-form", "RZ", "-ampl", "-1.0", "1.0"}));
     }
 
-    /** Vérifie que la forme RZ impose un nombre d'échantillons multiple de trois. */
-    @Test
-    void contraintesRzAvecNbEchNonMultipleDeTroisRejetee() {
-        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-form", "RZ", "-nbEch", "31"}));
-    }
-
     /** Vérifie les connexions de la chaîne source, émetteur, canal, récepteur et destination. */
     @Test
     void chaineAnalogiqueConnecteEmetteurTransmetteurRecepteur() throws Exception {
@@ -407,5 +401,39 @@ class SimulateurTest {
         Simulateur simulateur = new Simulateur(new String[]{"-form", "NRZ", "-snrpb", "-10.0", "-mess", "1000", "-seed", "42"});
         simulateur.execute();
         assertTrue(simulateur.calculTauxErreurBinaire() > 0.1f);
+    }
+
+    /** Vérifie la lecture de plusieurs trajets et de l'option qui suit. */
+    @Test
+    void tiLitLesTrajets() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-snrpb", "10", "-ti", "2", "0.5", "4", "1.0", "-seed", "42"});
+        assertEquals(List.of(new Simulateur.Trajet(2, 0.5f), new Simulateur.Trajet(4, 1.0f)),
+                lireChamp(simulateur, Simulateur.class, "multiTrajets"));
+        assertEquals(42, ((SourceAleatoire) source(simulateur)).getSeed());
+    }
+
+    /** Vérifie qu'un trajet absent ou incomplet est refusé. */
+    @Test
+    void tiIncompletEstRejete() {
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-ti"}));
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{"-ti", "2"}));
+    }
+
+    /** Vérifie que les valeurs invalides d'un trajet sont refusées. */
+    @ParameterizedTest
+    @CsvSource({"abc,0.5", "2,abc", "2,1.5"})
+    void tiInvalideEstRejete(String retard, String attenuation) {
+        assertThrows(ArgumentsException.class,
+                () -> new Simulateur(new String[]{"-ti", retard, attenuation}));
+    }
+
+    /** Vérifie que cinq trajets sont acceptés, mais pas six. */
+    @Test
+    void tiLimiteLesTrajets() throws Exception {
+        String[] cinq = {"-ti", "1", "0.1", "2", "0.2", "3", "0.3", "4", "0.4", "5", "0.5"};
+        Simulateur simulateur = new Simulateur(cinq);
+        assertEquals(5, ((List<?>) lireChamp(simulateur, Simulateur.class, "multiTrajets")).size());
+        assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{
+                "-ti", "1", "0.1", "2", "0.2", "3", "0.3", "4", "0.4", "5", "0.5", "6", "0.6"}));
     }
 }

@@ -50,5 +50,5 @@ Le package visualisation est à présent testé.
 ## TP4
 - [ ] Graphiques : Amandine
 - [ ] Tests : Nathan
-- [ ] Argument : Antonin
-- [ ] TransmetteurBruité : Aymeric 
+- [x] Argument : Antonin
+- [x] TransmetteurBruité : Aymeric 

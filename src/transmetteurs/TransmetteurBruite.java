@@ -1,8 +1,10 @@
 package transmetteurs;
 
+import java.util.List;
 import java.util.Random;
 
 import codesbinaires.NbEchantillonInvalideException;
+import simulateur.Simulateur.Trajet;
 import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
@@ -12,6 +14,7 @@ import information.InformationNonConformeException;
  */
 public class TransmetteurBruite extends Transmetteur<Float, Float> {
     private Float puissanceBruit;
+    private final List<Trajet> multiTrajets;
     private final Random random;
     private final Float snrpb;
     private final Integer nbEchParBit;
@@ -25,20 +28,21 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
      * @param semence
      *      Semence utilisée pour générer les échantillons du bruit
      */
-    public TransmetteurBruite(float snrpb, int nbEchParBit, Integer semence) {
+    public TransmetteurBruite(float snrpb, int nbEchParBit, List<Trajet> multiTrajets, Integer semence) {
         super();
         if (nbEchParBit <= 0) {
             throw new NbEchantillonInvalideException("Erreur, le nombre d'échantillon par bit doit être strictement positif.");
         }
         this.snrpb = snrpb;
         this.nbEchParBit = nbEchParBit;
+        this.multiTrajets = multiTrajets;
         this.puissanceBruit = null;
         this.informationEmise = new Information<>();
         this.random = (semence != null) ? new Random(semence) : new Random();
     }
 
-    public TransmetteurBruite(float snrpb, int nbEchParBit) {
-        this(snrpb, nbEchParBit, null);
+    public TransmetteurBruite(float snrpb, int nbEchParBit, List<Trajet> multiTrajets) {
+        this(snrpb, nbEchParBit, multiTrajets, null);
     }
 
 
@@ -55,8 +59,12 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
         // réception de l'information reçue
         this.informationRecue = information;
         this.informationEmise = new Information<>();
+
+        // création du signal à transmettre
         this.calculPuissanceBruit();
-        this.ajoutBruitGaussien();
+        this.creerInformationEmise();
+
+        // transmission du signal
         this.emettre();
     }
 
@@ -72,12 +80,27 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
     }
 
     /**
-     * Ajoute un échantillon de bruit gaussien à chaque échantillon reçu.
+     * Création d'informationEmise
      */
-    private void ajoutBruitGaussien() {
-        for (Float echantillon : this.informationRecue) {
+    private void creerInformationEmise() {
+        int i_max = this.informationRecue.nbElements(); // Évite de recalculer a chaque itération
+        for (int i=0; i < i_max ; i++) {                // Iteration sur chaque bit reçu
+            // Calcul du bruit
             float bruit = this.genereEchantillonBruit();
-            this.informationEmise.add(echantillon + bruit);
+
+            // Calcul du multitrajet
+            float multiTrajets = 0;
+            for (Trajet trajet : this.multiTrajets) {   // Pour chaque trajet
+                if (trajet.decalage() <= i) {           // on vérifie si le décalage concerne le bit actuel
+                    // auquel cas le bit retardé est calculé
+                    multiTrajets += trajet.amplitude() * this.informationRecue.iemeElement(i-trajet.decalage()) ;
+                }
+            }
+
+            // On publie le bit reçu + bruit + multitrajet
+            this.informationEmise.add(
+                    this.informationRecue.iemeElement(i) + bruit + multiTrajets
+            );
         }
     }
 
