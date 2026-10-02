@@ -9,6 +9,7 @@ import sources.SourceAleatoire;
 import transmetteurs.Transmetteur;
 import transmetteurs.TransmetteurParfait;
 import transmetteurs.TransmetteurBruite;
+import transmetteurs.Trajet;
 import emetteurs.Emetteur;
 import recepteurs.Recepteur;
 import visualisations.SondeLogique;
@@ -407,7 +408,7 @@ class SimulateurTest {
     @Test
     void tiLitLesTrajets() throws Exception {
         Simulateur simulateur = new Simulateur(new String[]{"-snrpb", "10", "-ti", "2", "0.5", "4", "1.0", "-seed", "42"});
-        assertEquals(List.of(new Simulateur.Trajet(2, 0.5f), new Simulateur.Trajet(4, 1.0f)),
+        assertEquals(List.of(new Trajet(2, 0.5f), new Trajet(4, 1.0f)),
                 lireChamp(simulateur, Simulateur.class, "multiTrajets"));
         assertEquals(42, ((SourceAleatoire) source(simulateur)).getSeed());
     }

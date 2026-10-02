@@ -1,16 +1,16 @@
 package transmetteurs;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import codesbinaires.NbEchantillonInvalideException;
-import simulateur.Simulateur.Trajet;
 import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 
 /**
- * Transmetteur introduisant un bruit gaussien à l'émission
+ * Transmetteur introduisant un bruit gaussien et/ou des multitrajets à l'émission
  */
 public class TransmetteurBruite extends Transmetteur<Float, Float> {
     private Float puissanceBruit;
@@ -20,29 +20,56 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
     private final Integer nbEchParBit;
 
     /**
-     * Constructeur du transmetteur bruité utilisant le SNR par bit
-     * @param snrpb
-     *      Rapport signal sur bruit par bit
-     * @param nbEchParBit
-     *      Nombre d'échantillon par bit
-     * @param semence
-     *      Semence utilisée pour générer les échantillons du bruit
+     * Constructeur pour rétrocompatibilité (Étape 3) sans trajets indirects ni semence.
+     *
+     * @param snrpb rapport signal sur bruit par bit
+     * @param nbEchParBit nombre d'échantillons par bit
      */
-    public TransmetteurBruite(float snrpb, int nbEchParBit, List<Trajet> multiTrajets, Integer semence) {
+    public TransmetteurBruite(float snrpb, int nbEchParBit) {
+        this(snrpb, nbEchParBit, Collections.emptyList(), null);
+    }
+
+    /**
+     * Constructeur pour rétrocompatibilité (Étape 3) avec semence et sans trajets indirects.
+     *
+     * @param snrpb rapport signal sur bruit par bit
+     * @param nbEchParBit nombre d'échantillons par bit
+     * @param semence semence pour le générateur aléatoire
+     */
+    public TransmetteurBruite(float snrpb, int nbEchParBit, Integer semence) {
+        this(snrpb, nbEchParBit, Collections.emptyList(), semence);
+    }
+
+    /**
+     * Constructeur avec multitrajets sans semence.
+     *
+     * @param snrpb rapport signal sur bruit par bit (éventuellement null si pas de bruit)
+     * @param nbEchParBit nombre d'échantillons par bit
+     * @param multiTrajets liste des trajets indirects
+     */
+    public TransmetteurBruite(Float snrpb, int nbEchParBit, List<Trajet> multiTrajets) {
+        this(snrpb, nbEchParBit, multiTrajets, null);
+    }
+
+    /**
+     * Constructeur complet du transmetteur bruité utilisant le SNR par bit et les multitrajets.
+     *
+     * @param snrpb rapport signal sur bruit par bit (éventuellement null si pas de bruit)
+     * @param nbEchParBit nombre d'échantillons par bit
+     * @param multiTrajets liste des trajets indirects
+     * @param semence semence utilisée pour générer les échantillons du bruit
+     */
+    public TransmetteurBruite(Float snrpb, int nbEchParBit, List<Trajet> multiTrajets, Integer semence) {
         super();
         if (nbEchParBit <= 0) {
             throw new NbEchantillonInvalideException("Erreur, le nombre d'échantillon par bit doit être strictement positif.");
         }
         this.snrpb = snrpb;
         this.nbEchParBit = nbEchParBit;
-        this.multiTrajets = multiTrajets;
+        this.multiTrajets = (multiTrajets != null) ? multiTrajets : Collections.emptyList();
         this.puissanceBruit = null;
         this.informationEmise = new Information<>();
         this.random = (semence != null) ? new Random(semence) : new Random();
-    }
-
-    public TransmetteurBruite(float snrpb, int nbEchParBit, List<Trajet> multiTrajets) {
-        this(snrpb, nbEchParBit, multiTrajets, null);
     }
 
 
@@ -183,5 +210,14 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
      */
     public Integer getNbEchParBit() {
         return this.nbEchParBit;
+    }
+
+    /**
+     * Retourne la liste des trajets indirects configurés.
+     *
+     * @return liste des trajets indirects
+     */
+    public List<Trajet> getMultiTrajets() {
+        return this.multiTrajets;
     }
 }

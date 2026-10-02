@@ -28,8 +28,8 @@ public class CodeRZ extends CodeBinaire {
         if (amplitudeMin != 0)
             throw new AmplitudeInvalideException("Erreur, l'amplitude minimale doit être nulle.");
 
-        if (nbEchParBit <= 0)
-            throw new NbEchantillonInvalideException("Erreur, le nombre d'échantillon par bit doit être strictement positif en CodeRZ.");
+        if (nbEchParBit < 3)
+            throw new NbEchantillonInvalideException("Erreur, le nombre d'échantillon par bit doit être au moins de 3 en CodeRZ.");
     }
 
     /**
@@ -65,6 +65,7 @@ public class CodeRZ extends CodeBinaire {
 
         Information<Boolean> infoDecodee = new Information<>();
         int tiersNbEchParBit = nbEchParBit / 3;
+        int nbEchMilieu = tiersNbEchParBit + (nbEchParBit % 3);
         float amplitudeMilieu = (amplitudeMax + amplitudeMin) / 2;
         Iterator<Float> it = information.iterator();
         while (it.hasNext()) {
@@ -72,10 +73,10 @@ public class CodeRZ extends CodeBinaire {
                 it.next();
             }
             float amplitudeMoy = 0;
-            for (int i = 0; i < (tiersNbEchParBit + nbEchParBit % 3); i++) {
+            for (int i = 0; i < nbEchMilieu; i++) {
                 amplitudeMoy += it.next();
             }
-            amplitudeMoy /= tiersNbEchParBit;
+            amplitudeMoy /= nbEchMilieu;
             for (int i = 0; i < tiersNbEchParBit; i++) {
                 it.next();
             }

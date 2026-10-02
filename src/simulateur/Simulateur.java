@@ -18,6 +18,7 @@ import codesbinaires.CodeRZ;
 import codesbinaires.NbEchantillonInvalideException;
 import emetteurs.Emetteur;
 import recepteurs.Recepteur;
+import transmetteurs.Trajet;
 import visualisations.SondeSauvegarder;
 
 import java.util.ArrayList;
@@ -33,8 +34,6 @@ import java.util.List;
  *
  */
 public class Simulateur {
-    /** couple décalage, amplitude relative */
-    public record Trajet(int decalage, float amplitude) {}
 
     /** indique si le Simulateur utilise des sondes d'affichage */
     private boolean affichage = false;
@@ -121,12 +120,12 @@ public class Simulateur {
 
             if (sauvegarder) throw new ArgumentsException("Impossible de sauvegarder une transmission logique");
 
-        } else { // Chaîne de TRANSMISSION ANALOGIQUE bruitée (Étape 3)
+        } else { // Chaîne de TRANSMISSION ANALOGIQUE
             CodeBinaire codeBinaire = getCodeBinaire();
 
             Emetteur emetteur = new Emetteur(codeBinaire);
-            Transmetteur<Float, Float> transmetteurAnalogique = snrpbActif
-                    ? new TransmetteurBruite(snrpb, nbEch, multiTrajets, seed)
+            Transmetteur<Float, Float> transmetteurAnalogique = (snrpbActif || !multiTrajets.isEmpty())
+                    ? new TransmetteurBruite(snrpbActif ? snrpb : null, nbEch, multiTrajets, seed)
                     : new TransmetteurParfait<>();
             Recepteur recepteur = new Recepteur(codeBinaire);
 

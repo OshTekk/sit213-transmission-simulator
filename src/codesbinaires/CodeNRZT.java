@@ -22,8 +22,8 @@ public class CodeNRZT extends CodeBinaire {
     public CodeNRZT(int nbEchParBit, float amplitudeMin, float amplitudeMax) {
         super(nbEchParBit, amplitudeMin, amplitudeMax);
 
-        if (nbEchParBit <= 0)
-            throw new NbEchantillonInvalideException("Erreur, le nombre d'échantillon par bit doit être strictement positif.");
+        if (nbEchParBit < 3)
+            throw new NbEchantillonInvalideException("Erreur, le nombre d'échantillon par bit doit être au moins de 3 en CodeNRZT.");
 
         if (amplitudeMax < 0)
             throw new AmplitudeInvalideException("Erreur, l'amplitude maximale doit être positive.");
@@ -84,6 +84,7 @@ public class CodeNRZT extends CodeBinaire {
 
         Information<Boolean> infoDecodee = new Information<>();
         int tiersNbEchParBit = nbEchParBit / 3;
+        int nbEchMilieu = tiersNbEchParBit + (nbEchParBit % 3);
         float amplitudeMilieu = (amplitudeMax + amplitudeMin) / 2.0f;
         float amplitudeMoy;
         Iterator<Float> it = information.iterator();
@@ -92,10 +93,10 @@ public class CodeNRZT extends CodeBinaire {
                 it.next();
             }
             amplitudeMoy = 0.0f;
-            for (int i = 0; i < (tiersNbEchParBit + nbEchParBit % 3); i++) {
+            for (int i = 0; i < nbEchMilieu; i++) {
                 amplitudeMoy += it.next();
             }
-            amplitudeMoy /= tiersNbEchParBit;
+            amplitudeMoy /= nbEchMilieu;
             infoDecodee.add(amplitudeMoy > amplitudeMilieu);
             for (int i = 0; i < tiersNbEchParBit; i++) {
                 it.next();
