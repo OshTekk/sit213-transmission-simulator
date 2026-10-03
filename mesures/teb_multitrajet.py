@@ -58,9 +58,10 @@ CONFIG_FORMES = {
     },
 }
 
+# Echantillonnage d'un bit
 # 90 > valeur par défaut 30 et divisible par 3.
 # Une période de bit correspond donc ici à 90 échantillons.
-NB_ECH = 50
+NB_ECH_BIT = 100
 
 # Nombre de bits utilisés pour estimer le TEB.
 NB_BITS = 1_000
@@ -83,16 +84,19 @@ SEED = 12345
 #   retards : 0, 3, 6, ..., 90  -> 31 valeurs
 #   alpha   : 0, 0.05, ..., 1   -> 21 valeurs
 # donc 651 simulations par forme d'onde.
-PAS_RETARD = 5
-PAS_ALPHA = 0.05
 
-RETARDS = np.arange(0, NB_ECH + 1, PAS_RETARD)
+# Valeur max du décalage en échantillons
+MAX_ECH_RETARD = 2 * NB_ECH_BIT
+PAS_RETARD = 1
+PAS_ALPHA = 0.01
+
+RETARDS = np.arange(0, MAX_ECH_RETARD + 1, PAS_RETARD)
 ALPHAS = np.round(
     np.arange(0.0, 1.0 + PAS_ALPHA / 2.0, PAS_ALPHA),
     10
 )
 
-MAX_WORKERS = 6
+MAX_WORKERS = 12
 
 
 # ==============================================================================
@@ -124,7 +128,7 @@ def construire_commande(forme, retard, alpha):
     return [
         "java", "-cp", BIN_DIR, "simulateur.Simulateur",
         "-mess", str(NB_BITS),
-        "-nbEch", str(NB_ECH),
+        "-nbEch", str(NB_ECH_BIT),
         "-form", forme,
         "-ampl", str(config["ampl_min"]), str(config["ampl_max"]),
         "-snrpb", str(SNR_DB),
@@ -215,8 +219,8 @@ def calculer_carte(forme):
     )
     print(f"[INFO] Nombre de simulations : {total}")
     print(
-        f"[INFO] Retard : 0 à {NB_ECH} échantillons "
-        f"(une période de bit), pas={PAS_RETARD}"
+        f"[INFO] Retard : 0 à {MAX_ECH_RETARD} échantillons "
+        f"({MAX_ECH_RETARD / NB_ECH_BIT:g} T), pas={PAS_RETARD}"
     )
     print(
         f"[INFO] Amplitude relative : 0.00 à 1.00, "
@@ -285,10 +289,10 @@ def sauvegarder_csv(forme, tebs):
             for i_retard, retard in enumerate(RETARDS):
                 writer.writerow([
                     forme,
-                    NB_ECH,
+                    NB_ECH_BIT,
                     SNR_DB,
                     int(retard),
-                    retard / NB_ECH,
+                    retard / NB_ECH_BIT,
                     f"{alpha:.4f}",
                     tebs[i_alpha, i_retard],
                     ])
@@ -332,25 +336,29 @@ def tracer_carte(forme, tebs):
 
     ax.set_title(
         f"TEB en fonction du retard et de l'amplitude du trajet indirect\n"
-        f"{forme} — {NB_ECH} échantillons/bit — "
-        f"retard max = 1 période — SNR = {SNR_DB} dB"
+        f"{forme} — {NB_ECH_BIT} échantillons/bit — "
+        f"retard max = {MAX_ECH_RETARD / NB_ECH_BIT:g} T — SNR = {SNR_DB} dB"
     )
 
-    # Repères en fractions de période.
-    ticks = [
-        0,
-        NB_ECH / 4,
-        NB_ECH / 2,
-        3 * NB_ECH / 4,
-        NB_ECH,
-        ]
-    labels = [
-        "0",
-        f"{NB_ECH / 4:g}\n(T/4)",
-        f"{NB_ECH / 2:g}\n(T/2)",
-        f"{3 * NB_ECH / 4:g}\n(3T/4)",
-        f"{NB_ECH}\n(T)",
-    ]
+    # Fractions de la première période, puis chaque période jusqu'au retard max.
+    ticks = [0]
+    labels = ["0"]
+    for fraction, notation in ((1 / 4, "T/4"), (1 / 2, "T/2"), (3 / 4, "3T/4")):
+        retard = NB_ECH_BIT * fraction
+        if retard <= MAX_ECH_RETARD:
+            ticks.append(retard)
+            labels.append(f"{retard:g}\n({notation})")
+
+    for periode in range(1, MAX_ECH_RETARD // NB_ECH_BIT + 1):
+        retard = periode * NB_ECH_BIT
+        ticks.append(retard)
+        labels.append(f"{retard:g}\n({'T' if periode == 1 else f'{periode}T'})")
+
+    if MAX_ECH_RETARD % NB_ECH_BIT:
+        ticks.append(MAX_ECH_RETARD)
+        labels.append(
+            f"{MAX_ECH_RETARD:g}\n({MAX_ECH_RETARD / NB_ECH_BIT:g}T)"
+        )
 
     ax.set_xticks(ticks)
     ax.set_xticklabels(labels)
