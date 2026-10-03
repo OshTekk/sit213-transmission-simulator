@@ -34,4 +34,14 @@ class CodeRZTest extends CodeBinaireTest {
         });
     }
 
+    /** Vérifie le rejet des nombres d'échantillons par bit strictement inférieurs à 3. */
+    @DisplayName("Test de rejet si nbEchParBit < 3")
+    @Test
+    void testNbEchantillonInferieurATrois() {
+        assertThrows(NbEchantillonInvalideException.class, () -> new CodeRZ(0, ampliMin, ampliMax));
+        assertThrows(NbEchantillonInvalideException.class, () -> new CodeRZ(1, ampliMin, ampliMax));
+        assertThrows(NbEchantillonInvalideException.class, () -> new CodeRZ(2, ampliMin, ampliMax));
+        assertDoesNotThrow(() -> new CodeRZ(3, ampliMin, ampliMax));
+    }
+
 }

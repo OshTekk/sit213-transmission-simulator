@@ -49,6 +49,6 @@ Le package visualisation est à présent testé.
   - N0: densité spectrale du bruit (Watt/Hz)
 ## TP4
 - [ ] Graphiques : Amandine
-- [ ] Tests : Nathan
+- [x] Tests : Nathan
 - [x] Argument : Antonin
 - [x] TransmetteurBruité : Aymeric 

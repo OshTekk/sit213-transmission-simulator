@@ -3,6 +3,7 @@ package transmetteurs;
 import destinations.Destination;
 import information.Information;
 import information.InformationNonConformeException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -318,6 +319,99 @@ class TransmetteurBruiteTest {
         for (float valeur : transmetteur.getInformationEmise()) {
             assertTrue(Float.isNaN(valeur));
         }
+    }
+
+    /** Vérifie qu'un trajet indirect sans bruit applique le retard et l'atténuation attendus. */
+    @Test
+    @DisplayName("Test d'un trajet indirect sans bruit")
+    void recevoirUnTrajetSansBruitAppliqueRetardEtAttenuation() throws Exception {
+        List<Trajet> trajets = List.of(new Trajet(2, 0.5f));
+        TransmetteurBruite transmetteur = new TransmetteurBruite(null, NBECHPARBIT_COMMUN, trajets, null);
+        Information<Float> signal = new Information<>(new Float[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f});
+
+        transmetteur.recevoir(signal);
+
+        Information<Float> emission = transmetteur.getInformationEmise();
+        assertEquals(5, emission.nbElements());
+        assertEquals(1.0f, emission.iemeElement(0), 1e-6f); // pas de contribution pour i < 2
+        assertEquals(2.0f, emission.iemeElement(1), 1e-6f);
+        assertEquals(3.0f + 0.5f * 1.0f, emission.iemeElement(2), 1e-6f); // 3.5
+        assertEquals(4.0f + 0.5f * 2.0f, emission.iemeElement(3), 1e-6f); // 5.0
+        assertEquals(5.0f + 0.5f * 3.0f, emission.iemeElement(4), 1e-6f); // 6.5
+    }
+
+    /** Vérifie que plusieurs trajets indirects superposent correctement leurs contributions au signal direct. */
+    @Test
+    @DisplayName("Test de plusieurs trajets indirects")
+    void recevoirPlusieursTrajetsSuperposeLesContributions() throws Exception {
+        List<Trajet> trajets = List.of(new Trajet(1, 0.5f), new Trajet(2, 0.25f));
+        TransmetteurBruite transmetteur = new TransmetteurBruite(null, NBECHPARBIT_COMMUN, trajets, null);
+        Information<Float> signal = new Information<>(new Float[]{2.0f, 4.0f, 6.0f, 8.0f});
+
+        transmetteur.recevoir(signal);
+
+        Information<Float> emission = transmetteur.getInformationEmise();
+        assertEquals(4, emission.nbElements());
+        assertEquals(2.0f, emission.iemeElement(0), 1e-6f);
+        assertEquals(4.0f + 0.5f * 2.0f, emission.iemeElement(1), 1e-6f); // 5.0
+        assertEquals(6.0f + 0.5f * 4.0f + 0.25f * 2.0f, emission.iemeElement(2), 1e-6f); // 8.5
+        assertEquals(8.0f + 0.5f * 6.0f + 0.25f * 4.0f, emission.iemeElement(3), 1e-6f); // 12.0
+    }
+
+    /** Vérifie qu'un trajet d'atténuation nulle ne modifie pas le signal. */
+    @Test
+    @DisplayName("Test d'un trajet avec atténuation nulle")
+    void recevoirTrajetAttenuationNulleNeModifiePasSignal() throws Exception {
+        List<Trajet> trajets = List.of(new Trajet(1, 0.0f));
+        TransmetteurBruite transmetteur = new TransmetteurBruite(null, NBECHPARBIT_COMMUN, trajets, null);
+        Information<Float> signal = new Information<>(new Float[]{1.0f, -2.0f, 3.5f});
+
+        transmetteur.recevoir(signal);
+
+        assertEquals(signal, transmetteur.getInformationEmise());
+    }
+
+    /** Vérifie qu'un retard supérieur à la durée du signal n'impacte pas l'émission. */
+    @Test
+    @DisplayName("Test d'un trajet avec retard supérieur à la taille du signal")
+    void recevoirTrajetRetardSuperieurATailleSignalNeModifiePasSignal() throws Exception {
+        List<Trajet> trajets = List.of(new Trajet(10, 0.8f));
+        TransmetteurBruite transmetteur = new TransmetteurBruite(null, NBECHPARBIT_COMMUN, trajets, null);
+        Information<Float> signal = new Information<>(new Float[]{1.0f, 2.0f, 3.0f});
+
+        transmetteur.recevoir(signal);
+
+        assertEquals(signal, transmetteur.getInformationEmise());
+    }
+
+    /** Vérifie que le bruit gaussien et les trajets indirects s'additionnent de façon découplée avec une même graine. */
+    @Test
+    @DisplayName("Test combinant multitrajets et bruit gaussien")
+    void recevoirTrajetsEtBruitCombineLesDeux() throws Exception {
+        List<Trajet> trajets = List.of(new Trajet(1, 0.5f));
+        TransmetteurBruite sansTrajets = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, MULTI_TRAJET_NUL, SEMENCE_COMMUNE);
+        TransmetteurBruite avecTrajets = new TransmetteurBruite(10f, NBECHPARBIT_COMMUN, trajets, SEMENCE_COMMUNE);
+        Information<Float> signal = new Information<>(new Float[]{2.0f, 4.0f, 6.0f});
+
+        sansTrajets.recevoir(signal);
+        avecTrajets.recevoir(signal);
+
+        Information<Float> sortieSans = sansTrajets.getInformationEmise();
+        Information<Float> sortieAvec = avecTrajets.getInformationEmise();
+
+        // Le premier échantillon (i=0) ne subit aucun retard (dt=1), la différence doit être 0
+        assertEquals(0.0f, sortieAvec.iemeElement(0) - sortieSans.iemeElement(0), 1e-6f);
+        // Pour les suivants, la différence correspond exactement à l'écho atténué
+        assertEquals(0.5f * 2.0f, sortieAvec.iemeElement(1) - sortieSans.iemeElement(1), 1e-6f);
+        assertEquals(0.5f * 4.0f, sortieAvec.iemeElement(2) - sortieSans.iemeElement(2), 1e-6f);
+    }
+
+    /** Vérifie la tolérance à une liste de trajets nulle sans lever d'exception. */
+    @Test
+    @DisplayName("Test de l'initialisation des multitrajets dans le constructeur")
+    void constructeurInitialiseEtSecuriseMultiTrajets() {
+        assertDoesNotThrow(() -> new TransmetteurBruite(10f, 30, List.of(new Trajet(2, 0.5f)), null));
+        assertDoesNotThrow(() -> new TransmetteurBruite(10f, 30, null, null));
     }
 
     /** Destination qui mémorise la dernière information et compte les réceptions. */

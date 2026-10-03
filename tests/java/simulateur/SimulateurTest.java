@@ -14,6 +14,7 @@ import emetteurs.Emetteur;
 import recepteurs.Recepteur;
 import visualisations.SondeLogique;
 import visualisations.SondeAnalogique;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -436,5 +437,47 @@ class SimulateurTest {
         assertEquals(5, ((List<?>) lireChamp(simulateur, Simulateur.class, "multiTrajets")).size());
         assertThrows(ArgumentsException.class, () -> new Simulateur(new String[]{
                 "-ti", "1", "0.1", "2", "0.2", "3", "0.3", "4", "0.4", "5", "0.5", "6", "0.6"}));
+    }
+
+    /** Vérifie que l'option -ti seule (sans -snrpb) active bien le TransmetteurBruite sans bruit. */
+    @Test
+    @DisplayName("Test de la connexion du canal avec l'option -ti seule")
+    void tiSeulConnecteTransmetteurBruiteSansBruit() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-ti", "2", "0.5"});
+        Emetteur emetteur = (Emetteur) ((List<?>) lireChamp(source(simulateur), Source.class, "destinationsConnectees")).get(0);
+        List<?> sortiesEmetteur = (List<?>) lireChamp(emetteur, Transmetteur.class, "destinationsConnectees");
+        assertEquals(1, sortiesEmetteur.size());
+        assertInstanceOf(TransmetteurBruite.class, sortiesEmetteur.get(0));
+        TransmetteurBruite canal = (TransmetteurBruite) sortiesEmetteur.get(0);
+        assertNull(lireChamp(canal, TransmetteurBruite.class, "snrpb"), "Le bruit ne doit pas être activé si -snrpb est absent");
+        assertEquals(List.of(new Trajet(2, 0.5f)), lireChamp(canal, TransmetteurBruite.class, "multiTrajets"));
+    }
+
+    /** Vérifie l'exécution complète d'une simulation avec -ti seul sans générer d'exception. */
+    @Test
+    @DisplayName("Test d'exécution avec l'option -ti seule")
+    void executeAvecTiSeulTransmetSansErreur() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-mess", "0101010101", "-ti", "1", "0.1"});
+        assertDoesNotThrow(simulateur::execute);
+        assertEquals(0.0f, simulateur.calculTauxErreurBinaire(), 1e-6f);
+    }
+
+    /** Vérifie l'exécution complète d'une simulation combinant trajets indirects et bruit gaussien. */
+    @Test
+    @DisplayName("Test d'exécution combinant -ti et -snrpb")
+    void executeAvecTiEtSnrpbCombine() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-mess", "1000", "-snrpb", "20", "-ti", "2", "0.2", "-seed", "42"});
+        assertDoesNotThrow(simulateur::execute);
+        assertNotNull(destination(simulateur).getInformationRecue());
+    }
+
+    /** Vérifie le calcul du TEB en présence d'interférences sévères de multitrajets. */
+    @Test
+    @DisplayName("Test d'exécution avec multitrajets sévères")
+    void executeAvecTiSevereCalculeTeb() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-mess", "01010101010101010101", "-nbEch", "30", "-ti", "15", "1.0"});
+        assertDoesNotThrow(simulateur::execute);
+        float teb = simulateur.calculTauxErreurBinaire();
+        assertTrue(teb >= 0.0f && teb <= 1.0f);
     }
 }
