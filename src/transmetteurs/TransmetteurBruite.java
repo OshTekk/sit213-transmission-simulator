@@ -18,16 +18,6 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
     private final Random random;
     private final Float snrpb;
     private final Integer nbEchParBit;
-    /**
-     * Constructeur avec multitrajets sans semence.
-     *
-     * @param snrpb rapport signal sur bruit par bit (éventuellement null si pas de bruit)
-     * @param nbEchParBit nombre d'échantillons par bit
-     * @param multiTrajets liste des trajets indirects
-     */
-    public TransmetteurBruite(Float snrpb, int nbEchParBit, List<Trajet> multiTrajets) {
-        this(snrpb, nbEchParBit, multiTrajets, null);
-    }
 
     /**
      * Constructeur complet du transmetteur bruité utilisant le SNR par bit et les multitrajets.
@@ -161,41 +151,5 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
             sommeQuadratique += (double) echantillon * (double) echantillon;
         }
         return (float) (sommeQuadratique / nEchantillons);
-    }
-
-    /**
-     * Retourne la puissance du bruit calculée ou configurée.
-     *
-     * @return puissance du bruit
-     */
-    public Float getPuissanceBruit() {
-        return this.puissanceBruit;
-    }
-
-    /**
-     * Retourne le rapport signal sur bruit par bit configuré.
-     *
-     * @return rapport signal sur bruit par bit (en dB)
-     */
-    public Float getSnrpb() {
-        return this.snrpb;
-    }
-
-    /**
-     * Retourne le nombre d'échantillons par bit configuré.
-     *
-     * @return nombre d'échantillons par bit
-     */
-    public Integer getNbEchParBit() {
-        return this.nbEchParBit;
-    }
-
-    /**
-     * Retourne la liste des trajets indirects configurés.
-     *
-     * @return liste des trajets indirects
-     */
-    public List<Trajet> getMultiTrajets() {
-        return this.multiTrajets;
     }
 }
