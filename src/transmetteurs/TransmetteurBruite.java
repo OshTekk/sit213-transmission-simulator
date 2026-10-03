@@ -18,28 +18,6 @@ public class TransmetteurBruite extends Transmetteur<Float, Float> {
     private final Random random;
     private final Float snrpb;
     private final Integer nbEchParBit;
-
-    /**
-     * Constructeur pour rétrocompatibilité (Étape 3) sans trajets indirects ni semence.
-     *
-     * @param snrpb rapport signal sur bruit par bit
-     * @param nbEchParBit nombre d'échantillons par bit
-     */
-    public TransmetteurBruite(float snrpb, int nbEchParBit) {
-        this(snrpb, nbEchParBit, Collections.emptyList(), null);
-    }
-
-    /**
-     * Constructeur pour rétrocompatibilité (Étape 3) avec semence et sans trajets indirects.
-     *
-     * @param snrpb rapport signal sur bruit par bit
-     * @param nbEchParBit nombre d'échantillons par bit
-     * @param semence semence pour le générateur aléatoire
-     */
-    public TransmetteurBruite(float snrpb, int nbEchParBit, Integer semence) {
-        this(snrpb, nbEchParBit, Collections.emptyList(), semence);
-    }
-
     /**
      * Constructeur avec multitrajets sans semence.
      *
