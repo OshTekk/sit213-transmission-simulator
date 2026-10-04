@@ -22,11 +22,7 @@ public  class Information <T>  implements Iterable <T> {
      * @param content le tableau d'éléments pour initialiser l'information construite
      */
     public Information(T [] content) {
-        this.content = new ArrayList<>();
-
-        for (int i = 0; i < content.length; i++) {
-            this.content.add(content[i]);
-        }
+        this.content = new ArrayList<>(Arrays.asList(content));
     }
    
     /**
