@@ -6,15 +6,15 @@ import java.util.*;
  *  
  * @author prou
  */	
-public  class Information <T>  implements Iterable <T> {
+public  class Information<T>  implements Iterable<T> {
    
-    private ArrayList <T> content;
+    private ArrayList<T> content;
    
     /**
      * pour construire une information vide
      */
     public Information() {
-	this.content = new ArrayList<T> ();
+	    this.content = new ArrayList<T> ();
     }
    
     /**
@@ -30,7 +30,7 @@ public  class Information <T>  implements Iterable <T> {
      * @return le nombre d'éléments de l'information
      */
     public int nbElements() {
-	return this.content.size();
+	    return this.content.size();
     }
    
     /**
@@ -39,7 +39,7 @@ public  class Information <T>  implements Iterable <T> {
      * @return le ieme élément de l'information
      */
     public T iemeElement(int i) {
-	return this.content.get(i);
+	    return this.content.get(i);
     }
    
     /**
@@ -48,7 +48,7 @@ public  class Information <T>  implements Iterable <T> {
      * @param v la nouvelle ieme information
      */ 
     public void setIemeElement(int i, T v) {
-	this.content.set(i, v);
+	    this.content.set(i, v);
     }
    
     /**
@@ -56,7 +56,7 @@ public  class Information <T>  implements Iterable <T> {
      * @param valeur  l'élément à rajouter
      */
     public void add(T valeur) {
-	this.content.add(valeur);
+	    this.content.add(valeur);
     }
    
    
@@ -95,7 +95,7 @@ public  class Information <T>  implements Iterable <T> {
     /**
      * pour utilisation du "for each" 
      */
-    public Iterator <T> iterator() {
+    public Iterator<T> iterator() {
 	return content.iterator();
     }
 }
