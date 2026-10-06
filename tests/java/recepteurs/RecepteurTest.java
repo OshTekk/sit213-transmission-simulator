@@ -7,6 +7,7 @@ import information.Information;
 import information.InformationNonConformeException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import transmetteurs.Recepteur;
 
 import static org.junit.jupiter.api.Assertions.*;
 

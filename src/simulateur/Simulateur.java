@@ -16,13 +16,12 @@ import codesbinaires.CodeNRZ;
 import codesbinaires.CodeNRZT;
 import codesbinaires.CodeRZ;
 import codesbinaires.NbEchantillonInvalideException;
-import emetteurs.Emetteur;
-import recepteurs.Recepteur;
+import transmetteurs.Emetteur;
+import transmetteurs.Recepteur;
 import transmetteurs.Trajet;
 import visualisations.SondeSauvegarder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 

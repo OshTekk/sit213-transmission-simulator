@@ -3,11 +3,11 @@ package emetteurs;
 import codesbinaires.CodeBinaire;
 import codesbinaires.CodeNRZ;
 import destinations.Destination;
-import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import transmetteurs.Emetteur;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,10 +1,9 @@
-package emetteurs;
+package transmetteurs;
 
 import codesbinaires.CodeBinaire;
 import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
-import transmetteurs.Transmetteur;
 
 /**
  * Composant émetteur qui convertit une information logique (bits)

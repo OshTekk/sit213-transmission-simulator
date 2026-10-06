@@ -1,10 +1,9 @@
-package recepteurs;
+package transmetteurs;
 
 import codesbinaires.CodeBinaire;
 import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
-import transmetteurs.Transmetteur;
 
 /**
  * Composant récepteur qui convertit une information analogique
