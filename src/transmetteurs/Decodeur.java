@@ -6,12 +6,32 @@ import information.InformationNonConformeException;
 
 import java.util.Iterator;
 
+/**
+ * Décode les bits logiques reçus du canal en appliquant la règle de distance
+ * de Hamming minimale sur chaque triplet de bits.
+ *
+ * <p>Les triplets proches de {@code 010} (avec au plus une erreur) sont décodés
+ * en {@code 0}, et ceux proches de {@code 101} sont décodés en {@code 1}.</p>
+ *
+ * @author Antonin Pons
+ * @version 1.0
+ */
 public class Decodeur extends Transmetteur<Boolean, Boolean> {
+    /**
+     * Construit un décodeur avec une information émise initialement vide.
+     */
     public Decodeur() {
         super();
         this.informationEmise = new Information<>();
     }
 
+    /**
+     * Reçoit une information codée sous forme de triplets, décode chaque triplet
+     * et émet l'information décodée vers toutes les destinations connectées.
+     *
+     * @param information information codée reçue (doit être un multiple de 3)
+     * @throws InformationNonConformeException si l'information est nulle ou si sa taille n'est pas un multiple de 3
+     */
     @Override
     public void recevoir(Information<Boolean> information) throws InformationNonConformeException {
         if (information == null) {

@@ -10,9 +10,11 @@ import information.InformationNonConformeException;
  * {@code 1 -> 101}. Ces triplets permettent au décodeur de corriger
  * une erreur portant sur un seul bit par triplet.
  *
- * <p>Les triplets produits lors de chaque réception sont ajoutés à
- * l'information émise par ce codeur. L'envoi aux destinations connectées
- * s'effectue lors de l'appel à {@link #emettre()}.</p>
+ * <p>Les triplets produits lors de chaque réception sont transmis
+ * automatiquement aux destinations connectées.</p>
+ *
+ * @author Aymeric Schaeffer
+ * @version 1.0
  */
 public class Codeur extends Transmetteur<Boolean, Boolean> {
     /**
@@ -24,17 +26,21 @@ public class Codeur extends Transmetteur<Boolean, Boolean> {
     }
 
     /**
-     * Mémorise l'information reçue et ajoute son codage à l'information émise.
-     * Les bits déjà codés sont conservés.
+     * Mémorise l'information reçue, encode chaque bit sous forme de triplet
+     * et émet l'information codée vers toutes les destinations connectées.
      *
      * @param information les bits à coder
-     * @throws InformationNonConformeException déclarée par l'interface des
-     *         destinations ; cette implémentation ne la déclenche pas directement
+     * @throws InformationNonConformeException si l'information reçue est nulle ou invalide
      */
     @Override
     public void recevoir(Information<Boolean> information) throws InformationNonConformeException {
+        if (information == null) {
+            throw new InformationNonConformeException("L'information reçue ne peut pas être nulle.");
+        }
         this.informationRecue = information;
+        this.informationEmise = new Information<>();
         encoder();
+        this.emettre();
     }
 
     /**
