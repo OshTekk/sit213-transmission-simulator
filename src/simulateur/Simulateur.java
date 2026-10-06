@@ -20,6 +20,8 @@ import transmetteurs.Emetteur;
 import transmetteurs.Recepteur;
 import transmetteurs.Trajet;
 import visualisations.SondeSauvegarder;
+import transmetteurs.Codeur;
+import transmetteurs.Decodeur;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,6 +53,9 @@ public class Simulateur {
 
     /** indique si le Simulateur utilise une transmission analogique (par défaut false = logique) */
     private boolean transmissionAnalogique = false;
+
+    /** Indique si le codage de canal est activé. */
+    private boolean codageCanal = false;
 
     /** la forme d'onde utilisée pour la transmission analogique ("RZ", "NRZ", "NRZT") */
     private String formeOnde = "RZ";
@@ -111,8 +116,27 @@ public class Simulateur {
         if (!transmissionAnalogique) { // Chaîne de TRANSMISSION LOGIQUE (Étape 1)
             Transmetteur<Boolean, Boolean> transmetteurLogique = new TransmetteurParfait<>();
 
-            source.connecter(transmetteurLogique);
-            transmetteurLogique.connecter(destination);
+            if (codageCanal) {
+                Codeur codeur = new Codeur();
+                Decodeur decodeur = new Decodeur();
+
+                source.connecter(codeur);
+                codeur.connecter(transmetteurLogique);
+                transmetteurLogique.connecter(decodeur);
+                decodeur.connecter(destination);
+
+                if (affichage) {
+                    codeur.connecter(
+                            new SondeLogique("Sonde après encodage", 100)
+                    );
+                    decodeur.connecter(
+                            new SondeLogique("Sonde après décodage", 100)
+                    );
+                }
+            } else {
+                source.connecter(transmetteurLogique);
+                transmetteurLogique.connecter(destination);
+            }
 
             // Ajout des sondes logiques si l'affichage est demandé (-s)
             if (affichage) afficherSondesLogiques(transmetteurLogique);
@@ -129,10 +153,31 @@ public class Simulateur {
             Recepteur recepteur = new Recepteur(codeBinaire);
 
             // Connexion de la chaîne analogique
-            source.connecter(emetteur);
-            emetteur.connecter(transmetteurAnalogique);
-            transmetteurAnalogique.connecter(recepteur);
-            recepteur.connecter(destination);
+            if (codageCanal) {
+                Codeur codeur = new Codeur();
+                Decodeur decodeur = new Decodeur();
+
+                source.connecter(codeur);
+                codeur.connecter(emetteur);
+                emetteur.connecter(transmetteurAnalogique);
+                transmetteurAnalogique.connecter(recepteur);
+                recepteur.connecter(decodeur);
+                decodeur.connecter(destination);
+
+                if (affichage) {
+                    codeur.connecter(
+                            new SondeLogique("Sonde après encodage", 100)
+                    );
+                    decodeur.connecter(
+                            new SondeLogique("Sonde après décodage", 100)
+                    );
+                }
+            } else {
+                source.connecter(emetteur);
+                emetteur.connecter(transmetteurAnalogique);
+                transmetteurAnalogique.connecter(recepteur);
+                recepteur.connecter(destination);
+            }
 
             // Ajout des sondes analogiques et logiques si l'affichage est demandé (-s)
             if (affichage) afficherSondesAnalogiques(emetteur, transmetteurAnalogique, recepteur);
@@ -260,6 +305,10 @@ public class Simulateur {
                     transmissionAnalogique = true;
                     multiTrajets.clear();
                     i = analyserMultiTrajets(args, i);
+                }
+                case "-codeur" -> {
+                    codageCanal = true;
+                    i++;
                 }
                 default -> throw new ArgumentsException("Option invalide :" + args[i]);
             }
