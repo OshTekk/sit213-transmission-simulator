@@ -53,7 +53,8 @@ Le package visualisation est à présent testé.
 - [x] Argument : Antonin
 - [x] TransmetteurBruité : Aymeric
 ## TP5
-- [ ] Encodeur : Aymeric
-- [ ] Décodeur : Antonin
+- [x] Encodeur : Aymeric
+- [x] Décodeur : Antonin
 - [ ] Simulateur : Simulateur + Comparateur TEB
 - [ ] Tests : Nathan
+- [ ] Corriger echantillons : Antonin
