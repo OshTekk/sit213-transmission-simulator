@@ -1,17 +1,21 @@
 package destinations;
 
 import information.Information;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DestinationFinaleTest {
-    /** Vérifie qu'aucune information n'est reçue avant la première transmission. */
-    @Test void constructeurInitialiseLaReceptionANull() {
+
+    @Test
+    @DisplayName("Initialisation sans information reçue")
+    void testEtatInitial() {
         assertNull(new DestinationFinale().getInformationRecue());
     }
 
-    /** Vérifie que la destination conserve la dernière information reçue. */
-    @Test void memoriseLeDernierMessage() throws Exception {
+    @Test
+    @DisplayName("Mémorisation de la dernière information reçue")
+    void testMemorisationMessage() throws Exception {
         DestinationFinale destination = new DestinationFinale();
         Information<Boolean> premier = new Information<>(new Boolean[]{true, false});
         Information<Boolean> second = new Information<>(new Boolean[]{false});
@@ -21,16 +25,18 @@ class DestinationFinaleTest {
         assertEquals(second, destination.getInformationRecue());
     }
 
-    /** Vérifie qu'une information vide peut remplacer le message reçu. */
-    @Test void accepteUneInformationVide() throws Exception {
+    @Test
+    @DisplayName("Réception d'une information vide")
+    void testInformationVide() throws Exception {
         DestinationFinale destination = new DestinationFinale();
         destination.recevoir(new Information<>());
         assertNotNull(destination.getInformationRecue());
         assertEquals(0, destination.getInformationRecue().nbElements());
     }
 
-    /** Caractérise le comportement actuel : recevoir null efface le message précédent. */
-    @Test void nullEffaceActuellementLeMessage() throws Exception {
+    @Test
+    @DisplayName("Réception d'une information nulle")
+    void testReceptionNull() throws Exception {
         DestinationFinale destination = new DestinationFinale();
         destination.recevoir(new Information<>(new Boolean[]{true}));
         destination.recevoir(null);

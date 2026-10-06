@@ -4,21 +4,24 @@ import destinations.Destination;
 import destinations.DestinationFinale;
 import information.Information;
 import information.InformationNonConformeException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-// Méthodes fournies, conservées dans le périmètre car elles assurent l'émission réelle.
 class SourceTest {
-    /** Vérifie que l'émission renseigne l'information émise même sans destination. */
-    @Test void emissionSansDestinationMetAJourInformationEmise() throws Exception {
+
+    @Test
+    @DisplayName("Émission sans destination connectée")
+    void testEmissionSansDestination() throws Exception {
         SourceFixe source = new SourceFixe("01");
         assertNull(source.getInformationEmise());
         source.emettre();
         assertEquals(new Information<>(new Boolean[]{false, true}), source.getInformationEmise());
     }
 
-    /** Vérifie la diffusion à plusieurs destinations puis l'effet de la déconnexion. */
-    @Test void emissionVersPlusieursDestinationsPuisDeconnexion() throws Exception {
+    @Test
+    @DisplayName("Émission vers plusieurs destinations et déconnexion")
+    void testEmissionMultiDestinationsEtDeconnexion() throws Exception {
         SourceFixe source = new SourceFixe("01");
         DestinationFinale a = new DestinationFinale();
         DestinationFinale b = new DestinationFinale();
@@ -28,15 +31,16 @@ class SourceTest {
         assertEquals(source.getInformationEmise(), a.getInformationRecue());
         assertEquals(source.getInformationEmise(), b.getInformationRecue());
         source.deconnecter(b);
-        source.deconnecter(b); // Retirer une destination absente est sans effet.
+        source.deconnecter(b); // Retirer une destination absente est sans effet
         b.recevoir(null);
         source.emettre();
         assertNull(b.getInformationRecue());
         assertEquals(source.getInformationEmise(), a.getInformationRecue());
     }
 
-    /** Vérifie qu'un rejet par une destination interrompt l'émission et laisse son état nul. */
-    @Test void erreurDestinationInterromptEmissionEtLaisseInformationEmiseNulle() {
+    @Test
+    @DisplayName("Interruption de l'émission en cas d'exception sur une destination")
+    void testErreurDestinationInterromptEmission() {
         SourceFixe source = new SourceFixe("01");
         source.connecter(new Destination<Boolean>() {
             public void recevoir(Information<Boolean> information) throws InformationNonConformeException {
@@ -50,8 +54,9 @@ class SourceTest {
         assertNull(suivante.getInformationRecue());
     }
 
-    /** Caractérise l'exception actuelle quand une destination nulle est connectée. */
-    @Test void connecterNullProvoqueUneExceptionLorsDeLEmission() {
+    @Test
+    @DisplayName("Connexion d'une destination nulle")
+    void testConnecterNull() {
         SourceFixe source = new SourceFixe("01");
         source.connecter(null);
         assertThrows(NullPointerException.class, source::emettre);

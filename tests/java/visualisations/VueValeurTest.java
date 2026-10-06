@@ -1,15 +1,17 @@
 package visualisations;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static visualisations.SupportVisualisations.*;
 
-/** Vérifie l'affichage de la valeur, du titre et des dimensions de la fenêtre. */
 @Tag("graphique")
 class VueValeurTest {
-    @Test void constructeurAfficheLaValeurAvecLeTitreEtLesDimensions() throws Throwable {
+    @Test
+    @DisplayName("Affichage de la valeur, du titre et des dimensions de la fenêtre")
+    void testConstructeurValeurTitreDimensions() throws Throwable {
         avecInterface(() -> {
             Vue.setXPosition(80);
             Vue.getYPosition(); // Place la fenêtre sous la barre de menus du système.
@@ -28,8 +30,9 @@ class VueValeurTest {
         });
     }
 
-    /** Caractérise l'acceptation actuelle d'une valeur et d'un nom nuls. */
-    @Test void constructeurAccepteActuellementValeurEtNomNull() throws Throwable {
+    @Test
+    @DisplayName("Comportement avec une valeur et un nom null")
+    void testConstructeurValeurEtNomNull() throws Throwable {
         avecInterface(() -> {
             VueValeur vue = assertDoesNotThrow(() -> new VueValeur(null, null));
             assertEquals(" null", texte(vue));
@@ -37,8 +40,9 @@ class VueValeurTest {
         });
     }
 
-    /** Vérifie que l'erreur de conversion d'une valeur en texte est propagée. */
-    @Test void constructeurPropageUneErreurDeConversionEnTexte() throws Throwable {
+    @Test
+    @DisplayName("Propagation d'une erreur de conversion de valeur en texte")
+    void testConstructeurErreurConversionTexte() throws Throwable {
         avecInterface(() -> {
             IllegalStateException erreur = new IllegalStateException("Conversion impossible");
             Object valeur = new Object() {

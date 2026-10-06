@@ -6,6 +6,7 @@ import destinations.Destination;
 import information.Information;
 import information.InformationNonConformeException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import transmetteurs.Emetteur;
 
@@ -29,17 +30,17 @@ class EmetteurTest {
         emetteur = new Emetteur(code);
     }
 
-    /** Vérifie que l'émetteur conserve son codeur et démarre sans information reçue ni émise. */
     @Test
-    void constructeurInitialiseLesInformationsANullEtConserveLeCodeBinaire() {
+    @DisplayName("État initial de l'émetteur et conservation du codeur")
+    void testEtatInitial() {
         assertSame(code, emetteur.getCodeBinaire());
         assertNull(emetteur.getInformationRecue());
         assertNull(emetteur.getInformationEmise());
     }
 
-    /** Vérifie que les bits reçus sont encodés puis transmis à la destination. */
     @Test
-    void recevoirTransmetAuxDestinationsConnectees() throws Exception {
+    @DisplayName("Transmission du signal encodé aux destinations connectées")
+    void testTransmissionDestinations() throws Exception {
         DestinationFloat destination = new DestinationFloat();
         emetteur.connecter(destination);
 
@@ -52,9 +53,9 @@ class EmetteurTest {
         assertEquals(emetteur.getInformationEmise(), destination.getInformationRecue());
     }
 
-    /** Vérifie qu'une information vide produit et transmet une émission vide. */
     @Test
-    void recevoirInformationVideProduitEmissionVide() throws Exception {
+    @DisplayName("Traitement d'une information vide")
+    void testInformationVide() throws Exception {
         DestinationFloat destination = new DestinationFloat();
         emetteur.connecter(destination);
 
@@ -64,9 +65,9 @@ class EmetteurTest {
         assertEquals(0, destination.getInformationRecue().nbElements());
     }
 
-    /** Vérifie qu'une réception nulle est rejetée sans écraser le message précédent. */
     @Test
-    void recevoirNullRejetteAvecExceptionSansEcraserPrecedent() throws Exception {
+    @DisplayName("Rejet d'une information reçue nulle")
+    void testRejetInformationNulle() throws Exception {
         Information<Boolean> bits = new Information<>(new Boolean[]{true});
         emetteur.recevoir(bits);
 
@@ -75,9 +76,9 @@ class EmetteurTest {
         assertNotNull(emetteur.getInformationEmise());
     }
 
-    /** Vérifie l'envoi aux destinations connectées et l'effet d'une déconnexion. */
     @Test
-    void emettreAToutesLesDestinationsEtDeconnecter() throws Exception {
+    @DisplayName("Diffusion multi-destinations et déconnexion")
+    void testMultiDestinationsEtDeconnexion() throws Exception {
         DestinationFloat d1 = new DestinationFloat();
         DestinationFloat d2 = new DestinationFloat();
         emetteur.connecter(d1);
@@ -95,16 +96,16 @@ class EmetteurTest {
         assertNotEquals(emetteur.getInformationEmise(), d2.getInformationRecue());
     }
 
-    /** Vérifie qu'émettre avant une réception et sans destination ne modifie pas l'état. */
     @Test
-    void emettreAvantReceptionSansDestinationNeFaitRien() throws Exception {
+    @DisplayName("Émission avant réception sans destination")
+    void testEmettreAvantReception() throws Exception {
         emetteur.emettre();
         assertNull(emetteur.getInformationEmise());
     }
 
-    /** Vérifie que le rejet d'une destination interrompt l'envoi aux suivantes. */
     @Test
-    void exceptionDestinationInterromptLEmission() {
+    @DisplayName("Interruption de l'émission en cas d'exception sur une destination")
+    void testExceptionDestination() {
         emetteur.connecter(new Destination<Float>() {
             @Override
             public void recevoir(Information<Float> information) throws InformationNonConformeException {

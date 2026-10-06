@@ -1,6 +1,7 @@
 package visualisations;
 
 import information.Information;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -8,16 +9,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static visualisations.SupportVisualisations.*;
 
 class SondeAnalogiqueTest {
-    /** Vérifie le nom et l'absence d'information reçue à la construction. */
-    @Test void constructeurConserveNomEtEtatInitial() {
+    @Test
+    @DisplayName("Nom et état initial à la construction")
+    void testConstructeur() {
         SondeAnalogique sonde = new SondeAnalogique("Signal");
         assertEquals("Signal", sonde.nom);
         assertNull(sonde.getInformationRecue());
     }
 
-    /** Vérifie la conversion des échantillons en courbe et le remplacement de la réception. */
-    @Test @Tag("graphique")
-    void recevoirConvertitLesEchantillonsEtRemplaceLaReception() throws Throwable {
+    @Test
+    @Tag("graphique")
+    @DisplayName("Conversion des échantillons en courbe et mise à jour de la réception")
+    void testRecevoirSignal() throws Throwable {
         avecInterface(() -> {
             SondeAnalogique sonde = new SondeAnalogique("Signal");
             Information<Float> premier = new Information<>(new Float[]{-2f, 0f, 3f});
@@ -34,9 +37,10 @@ class SondeAnalogiqueTest {
         });
     }
 
-    /** Caractérise l'échec actuel du dessin après réception d'un signal vide. */
-    @Test @Tag("graphique")
-    void recevoirVideCreeUneCourbeDontLeDessinEchoueActuellement() throws Throwable {
+    @Test
+    @Tag("graphique")
+    @DisplayName("Création d'une courbe sur signal vide")
+    void testRecevoirSignalVide() throws Throwable {
         avecInterface(() -> {
             SondeAnalogique sonde = new SondeAnalogique("Vide");
             Information<Float> vide = new Information<>();
@@ -49,15 +53,17 @@ class SondeAnalogiqueTest {
         });
     }
 
-    /** Caractérise l'exception actuelle provoquée par une réception nulle. */
-    @Test void recevoirNullLeveUneNullPointerException() {
+    @Test
+    @DisplayName("Rejet d'une réception nulle")
+    void testRecevoirNull() {
         SondeAnalogique sonde = new SondeAnalogique("Signal");
         assertThrows(NullPointerException.class, () -> sonde.recevoir(null));
         assertNull(sonde.getInformationRecue());
     }
 
-    /** Caractérise l'échec sur un élément nul après mémorisation de l'information. */
-    @Test void recevoirUnElementNullEchoueApresMemorisation() {
+    @Test
+    @DisplayName("Échec sur un élément nul dans l'information")
+    void testRecevoirElementNull() {
         SondeAnalogique sonde = new SondeAnalogique("Signal");
         Information<Float> info = new Information<>(new Float[]{1f, null});
         assertThrows(NullPointerException.class, () -> sonde.recevoir(info));

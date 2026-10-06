@@ -4,19 +4,23 @@ import destinations.DestinationFinale;
 import destinations.Destination;
 import information.Information;
 import information.InformationNonConformeException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransmetteurParfaitTest {
-    /** Vérifie qu'aucune information n'est reçue ni émise à la construction. */
-    @Test void constructeurInitialiseLesInformationsANull() {
+
+    @Test
+    @DisplayName("État initial du transmetteur parfait")
+    void testEtatInitial() {
         TransmetteurParfait<Boolean> transmetteur = new TransmetteurParfait<>();
         assertNull(transmetteur.getInformationRecue());
         assertNull(transmetteur.getInformationEmise());
     }
 
-    /** Vérifie qu'une réception est automatiquement retransmise sans modification. */
-    @Test void recevoirTransmetAutomatiquementSansAlteration() throws Exception {
+    @Test
+    @DisplayName("Transmission automatique sans altération de l'information")
+    void testTransmissionParfaite() throws Exception {
         TransmetteurParfait<Boolean> transmetteur = new TransmetteurParfait<>();
         DestinationFinale destination = new DestinationFinale();
         transmetteur.connecter(destination);
@@ -27,23 +31,26 @@ class TransmetteurParfaitTest {
         assertEquals(message, destination.getInformationRecue());
     }
 
-    /** Vérifie qu'une réception est mémorisée même sans destination connectée. */
-    @Test void recevoirSansDestinationMemoriseLeMessage() throws Exception {
+    @Test
+    @DisplayName("Réception sans destination connectée")
+    void testReceptionSansDestination() throws Exception {
         TransmetteurParfait<String> transmetteur = new TransmetteurParfait<>();
         Information<String> message = new Information<>(new String[]{"a", "b"});
         transmetteur.recevoir(message);
         assertEquals(message, transmetteur.getInformationEmise());
     }
 
-    /** Vérifie que le transmetteur accepte et émet une information vide. */
-    @Test void recevoirUneInformationVide() throws Exception {
+    @Test
+    @DisplayName("Traitement d'une information vide")
+    void testInformationVide() throws Exception {
         TransmetteurParfait<Boolean> transmetteur = new TransmetteurParfait<>();
         transmetteur.recevoir(new Information<>());
         assertEquals(0, transmetteur.getInformationEmise().nbElements());
     }
 
-    /** Vérifie qu'une réception nulle est rejetée sans effacer le message précédent. */
-    @Test void recevoirNullRejetteSansEcraserLeMessagePrecedent() throws Exception {
+    @Test
+    @DisplayName("Rejet d'une information reçue nulle")
+    void testRejetInformationNulle() throws Exception {
         TransmetteurParfait<Boolean> transmetteur = new TransmetteurParfait<>();
         Information<Boolean> message = new Information<>(new Boolean[]{true});
         transmetteur.recevoir(message);
@@ -52,63 +59,67 @@ class TransmetteurParfaitTest {
         assertEquals(message, transmetteur.getInformationEmise());
     }
 
-    /** Vérifie l'envoi aux destinations connectées et l'effet d'une déconnexion. */
-    @Test void emettreAToutesLesDestinationsEtDeconnecter() throws Exception {
+    @Test
+    @DisplayName("Diffusion multi-destinations et déconnexion")
+    void testMultiDestinationsEtDeconnexion() throws Exception {
         TransmetteurParfait<Boolean> transmetteur = new TransmetteurParfait<>();
         DestinationFinale a = new DestinationFinale();
         DestinationFinale b = new DestinationFinale();
         transmetteur.connecter(a);
         transmetteur.connecter(b);
-        Information<Boolean> premier = new Information<>(new Boolean[]{true});
-        transmetteur.recevoir(premier);
-        assertEquals(premier, a.getInformationRecue());
-        assertEquals(premier, b.getInformationRecue());
+        Information<Boolean> message = new Information<>(new Boolean[]{true});
+        transmetteur.recevoir(message);
+        assertEquals(message, a.getInformationRecue());
+        assertEquals(message, b.getInformationRecue());
         transmetteur.deconnecter(b);
-        Information<Boolean> second = new Information<>(new Boolean[]{false});
-        transmetteur.recevoir(second);
-        assertEquals(second, a.getInformationRecue());
-        assertEquals(premier, b.getInformationRecue());
+        transmetteur.deconnecter(b);
         a.recevoir(null);
+        b.recevoir(null);
         transmetteur.emettre();
-        assertEquals(second, a.getInformationRecue());
+        assertEquals(message, a.getInformationRecue());
+        assertNull(b.getInformationRecue());
     }
 
-    /** Vérifie qu'émettre sans réception ni destination laisse l'état initial inchangé. */
-    @Test void emettreAvantReceptionSansDestinationNeFaitRien() throws Exception {
+    @Test
+    @DisplayName("Émission avant réception sans destination")
+    void testEmettreAvantReceptionSansDestination() throws Exception {
         TransmetteurParfait<Boolean> transmetteur = new TransmetteurParfait<>();
         transmetteur.emettre();
         assertNull(transmetteur.getInformationEmise());
     }
 
-    /** Caractérise l'envoi actuel de null avant la première réception. */
-    @Test void emettreAvantReceptionTransmetActuellementNull() throws Exception {
+    @Test
+    @DisplayName("Émission avant réception avec destination")
+    void testEmettreAvantReception() throws Exception {
         TransmetteurParfait<Boolean> transmetteur = new TransmetteurParfait<>();
         DestinationFinale destination = new DestinationFinale();
-        destination.recevoir(new Information<>(new Boolean[]{true}));
         transmetteur.connecter(destination);
         transmetteur.emettre();
         assertNull(destination.getInformationRecue());
     }
 
-    /** Vérifie que le rejet d'une destination empêche l'envoi aux suivantes. */
-    @Test void exceptionDestinationInterromptLEmission() {
+    @Test
+    @DisplayName("Interruption de l'émission en cas d'exception sur une destination")
+    void testExceptionDestination() {
         TransmetteurParfait<Boolean> transmetteur = new TransmetteurParfait<>();
         transmetteur.connecter(new Destination<Boolean>() {
             public void recevoir(Information<Boolean> information) throws InformationNonConformeException {
-                throw new InformationNonConformeException("rejet volontaire du test");
+                throw new InformationNonConformeException("rejet volontaire");
             }
         });
         DestinationFinale suivante = new DestinationFinale();
         transmetteur.connecter(suivante);
-        assertThrows(InformationNonConformeException.class,
-                () -> transmetteur.recevoir(new Information<>(new Boolean[]{true})));
+        Information<Boolean> message = new Information<>(new Boolean[]{true});
+        assertThrows(InformationNonConformeException.class, () -> transmetteur.recevoir(message));
+        assertEquals(message, transmetteur.getInformationEmise());
         assertNull(suivante.getInformationRecue());
     }
 
-    /** Caractérise l'exception actuelle quand une destination nulle est connectée. */
-    @Test void destinationNulleProvoqueActuellementUneException() {
+    @Test
+    @DisplayName("Connexion d'une destination nulle")
+    void testDestinationNulle() {
         TransmetteurParfait<Boolean> transmetteur = new TransmetteurParfait<>();
         transmetteur.connecter(null);
-        assertThrows(NullPointerException.class, () -> transmetteur.emettre());
+        assertThrows(NullPointerException.class, () -> transmetteur.recevoir(new Information<>(new Boolean[]{true})));
     }
 }

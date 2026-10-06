@@ -1,6 +1,7 @@
 package visualisations;
 
 import information.Information;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,16 +11,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static visualisations.SupportVisualisations.*;
 
 class SondePuissanceTest {
-    /** Vérifie le nom et l'absence d'information reçue à la construction. */
-    @Test void constructeurConserveNomEtEtatInitial() {
+    @Test
+    @DisplayName("Nom et état initial à la construction")
+    void testConstructeur() {
         SondePuissance sonde = new SondePuissance("Puissance");
         assertEquals("Puissance", sonde.nom);
         assertNull(sonde.getInformationRecue());
     }
 
-    /** Vérifie l'affichage de la moyenne des carrés et le remplacement de la réception. */
-    @Test @Tag("graphique")
-    void recevoirAfficheLaMoyenneDesCarresEtRemplaceLaReception() throws Throwable {
+    @Test
+    @Tag("graphique")
+    @DisplayName("Affichage de la moyenne des carrés et mise à jour de la réception")
+    void testRecevoirSignal() throws Throwable {
         avecInterface(() -> {
             SondePuissance sonde = new SondePuissance("Puissance");
             Information<Float> premier = new Information<>(new Float[]{-2f, 1f, 3f});
@@ -36,18 +39,21 @@ class SondePuissanceTest {
         });
     }
 
-    /** Vérifie que la puissance d'un seul échantillon est son carré. */
-    @ParameterizedTest @CsvSource({"-0.5, 0.25", "0.0, 0.0", "2.0, 4.0"}) @Tag("graphique")
-    void recevoirUnSeulEchantillonAfficheSonCarre(float valeur, double puissance) throws Throwable {
+    @ParameterizedTest
+    @CsvSource({"-0.5, 0.25", "0.0, 0.0", "2.0, 4.0"})
+    @Tag("graphique")
+    @DisplayName("Puissance d'un échantillon unique égale à son carré")
+    void testRecevoirUnSeulEchantillon(float valeur, double puissance) throws Throwable {
         avecInterface(() -> {
             new SondePuissance("P").recevoir(new Information<>(new Float[]{valeur}));
             assertEquals(puissance, Double.parseDouble(texte(vueUnique(VueValeur.class)).trim()), 1e-12);
         });
     }
 
-    /** Caractérise l'affichage actuel de NaN pour une information vide. */
-    @Test @Tag("graphique")
-    void recevoirUneInformationVideAfficheActuellementNaN() throws Throwable {
+    @Test
+    @Tag("graphique")
+    @DisplayName("Affichage de NaN pour une information vide")
+    void testRecevoirInformationVide() throws Throwable {
         avecInterface(() -> {
             SondePuissance sonde = new SondePuissance("P");
             Information<Float> vide = new Information<>();
@@ -57,15 +63,17 @@ class SondePuissanceTest {
         });
     }
 
-    /** Caractérise l'exception actuelle provoquée par une réception nulle. */
-    @Test void recevoirNullLeveUneNullPointerException() {
+    @Test
+    @DisplayName("Rejet d'une réception nulle")
+    void testRecevoirNull() {
         SondePuissance sonde = new SondePuissance("P");
         assertThrows(NullPointerException.class, () -> sonde.recevoir(null));
         assertNull(sonde.getInformationRecue());
     }
 
-    /** Caractérise l'échec sur un élément nul après mémorisation de l'information. */
-    @Test void recevoirUnElementNullEchoueApresMemorisation() {
+    @Test
+    @DisplayName("Échec sur un élément nul dans l'information")
+    void testRecevoirElementNull() {
         SondePuissance sonde = new SondePuissance("P");
         Information<Float> info = new Information<>(new Float[]{1f, null});
         assertThrows(NullPointerException.class, () -> sonde.recevoir(info));

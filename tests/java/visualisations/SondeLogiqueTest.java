@@ -1,6 +1,7 @@
 package visualisations;
 
 import information.Information;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -8,16 +9,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static visualisations.SupportVisualisations.*;
 
 class SondeLogiqueTest {
-    /** Vérifie le nom et l'absence d'information reçue à la construction. */
-    @Test void constructeurConserveNomEtEtatInitial() {
+    @Test
+    @DisplayName("Nom et état initial à la construction")
+    void testConstructeur() {
         SondeLogique sonde = new SondeLogique("Bits", 20);
         assertEquals("Bits", sonde.nom);
         assertNull(sonde.getInformationRecue());
     }
 
-    /** Vérifie la conversion des bits en courbe avec la largeur demandée. */
-    @Test @Tag("graphique")
-    void recevoirConvertitLesBitsEtTransmetLaLargeur() throws Throwable {
+    @Test
+    @Tag("graphique")
+    @DisplayName("Conversion des bits en courbe avec la largeur demandée")
+    void testRecevoirBits() throws Throwable {
         avecInterface(() -> {
             SondeLogique sonde = new SondeLogique("Bits", 50);
             Information<Boolean> premier = new Information<>(new Boolean[]{true, false});
@@ -35,9 +38,10 @@ class SondeLogiqueTest {
         });
     }
 
-    /** Vérifie qu'une réception vide ne conserve que le point initial de la courbe. */
-    @Test @Tag("graphique")
-    void recevoirVideConserveSeulementLePointInitial() throws Throwable {
+    @Test
+    @Tag("graphique")
+    @DisplayName("Réception vide ne conservant que le point initial")
+    void testRecevoirBitsVide() throws Throwable {
         avecInterface(() -> {
             SondeLogique sonde = new SondeLogique("Vide", 20);
             Information<Boolean> vide = new Information<>();
@@ -47,23 +51,26 @@ class SondeLogiqueTest {
         });
     }
 
-    /** Caractérise l'exception actuelle provoquée par une réception nulle. */
-    @Test void recevoirNullLeveUneNullPointerException() {
+    @Test
+    @DisplayName("Rejet d'une réception nulle")
+    void testRecevoirNull() {
         SondeLogique sonde = new SondeLogique("Bits", 20);
         assertThrows(NullPointerException.class, () -> sonde.recevoir(null));
         assertNull(sonde.getInformationRecue());
     }
 
-    /** Caractérise l'échec sur un bit nul après mémorisation de l'information. */
-    @Test void recevoirUnElementNullEchoueApresMemorisation() {
+    @Test
+    @DisplayName("Échec sur un bit nul dans l'information")
+    void testRecevoirElementNull() {
         SondeLogique sonde = new SondeLogique("Bits", 20);
         Information<Boolean> info = new Information<>(new Boolean[]{true, null});
         assertThrows(NullPointerException.class, () -> sonde.recevoir(info));
         assertSame(info, sonde.getInformationRecue());
     }
 
-    /** Caractérise l'acceptation actuelle d'une largeur nulle ou négative. */
-    @Test void constructeurAccepteActuellementUneLargeurNulleOuNegative() {
+    @Test
+    @DisplayName("Comportement avec une largeur nulle ou négative")
+    void testConstructeurLargeurNulleOuNegative() {
         assertDoesNotThrow(() -> new SondeLogique("Bits", 0));
         assertDoesNotThrow(() -> new SondeLogique("Bits", -1));
     }

@@ -1,5 +1,6 @@
 package visualisations;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,10 +11,11 @@ import java.awt.Color;
 import static org.junit.jupiter.api.Assertions.*;
 import static visualisations.SupportVisualisations.*;
 
-/** Vérifie les points, les bornes et la fenêtre d'une courbe analogique neuve. */
 @Tag("graphique")
 class VueCourbeTest {
-    @Test void constructeurAnalogiquePreparePointsBornesEtFenetre() throws Throwable {
+    @Test
+    @DisplayName("Points, bornes et fenêtre d'une courbe analogique neuve")
+    void testConstructeurAnalogique() throws Throwable {
         avecInterface(() -> {
             Vue.setXPosition(70);
             Vue.getYPosition();
@@ -30,8 +32,9 @@ class VueCourbeTest {
         });
     }
 
-    /** Vérifie les paliers, les dimensions et la fenêtre d'une courbe logique neuve. */
-    @Test void constructeurLogiquePrepareLesPaliersEtLaFenetre() throws Throwable {
+    @Test
+    @DisplayName("Paliers, dimensions et fenêtre d'une courbe logique neuve")
+    void testConstructeurLogique() throws Throwable {
         avecInterface(() -> {
             Vue.getYPosition(); // Évite le déplacement imposé par la barre de menus macOS.
             VueCourbe vue = new VueCourbe(new boolean[]{false, true}, 40, "Logique");
@@ -46,9 +49,10 @@ class VueCourbeTest {
         });
     }
 
-    /** Vérifie le calcul de largeur analogique et son plafonnement. */
-    @ParameterizedTest @CsvSource({"989, 999", "990, 1000", "991, 1000"})
-    void constructeurAnalogiquePlafonneLaLargeur(int longueur, int largeur) throws Throwable {
+    @ParameterizedTest
+    @CsvSource({"989, 999", "990, 1000", "991, 1000"})
+    @DisplayName("Calcul de la largeur analogique et plafonnement")
+    void testConstructeurAnalogiquePlafonnementLargeur(int longueur, int largeur) throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran vue = new CourbeHorsEcran(new float[longueur])) {
                 assertEquals(largeur, vue.getWidth());
@@ -56,9 +60,10 @@ class VueCourbeTest {
         });
     }
 
-    /** Vérifie le calcul de largeur logique selon les pixels par bit et son plafonnement. */
-    @ParameterizedTest @CsvSource({"98, 10, 990", "99, 10, 1000", "100, 10, 1000", "2, 0, 10"})
-    void constructeurLogiqueCalculeEtPlafonneLaLargeur(int longueur, int pixels, int largeur) throws Throwable {
+    @ParameterizedTest
+    @CsvSource({"98, 10, 990", "99, 10, 1000", "100, 10, 1000", "2, 0, 10"})
+    @DisplayName("Calcul de la largeur logique et plafonnement")
+    void testConstructeurLogiqueCalculLargeur(int longueur, int pixels, int largeur) throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran vue = new CourbeHorsEcran(new boolean[longueur], pixels)) {
                 assertEquals(largeur, vue.getWidth());
@@ -66,16 +71,18 @@ class VueCourbeTest {
         });
     }
 
-    /** Caractérise le rejet actuel d'un tableau nul par les deux constructeurs. */
-    @Test void constructeursRejettentActuellementUnTableauNull() throws Throwable {
+    @Test
+    @DisplayName("Rejet d'un tableau null par les constructeurs")
+    void testConstructeursRejetTableauNull() throws Throwable {
         avecInterface(() -> {
             assertThrows(NullPointerException.class, () -> new VueCourbe((float[]) null, "Erreur"));
             assertThrows(NullPointerException.class, () -> new VueCourbe((boolean[]) null, 20, "Erreur"));
         });
     }
 
-    /** Vérifie qu'un changement de signal analogique remplace les points et recalcule les bornes. */
-    @Test void changerAnalogiqueRemplaceLesPointsEtRecalculeLesBornes() throws Throwable {
+    @Test
+    @DisplayName("Changement de signal analogique et recalcul des bornes")
+    void testChangerAnalogique() throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran vue = new CourbeHorsEcran(new float[]{-10, 20})) {
                 vue.changer(new float[]{1, 2, 1});
@@ -86,8 +93,9 @@ class VueCourbeTest {
         });
     }
 
-    /** Vérifie qu'un changement de signal logique remplace les paliers et réinitialise les bornes. */
-    @Test void changerLogiqueRemplaceLesPaliersEtReinitialiseLesBornes() throws Throwable {
+    @Test
+    @DisplayName("Changement de signal logique et réinitialisation des bornes")
+    void testChangerLogique() throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran vue = new CourbeHorsEcran(new float[]{-10, 20})) {
                 vue.changer(new boolean[]{true, false});
@@ -98,8 +106,9 @@ class VueCourbeTest {
         });
     }
 
-    /** Vérifie qu'un changement vers null échoue sans modifier la courbe précédente. */
-    @Test void changerNullEchoueEtConserveLaCourbePrecedente() throws Throwable {
+    @Test
+    @DisplayName("Échec d'un changement vers null avec conservation de la courbe")
+    void testChangerNull() throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran vue = new CourbeHorsEcran(new float[]{-1, 1})) {
                 assertThrows(NullPointerException.class, () -> vue.changer((float[]) null));
@@ -110,8 +119,9 @@ class VueCourbeTest {
         });
     }
 
-    /** Vérifie qu'une courbe logique accepte un tableau vide au changement. */
-    @Test void changerLogiqueAccepteUnTableauVide() throws Throwable {
+    @Test
+    @DisplayName("Changement d'une courbe logique avec un tableau vide")
+    void testChangerLogiqueTableauVide() throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran vue = new CourbeHorsEcran(new boolean[]{true}, 20)) {
                 assertDoesNotThrow(() -> vue.changer(new boolean[0]));
@@ -120,8 +130,9 @@ class VueCourbeTest {
         });
     }
 
-    /** Caractérise l'échec actuel du dessin après un changement vers un signal analogique vide. */
-    @Test void changerAnalogiqueVideEchoueActuellementLorsDuDessin() throws Throwable {
+    @Test
+    @DisplayName("Échec du dessin après changement vers un signal analogique vide")
+    void testChangerAnalogiqueVide() throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran vue = new CourbeHorsEcran(new float[]{-1, 1})) {
                 assertThrows(ArrayIndexOutOfBoundsException.class, () -> vue.changer(new float[0]));
@@ -130,8 +141,9 @@ class VueCourbeTest {
         });
     }
 
-    /** Caractérise l'échec actuel du dessin d'une courbe analogique vide. */
-    @Test void paintSurUneCourbeAnalogiqueVideEchoueActuellement() throws Throwable {
+    @Test
+    @DisplayName("Échec du tracé d'une courbe analogique vide")
+    void testPaintAnalogiqueVide() throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran vue = new CourbeHorsEcran(new float[0])) {
                 verifierCourbe(vue, 0, 0);
@@ -140,8 +152,9 @@ class VueCourbeTest {
         });
     }
 
-    /** Vérifie qu'un contexte graphique nul ne modifie pas les images de la courbe. */
-    @Test void paintAvecGraphicsNullNeDessineRien() throws Throwable {
+    @Test
+    @DisplayName("Tracé avec un Graphics null n'altérant pas les images")
+    void testPaintGraphicsNull() throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran vue = new CourbeHorsEcran(new float[]{-1, 1})) {
                 vue.fond.setRGB(0, 0, Color.MAGENTA.getRGB());
@@ -152,8 +165,9 @@ class VueCourbeTest {
         });
     }
 
-    /** Vérifie le tracé du fond, des axes et des segments d'une courbe analogique mixte. */
-    @Test void paintDessineLeFondLesAxesEtLaCourbeMixte() throws Throwable {
+    @Test
+    @DisplayName("Tracé du fond, des axes et de la courbe mixte")
+    void testPaintCourbeMixte() throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran vue = new CourbeHorsEcran(new float[]{-1, 1, -1})) {
                 vue.paint(vue.getGraphics());
@@ -167,9 +181,10 @@ class VueCourbeTest {
         });
     }
 
-    /** Vérifie le tracé des signaux positifs, négatifs et nuls. */
-    @ParameterizedTest @CsvSource({"1, 2, 0, 2, 10", "-1, -2, -2, 0, 110", "0, 0, 0, 0, 10"})
-    void paintSansArgumentDessineLesSignauxPositifsNegatifsEtNuls(
+    @ParameterizedTest
+    @CsvSource({"1, 2, 0, 2, 10", "-1, -2, -2, 0, 110", "0, 0, 0, 0, 10"})
+    @DisplayName("Tracé des signaux positifs, négatifs et nuls")
+    void testPaintSignauxPositifsNegatifsNuls(
             float premier, float milieu, float min, float max, int yMilieu) throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran vue = new CourbeHorsEcran(new float[]{premier, milieu, premier})) {
@@ -180,8 +195,9 @@ class VueCourbeTest {
         });
     }
 
-    /** Caractérise le dessin actuel d'un seul échantillon analogique et d'une courbe logique vide. */
-    @Test void paintAccepteActuellementUnSeulEchantillonEtUneCourbeLogiqueVide() throws Throwable {
+    @Test
+    @DisplayName("Tracé d'un échantillon analogique unique et d'une courbe logique vide")
+    void testPaintEchantillonUniqueEtLogiqueVide() throws Throwable {
         avecInterface(() -> {
             try (CourbeHorsEcran analogique = new CourbeHorsEcran(new float[]{2});
                  CourbeHorsEcran logique = new CourbeHorsEcran(new boolean[0], 20)) {

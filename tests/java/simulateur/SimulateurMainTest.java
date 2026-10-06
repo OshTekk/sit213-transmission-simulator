@@ -1,5 +1,6 @@
 package simulateur;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -42,15 +43,17 @@ class SimulateurMainTest {
         }
     }
 
-    /** Vérifie que le programme lancé sans argument termine normalement et affiche un TEB nul. */
-    @Test void mainParDefautAfficheTEBZero() throws Exception {
+    @Test
+    @DisplayName("Exécution par défaut : code de retour zéro et TEB nul")
+    void testMainParDefaut() throws Exception {
         Resultat resultat = lancer();
         assertEquals(0, resultat.code());
         assertTrue(resultat.sortie().contains("TEB : 0.0"), resultat.sortie());
     }
 
-    /** Vérifie que la commande et son TEB sont affichés après une exécution avec options. */
-    @Test void mainAvecArgumentsAfficheLaCommandeEtLeTEB() throws Exception {
+    @Test
+    @DisplayName("Exécution avec arguments (-mess, -seed) : affichage des arguments et TEB nul")
+    void testMainAvecArguments() throws Exception {
         Resultat resultat = lancer("-mess", "1010101", "-seed", "42");
         assertEquals(0, resultat.code());
         assertTrue(resultat.sortie().contains("-mess  1010101"), resultat.sortie());
@@ -58,16 +61,18 @@ class SimulateurMainTest {
         assertTrue(resultat.sortie().contains("TEB : 0.0"), resultat.sortie());
     }
 
-    /** Vérifie le code de sortie et le diagnostic produits pour un argument inconnu. */
-    @Test void mainErreurArgumentsTermineAvecCodeMoinsUn() throws Exception {
+    @Test
+    @DisplayName("Erreur sur option inconnue : code d'erreur et message d'exception")
+    void testMainErreurArguments() throws Exception {
         Resultat resultat = lancer("-inconnu");
         assertEquals(System.getProperty("os.name").startsWith("Windows") ? -1 : 255, resultat.code());
         assertTrue(resultat.sortie().contains("ArgumentsException"), resultat.sortie());
         assertFalse(resultat.sortie().contains("TEB :"));
     }
 
-    /** Vérifie le code de sortie et le diagnostic produits lors d'un échec d'exécution. */
-    @Test void mainErreurExecutionTermineAvecCodeMoinsDeux() throws Exception {
+    @Test
+    @DisplayName("Erreur d'exécution (HeadlessException avec -s) : code d'erreur et diagnostic")
+    void testMainErreurExecution() throws Exception {
         // L'affichage est impossible en mode sans écran : couvre le second catch de main.
         Resultat resultat = lancer("-s");
         assertEquals(System.getProperty("os.name").startsWith("Windows") ? -2 : 254, resultat.code());
@@ -75,19 +80,19 @@ class SimulateurMainTest {
         assertFalse(resultat.sortie().contains("TEB :"));
     }
 
-    /** Vérifie l'affichage du TEB pour les formes analogiques prises en charge. */
     @ParameterizedTest
     @ValueSource(strings = {"RZ", "NRZ"})
-    void mainAvecFormeAnalogiqueAfficheTEBZero(String forme) throws Exception {
+    @DisplayName("Exécution avec formes analogiques valides et TEB nul")
+    void testMainFormeAnalogique(String forme) throws Exception {
         Resultat resultat = lancer("-form", forme, "-mess", "1010101");
         assertEquals(0, resultat.code());
         assertTrue(resultat.sortie().contains("-form  " + forme), resultat.sortie());
         assertTrue(resultat.sortie().contains("TEB : 0.0"), resultat.sortie());
     }
 
-    /** Vérifie le code de sortie et le diagnostic produits pour une forme inconnue. */
     @Test
-    void mainErreurFormeInconnueTermineAvecCodeMoinsUn() throws Exception {
+    @DisplayName("Erreur sur forme d'onde inconnue : code d'erreur")
+    void testMainErreurFormeInconnue() throws Exception {
         Resultat resultat = lancer("-form", "INCONNU");
         assertEquals(System.getProperty("os.name").startsWith("Windows") ? -1 : 255, resultat.code());
         assertTrue(resultat.sortie().contains("ArgumentsException"), resultat.sortie());

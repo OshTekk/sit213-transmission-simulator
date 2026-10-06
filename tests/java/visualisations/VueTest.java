@@ -1,6 +1,7 @@
 package visualisations;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,24 +16,27 @@ class VueTest {
         Vue.setXPosition(0);
     }
 
-    /** Vérifie que la position horizontale définie est relue sans incrément. */
-    @ParameterizedTest @ValueSource(ints = {0, 125, -50})
-    void setEtGetXPositionConserventLaValeurSansIncrement(int x) {
+    @ParameterizedTest
+    @ValueSource(ints = {0, 125, -50})
+    @DisplayName("Position horizontale définie relue sans incrément")
+    void testSetEtGetXPosition(int x) {
         Vue.setXPosition(x);
         assertEquals(x, Vue.getXPosition());
         assertEquals(x, Vue.getXPosition());
     }
 
-    /** Vérifie que chaque lecture de la position verticale avance de deux cents pixels. */
-    @Test void getYPositionAvanceDeDeuxCentsPixels() {
+    @Test
+    @DisplayName("Incrémentation de la position verticale de 200 pixels à chaque lecture")
+    void testGetYPositionIncremente() {
         Vue.resetPosition();
         assertEquals(0, Vue.getYPosition());
         assertEquals(200, Vue.getYPosition());
         assertEquals(400, Vue.getYPosition());
     }
 
-    /** Vérifie que la remise à zéro réinitialise la position verticale et conserve l'horizontale. */
-    @Test void resetPositionReinitialiseYEtConserveX() {
+    @Test
+    @DisplayName("Réinitialisation de la position verticale avec conservation de la position horizontale")
+    void testResetPosition() {
         Vue.setXPosition(75);
         Vue.getYPosition();
         Vue.getYPosition();
@@ -42,8 +46,9 @@ class VueTest {
         assertEquals(75, Vue.getXPosition());
     }
 
-    /** Vérifie qu'une fermeture répétée sans vue réinitialise la position verticale. */
-    @Test void killSansVueEstRepetableEtReinitialiseY() {
+    @Test
+    @DisplayName("Fermeture répétée sans vue réinitialisant la position verticale")
+    void testKillSansVue() {
         Vue.setXPosition(75);
         Vue.getYPosition();
         assertDoesNotThrow(Vue::kill);
@@ -52,9 +57,10 @@ class VueTest {
         assertEquals(75, Vue.getXPosition());
     }
 
-    /** Vérifie que le titre est conservé sans afficher la fenêtre à la construction. */
-    @Test @Tag("graphique")
-    void constructeurConserveLeTitreSansAfficherLaVue() throws Throwable {
+    @Test
+    @Tag("graphique")
+    @DisplayName("Titre conservé sans affichage à la construction")
+    void testConstructeurTitre() throws Throwable {
         avecInterface(() -> {
             Vue vue = new Vue("Fenêtre test");
             assertEquals("Fenêtre test", vue.getTitle());
@@ -63,9 +69,10 @@ class VueTest {
         });
     }
 
-    /** Vérifie que la fermeture supprime toutes les vues et vide leur registre. */
-    @Test @Tag("graphique")
-    void killFermeToutesLesVuesEtVideLeRegistre() throws Throwable {
+    @Test
+    @Tag("graphique")
+    @DisplayName("Fermeture de toutes les vues et vidage du registre")
+    void testKillFermeToutesLesVues() throws Throwable {
         avecInterface(() -> {
             class VueComptee extends Vue {
                 int fermetures;
