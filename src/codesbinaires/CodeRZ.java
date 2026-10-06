@@ -41,13 +41,16 @@ public class CodeRZ extends CodeBinaire {
     public Information<Float> encoder(Information<Boolean> information) {
         Information<Float> infoEncodee = new Information<>();
         int tiersNbEchParBit = nbEchParBit / 3;
+        int resteNbEch = nbEchParBit % 3;
+        int nbEchLateral = tiersNbEchParBit + (resteNbEch == 2 ? 1 : 0);
+        int nbEchMilieu = tiersNbEchParBit + (resteNbEch == 1 ? 1 : 0);
 
         for (Boolean bit : information) {
             // Si le bit est a 1, amplitudeMax, sinon amplitudeMin
             float amplitudeMilieu = bit ? amplitudeMax : amplitudeMin;
-            ajouterEchantillons(infoEncodee, amplitudeMin, tiersNbEchParBit);
-            ajouterEchantillons(infoEncodee, amplitudeMilieu, tiersNbEchParBit + nbEchParBit % 3);
-            ajouterEchantillons(infoEncodee, amplitudeMin, tiersNbEchParBit);
+            ajouterEchantillons(infoEncodee, amplitudeMin, nbEchLateral);
+            ajouterEchantillons(infoEncodee, amplitudeMilieu, nbEchMilieu);
+            ajouterEchantillons(infoEncodee, amplitudeMin, nbEchLateral);
         }
         return infoEncodee;
     }
@@ -65,11 +68,13 @@ public class CodeRZ extends CodeBinaire {
 
         Information<Boolean> infoDecodee = new Information<>();
         int tiersNbEchParBit = nbEchParBit / 3;
-        int nbEchMilieu = tiersNbEchParBit + (nbEchParBit % 3);
+        int resteNbEch = nbEchParBit % 3;
+        int nbEchMilieu = tiersNbEchParBit + ( resteNbEch == 1 ? 1 : 0);
+        int nbEchLateral = tiersNbEchParBit + (resteNbEch == 2 ? 1 : 0);
         float amplitudeMilieu = (amplitudeMax + amplitudeMin) / 2;
         Iterator<Float> it = information.iterator();
         while (it.hasNext()) {
-            for (int i = 0; i < tiersNbEchParBit; i++) {
+            for (int i = 0; i < nbEchLateral; i++) {
                 it.next();
             }
             float amplitudeMoy = 0;
@@ -77,7 +82,7 @@ public class CodeRZ extends CodeBinaire {
                 amplitudeMoy += it.next();
             }
             amplitudeMoy /= nbEchMilieu;
-            for (int i = 0; i < tiersNbEchParBit; i++) {
+            for (int i = 0; i < nbEchLateral; i++) {
                 it.next();
             }
             infoDecodee.add(amplitudeMoy > amplitudeMilieu);

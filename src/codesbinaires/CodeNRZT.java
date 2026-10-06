@@ -45,6 +45,9 @@ public class CodeNRZT extends CodeBinaire {
     public Information<Float> encoder(Information<Boolean> information) {
         Information<Float> infoEncodee = new Information<>();
         int tiersNbEchParBit = nbEchParBit / 3;
+        int resteNbEch = nbEchParBit % 3;
+        int nbEchLateral = tiersNbEchParBit + (resteNbEch == 2 ? 1 : 0);
+        int nbEchMilieu = tiersNbEchParBit + (resteNbEch == 1 ? 1 : 0);
         int nBits = information.nbElements();
         boolean bit;
         float amplitudeMoyenne = (amplitudeMax + amplitudeMin) / 2;
@@ -55,17 +58,17 @@ public class CodeNRZT extends CodeBinaire {
             amplitudePic = bit ? amplitudeMax : amplitudeMin;
 
             if (i == 0 || bit != information.iemeElement(i - 1)) {
-                ajouterPente(infoEncodee, tiersNbEchParBit, amplitudeMoyenne, amplitudePic);
+                ajouterPente(infoEncodee, nbEchLateral, amplitudeMoyenne, amplitudePic);
             } else {
-                ajouterEchantillons(infoEncodee, amplitudePic, tiersNbEchParBit);
+                ajouterEchantillons(infoEncodee, amplitudePic, nbEchLateral);
             }
 
-            ajouterEchantillons(infoEncodee, amplitudePic,  tiersNbEchParBit + nbEchParBit % 3);
+            ajouterEchantillons(infoEncodee, amplitudePic,  nbEchMilieu);
 
             if (i == nBits - 1 || bit != information.iemeElement(i + 1)) {
-                ajouterPente(infoEncodee, tiersNbEchParBit, amplitudePic, amplitudeMoyenne);
+                ajouterPente(infoEncodee, nbEchLateral, amplitudePic, amplitudeMoyenne);
             } else {
-                ajouterEchantillons(infoEncodee, amplitudePic, tiersNbEchParBit);
+                ajouterEchantillons(infoEncodee, amplitudePic, nbEchLateral);
             }
         }
 
@@ -84,12 +87,14 @@ public class CodeNRZT extends CodeBinaire {
 
         Information<Boolean> infoDecodee = new Information<>();
         int tiersNbEchParBit = nbEchParBit / 3;
-        int nbEchMilieu = tiersNbEchParBit + (nbEchParBit % 3);
+        int resteNbEch = nbEchParBit % 3;
+        int nbEchMilieu = tiersNbEchParBit + ( resteNbEch == 1 ? 1 : 0);
+        int nbEchLateral = tiersNbEchParBit + (resteNbEch == 2 ? 1 : 0);
         float amplitudeMilieu = (amplitudeMax + amplitudeMin) / 2.0f;
         float amplitudeMoy;
         Iterator<Float> it = information.iterator();
         while (it.hasNext()) {
-            for (int i = 0; i < tiersNbEchParBit; i++) {
+            for (int i = 0; i < nbEchLateral; i++) {
                 it.next();
             }
             amplitudeMoy = 0.0f;
@@ -98,7 +103,7 @@ public class CodeNRZT extends CodeBinaire {
             }
             amplitudeMoy /= nbEchMilieu;
             infoDecodee.add(amplitudeMoy > amplitudeMilieu);
-            for (int i = 0; i < tiersNbEchParBit; i++) {
+            for (int i = 0; i < nbEchLateral; i++) {
                 it.next();
             }
         }
