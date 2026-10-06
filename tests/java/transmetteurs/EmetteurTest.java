@@ -1,4 +1,4 @@
-package emetteurs;
+package transmetteurs;
 
 import codesbinaires.CodeBinaire;
 import codesbinaires.CodeNRZ;
@@ -8,7 +8,6 @@ import information.InformationNonConformeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import transmetteurs.Emetteur;
 
 import static org.junit.jupiter.api.Assertions.*;
 
