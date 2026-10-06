@@ -37,6 +37,10 @@ public class Decodeur extends Transmetteur<Boolean, Boolean> {
         }
     }
 
+    /**
+     * Traitement des bits reçus : chaque triplet de bit est
+     * décodé à l'aide de la decoderBits(a, b, c).
+     */
     private void creerInformationEmise() {
         boolean a, b, c, bitDecode;
         Iterator<Boolean> it = this.informationRecue.iterator();
@@ -49,6 +53,17 @@ public class Decodeur extends Transmetteur<Boolean, Boolean> {
         }
     }
 
+    /**
+     * Décode un triplet de bits
+     * 101 -> 1
+     * 010 -> 0
+     * Si un bit sur trois est faux, le résultat du décodeur
+     * sera quand même bon
+     * @param a premier bit du triplet
+     * @param b deuxième bit du triplet
+     * @param c troisième bit du triplet
+     * @return bit décodé
+     */
     private boolean decoderBits(boolean a, boolean b, boolean c) {
         return (a && !b) || (a && c) || (!b && c);
     }
