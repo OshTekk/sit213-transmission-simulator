@@ -1,5 +1,5 @@
 #!/bin/sh
-ARCHIVE_NAME="${1:-Pons-Weymeels-Touchais-Schaeffer.SIT213.Etape4}"
+ARCHIVE_NAME="${1:-Pons-Weymeels-Touchais-Schaeffer.SIT213.Etape5}"
 
 if [ -d "src" ]; then
     ROOT_DIR="."

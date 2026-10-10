@@ -55,6 +55,7 @@ Le package visualisation est à présent testé.
 ## TP5
 - [x] Encodeur : Aymeric
 - [x] Décodeur : Antonin
-- [ ] Simulateur : Simulateur + Comparateur TEB
-- [ ] Tests : Nathan
-- [ ] Corriger echantillons : Antonin
+- [x] Simulateur : Simulateur + Comparateur TEB
+- [x] Tests : Nathan
+- [x] Corriger echantillons : Antonin
+

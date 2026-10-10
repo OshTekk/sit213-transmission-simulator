@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class CodeRZTest extends CodeBinaireTest {
@@ -31,5 +34,17 @@ class CodeRZTest extends CodeBinaireTest {
         assertThrows(NbEchantillonInvalideException.class, () -> new CodeRZ(1, ampliMin, ampliMax));
         assertThrows(NbEchantillonInvalideException.class, () -> new CodeRZ(2, ampliMin, ampliMax));
         assertDoesNotThrow(() -> new CodeRZ(3, ampliMin, ampliMax));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {9, 10, 11, 12, 13, 14})
+    @DisplayName("Invariance encodage puis décodage pour différents nombres d'échantillons (modulo 3)")
+    void testInvarianceModuloTrois(int nbEchTest) throws Exception {
+        CodeRZ code = new CodeRZ(nbEchTest, ampliMin, ampliMax);
+        information.Information<Boolean> info = new information.Information<>(boolTestChain);
+        information.Information<Float> sign = code.encoder(info);
+        assertEquals(info.nbElements() * nbEchTest, sign.nbElements());
+        information.Information<Boolean> decode = code.decoder(sign);
+        assertEquals(info, decode);
     }
 }

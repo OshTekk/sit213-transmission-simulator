@@ -545,4 +545,74 @@ class SimulateurTest {
         assertEquals(0.0f, simulateur.calculTauxErreurBinaire());
         assertEquals(destination(simulateur).getInformationRecue(), source(simulateur).getInformationEmise());
     }
+
+    @Test
+    @DisplayName("Connexion de la chaîne analogique avec codeur et décodeur (-codeur -form)")
+    void testChaineAnalogiqueAvecCodeur() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-codeur", "-form", "NRZ", "-mess", "101"});
+        List<?> sortiesSource = (List<?>) lireChamp(source(simulateur), Source.class, "destinationsConnectees");
+        assertEquals(1, sortiesSource.size());
+        assertInstanceOf(Codeur.class, sortiesSource.get(0));
+
+        Codeur codeur = (Codeur) sortiesSource.get(0);
+        List<?> sortiesCodeur = (List<?>) lireChamp(codeur, Transmetteur.class, "destinationsConnectees");
+        assertEquals(1, sortiesCodeur.size());
+        assertInstanceOf(Emetteur.class, sortiesCodeur.get(0));
+
+        Emetteur emetteur = (Emetteur) sortiesCodeur.get(0);
+        List<?> sortiesEmetteur = (List<?>) lireChamp(emetteur, Transmetteur.class, "destinationsConnectees");
+        assertEquals(1, sortiesEmetteur.size());
+        assertInstanceOf(TransmetteurParfait.class, sortiesEmetteur.get(0));
+
+        Transmetteur<?, ?> canal = (Transmetteur<?, ?>) sortiesEmetteur.get(0);
+        List<?> sortiesCanal = (List<?>) lireChamp(canal, Transmetteur.class, "destinationsConnectees");
+        assertEquals(1, sortiesCanal.size());
+        assertInstanceOf(Recepteur.class, sortiesCanal.get(0));
+
+        Recepteur recepteur = (Recepteur) sortiesCanal.get(0);
+        List<?> sortiesRecepteur = (List<?>) lireChamp(recepteur, Transmetteur.class, "destinationsConnectees");
+        assertEquals(1, sortiesRecepteur.size());
+        assertInstanceOf(Decodeur.class, sortiesRecepteur.get(0));
+
+        Decodeur decodeur = (Decodeur) sortiesRecepteur.get(0);
+        List<?> sortiesDecodeur = (List<?>) lireChamp(decodeur, Transmetteur.class, "destinationsConnectees");
+        assertEquals(1, sortiesDecodeur.size());
+        assertInstanceOf(DestinationFinale.class, sortiesDecodeur.get(0));
+    }
+
+    @Test
+    @DisplayName("Transmission analogique sans erreur avec codeur en canal parfait (-codeur -form)")
+    void testExecuteAvecCodeurEtAnalogiqueSansErreur() throws Exception {
+        Simulateur simulateur = new Simulateur(new String[]{"-codeur", "-form", "NRZ", "-mess", "1010101"});
+        simulateur.execute();
+        assertEquals(0.0f, simulateur.calculTauxErreurBinaire());
+        assertEquals(destination(simulateur).getInformationRecue(), source(simulateur).getInformationEmise());
+    }
+
+    @Test
+    @DisplayName("Réduction du TEB en canal bruité grâce au codeur de canal (-codeur)")
+    void testCodeurReduitTebEnCanalBruite() throws Exception {
+        Simulateur simuSansCodeur = new Simulateur(new String[]{"-mess", "5000", "-form", "NRZ", "-snrpb", "2", "-seed", "42"});
+        simuSansCodeur.execute();
+        float tebSans = simuSansCodeur.calculTauxErreurBinaire();
+
+        Simulateur simuAvecCodeur = new Simulateur(new String[]{"-mess", "5000", "-form", "NRZ", "-snrpb", "2", "-seed", "42", "-codeur"});
+        simuAvecCodeur.execute();
+        float tebAvec = simuAvecCodeur.calculTauxErreurBinaire();
+
+        assertTrue(tebSans > 0.05f, "Le TEB sans codeur doit présenter des erreurs à ce SNR");
+        assertTrue(tebAvec < tebSans, "Le codeur de canal doit réduire significativement le TEB");
+    }
+
+    @Test
+    @DisplayName("Configuration avec sondes et codage canal (-s -codeur)")
+    void testChaineAvecSondesEtCodeur() {
+        assertDoesNotThrow(() -> {
+            Simulateur simuLogique = new Simulateur(new String[]{"-s", "-codeur", "-mess", "1010101"});
+            assertNotNull(simuLogique);
+            Simulateur simuAnalogique = new Simulateur(new String[]{"-s", "-codeur", "-form", "RZ", "-mess", "1010101"});
+            assertNotNull(simuAnalogique);
+        });
+    }
 }
+

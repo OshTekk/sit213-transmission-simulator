@@ -246,6 +246,8 @@ public class Simulateur {
      * <dt>-nbEch n</dt><dd>Fixe le nombre d'échantillons par bit.</dd>
      * <dt>-ampl min max</dt><dd>Fixe les amplitudes minimale et maximale.</dd>
      * <dt>-snrpb snr</dt><dd>Active le canal bruité avec le rapport signal sur bruit par bit.</dd>
+     * <dt>-ti dt ar ...</dt><dd>Configure jusqu'à 5 trajets indirects avec retard et atténuation.</dd>
+     * <dt>-codeur</dt><dd>Active le codage et décodage de canal (code correcteur d'erreurs).</dd>
      * <dt>-save fichier</dt><dd>Demande la sauvegarde du signal analogique.</dd>
      * </dl>
      *
