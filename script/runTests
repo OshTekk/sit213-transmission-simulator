@@ -18,9 +18,13 @@ fi
 echo "=== Tests JUnit ==="
 if [ -d "tests" ]; then
     set -eu
+    statut=0
     # Générer aussi la couverture lorsque des tests révèlent une anomalie.
     mvn -f tests/pom.xml clean test "$@" || statut=$?
     mvn -f tests/pom.xml jacoco:report "$@" || exit $?
+    if [ "$statut" -ne 0 ]; then
+        exit "$statut"
+    fi
 else
     echo "Déploiement : tests non lancés"
 fi

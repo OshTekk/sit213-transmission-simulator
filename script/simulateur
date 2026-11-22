@@ -9,6 +9,7 @@ fi
 
 if [ ! -d "bin" ]; then
     echo "Le dossier bin n’existe pas. Executez le script compile avant."
+    exit 1
 elif [ -z "$(ls -A 'bin')" ]; then
     echo "Le dossier bin est vide. Executez le script compile avant."
     exit 1

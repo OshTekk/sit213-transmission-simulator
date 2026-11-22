@@ -191,4 +191,7 @@ README.html
 .exercism
 docs/*
 suivi.md
-mesures/environnement1/README.md
+node_modules/
+web/node_modules/
+web/dist/
+.DS_Store*.tsbuildinfo
